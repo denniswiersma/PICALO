@@ -37,7 +37,7 @@ class Logger:
             20: "INFO",
             30: "WARNING",
             40: "ERROR",
-            50: "CRITICAL"
+            50: "CRITICAL",
         }
 
     def clear_logfile(self):
@@ -48,17 +48,26 @@ class Logger:
         # Construct stream handler.
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(self.level)
-        stream_handler.setFormatter(logging.Formatter('%(asctime)s  [%(levelname)-4.4s]  %(message)s', "%H:%M:%S"))
+        stream_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s  [%(levelname)-4.4s]  %(message)s", "%H:%M:%S"
+            )
+        )
 
         # Construct file handler.
         file_handler = logging.FileHandler(self.logfile)
         file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(logging.Formatter('%(asctime)s  %(module)-16s %(levelname)-8s %(message)s', "%Y-%m-%d %H:%M:%S"))
+        file_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s  %(module)-16s %(levelname)-8s %(message)s",
+                "%Y-%m-%d %H:%M:%S",
+            )
+        )
 
         # Construct logger object.
         logging.basicConfig(
-            level=logging.DEBUG,
-            handlers=[stream_handler, file_handler])
+            level=logging.DEBUG, handlers=[stream_handler, file_handler]
+        )
 
         return logging.getLogger(__name__)
 

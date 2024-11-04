@@ -33,12 +33,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -46,68 +46,83 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.components_path = getattr(arguments, 'components')
-        self.genes_path = getattr(arguments, 'genes')
-        self.gene_info_path = getattr(arguments, 'gene_info')
-        self.avg_ge_path = getattr(arguments, 'average_gene_expression')
-        outdir = getattr(arguments, 'out_directory')
-        self.out_filename = getattr(arguments, 'out_filename')
+        self.components_path = getattr(arguments, "components")
+        self.genes_path = getattr(arguments, "genes")
+        self.gene_info_path = getattr(arguments, "gene_info")
+        self.avg_ge_path = getattr(arguments, "average_gene_expression")
+        outdir = getattr(arguments, "out_directory")
+        self.out_filename = getattr(arguments, "out_filename")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'correlate_components_with_genes', outdir)
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "correlate_components_with_genes",
+            outdir,
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-c",
-                            "--components",
-                            type=str,
-                            required=True,
-                            help="The path to the components matrix.")
-        parser.add_argument("-g",
-                            "--genes",
-                            type=str,
-                            required=True,
-                            help="The path to the gene expression matrix.")
-        parser.add_argument("-gi",
-                            "--gene_info",
-                            type=str,
-                            required=True,
-                            help="The path to the gene info matrix.")
-        parser.add_argument("-avge",
-                            "--average_gene_expression",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the average gene expression "
-                                 "matrix.")
-        parser.add_argument("-od",
-                            "--out_directory",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The name of the output directory.")
-        parser.add_argument("-of",
-                            "--out_filename",
-                            type=str,
-                            required=False,
-                            default="output",
-                            help="The name of the output files.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-c",
+            "--components",
+            type=str,
+            required=True,
+            help="The path to the components matrix.",
+        )
+        parser.add_argument(
+            "-g",
+            "--genes",
+            type=str,
+            required=True,
+            help="The path to the gene expression matrix.",
+        )
+        parser.add_argument(
+            "-gi",
+            "--gene_info",
+            type=str,
+            required=True,
+            help="The path to the gene info matrix.",
+        )
+        parser.add_argument(
+            "-avge",
+            "--average_gene_expression",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the average gene expression " "matrix.",
+        )
+        parser.add_argument(
+            "-od",
+            "--out_directory",
+            type=str,
+            required=False,
+            default=None,
+            help="The name of the output directory.",
+        )
+        parser.add_argument(
+            "-of",
+            "--out_filename",
+            type=str,
+            required=False,
+            default="output",
+            help="The name of the output files.",
+        )
 
         return parser.parse_args()
 
@@ -124,7 +139,9 @@ class main():
 
         print("Pre-processing data.")
         # Make sure order is the same.
-        samples = set(comp_df.columns.tolist()).intersection(set(genes_df.columns.tolist()))
+        samples = set(comp_df.columns.tolist()).intersection(
+            set(genes_df.columns.tolist())
+        )
         comp_df = comp_df.loc[:, samples]
         genes_df = genes_df.loc[:, samples]
 
@@ -143,61 +160,89 @@ class main():
         print("Calculating FDR values.")
         fdr_m = np.empty_like(pvalue_m)
         for j in range(pvalue_m.shape[1]):
-            fdr_m[:, j] = multitest.multipletests(pvalue_m[:, j], method='fdr_bh')[1]
+            fdr_m[:, j] = multitest.multipletests(pvalue_m[:, j], method="fdr_bh")[1]
 
         print("Calculating z-scores.")
         flip_m = np.ones_like(corr_m)
         flip_m[corr_m > 0] = -1
         tmp_pvalue_m = np.copy(pvalue_m)
         tmp_pvalue_m = tmp_pvalue_m / 2  # two sided test
-        tmp_pvalue_m[tmp_pvalue_m > (1-1e-16)] = (1-1e-16)  # precision upper limit
-        tmp_pvalue_m[tmp_pvalue_m < 2.4703282292062328e-324] = 2.4703282292062328e-324  # precision lower limit
+        tmp_pvalue_m[tmp_pvalue_m > (1 - 1e-16)] = 1 - 1e-16  # precision upper limit
+        tmp_pvalue_m[
+            tmp_pvalue_m < 2.4703282292062328e-324
+        ] = 2.4703282292062328e-324  # precision lower limit
         zscore_m = stats.norm.ppf(tmp_pvalue_m) * flip_m
         del tmp_pvalue_m
 
         print("Saving output.")
-        for m, suffix in ([corr_m, "correlation_coefficient"],
-                          [pvalue_m, "correlation_pvalue"],
-                          [fdr_m, "correlation_FDR"],
-                          [zscore_m, "correlation_zscore"]):
+        for m, suffix in (
+            [corr_m, "correlation_coefficient"],
+            [pvalue_m, "correlation_pvalue"],
+            [fdr_m, "correlation_FDR"],
+            [zscore_m, "correlation_zscore"],
+        ):
             df = pd.DataFrame(m, index=genes, columns=components)
-            self.save_file(df=df,
-                           outpath=os.path.join(self.outdir,
-                                                "{}_{}.txt.gz".format(self.out_filename, suffix)),
-                           index=True)
+            self.save_file(
+                df=df,
+                outpath=os.path.join(
+                    self.outdir, "{}_{}.txt.gz".format(self.out_filename, suffix)
+                ),
+                index=True,
+            )
             del df
 
         print("Post-processing data.")
-        corr_df = pd.DataFrame(np.hstack((corr_m, pvalue_m, fdr_m, zscore_m)),
-                               columns=["{} r".format(comp) for comp in components] +
-                                       ["{} pvalue".format(comp) for comp in components] +
-                                       ["{} FDR".format(comp) for comp in components] +
-                                       ["{} zscore".format(comp) for comp in components])
+        corr_df = pd.DataFrame(
+            np.hstack((corr_m, pvalue_m, fdr_m, zscore_m)),
+            columns=["{} r".format(comp) for comp in components]
+            + ["{} pvalue".format(comp) for comp in components]
+            + ["{} FDR".format(comp) for comp in components]
+            + ["{} zscore".format(comp) for comp in components],
+        )
         corr_df.insert(0, "ProbeName", genes)
-        corr_df.insert(1, 'HGNCName', corr_df["ProbeName"].map(gene_dict))
+        corr_df.insert(1, "HGNCName", corr_df["ProbeName"].map(gene_dict))
         file_appendix = ""
         if self.avg_ge_path is not None:
             avg_ge_df = self.load_file(self.avg_ge_path, header=0, index_col=0)
             avg_ge_dict = dict(zip(avg_ge_df.index, avg_ge_df["average"]))
-            corr_df.insert(2, 'avgExpression', corr_df["ProbeName"].map(avg_ge_dict))
+            corr_df.insert(2, "avgExpression", corr_df["ProbeName"].map(avg_ge_dict))
             file_appendix += "-avgExpressionAdded"
             del avg_ge_df
 
         print("Saving file.")
         print(corr_df)
-        self.save_file(df=corr_df,
-                       outpath=os.path.join(self.outdir, "{}_results{}.txt.gz".format(self.out_filename, file_appendix)),
-                       index=False)
-        corr_df.to_excel(os.path.join(self.outdir, "{}_results{}.xlsx".format(self.out_filename, file_appendix)))
+        self.save_file(
+            df=corr_df,
+            outpath=os.path.join(
+                self.outdir,
+                "{}_results{}.txt.gz".format(self.out_filename, file_appendix),
+            ),
+            index=False,
+        )
+        corr_df.to_excel(
+            os.path.join(
+                self.outdir,
+                "{}_results{}.xlsx".format(self.out_filename, file_appendix),
+            )
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
@@ -216,7 +261,9 @@ class main():
         r = np.empty((m1_dev.shape[1], m2_dev.shape[1]), dtype=np.float64)
         for i in range(m1_dev.shape[1]):
             for j in range(m2_dev.shape[1]):
-                r[i, j] = np.sum(m1_dev[:, i] * m2_dev[:, j]) / np.sqrt(m1_rss[i] * m2_rss[j])
+                r[i, j] = np.sum(m1_dev[:, i] * m2_dev[:, j]) / np.sqrt(
+                    m1_rss[i] * m2_rss[j]
+                )
 
         rf = r.flatten()
         df = m1.shape[0] - 2
@@ -227,15 +274,15 @@ class main():
 
     @staticmethod
     def save_file(df, outpath, header=True, index=False, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -248,6 +295,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

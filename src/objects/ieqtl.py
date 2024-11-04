@@ -16,7 +16,17 @@ LICENSE file in the root directory of this source tree.
 import numpy as np
 
 # Local application imports.
-from src.statistics import inverse, fit, predict, calc_residuals, calc_rss, fit_and_predict, calc_std, calc_p_value, calc_regression_log_likelihood
+from src.statistics import (
+    inverse,
+    fit,
+    predict,
+    calc_residuals,
+    calc_rss,
+    fit_and_predict,
+    calc_std,
+    calc_p_value,
+    calc_regression_log_likelihood,
+)
 
 
 class IeQTL:
@@ -33,8 +43,7 @@ class IeQTL:
         # Save data.
         self.mask = ~np.isnan(genotype)
         self.n = np.sum(self.mask)
-        self.X = self.construct_model_matrix(genotype=genotype,
-                                             covariate=covariate)
+        self.X = self.construct_model_matrix(genotype=genotype, covariate=covariate)
         self.y = np.copy(expression[self.mask])
         del genotype, covariate, expression
 
@@ -87,17 +96,12 @@ class IeQTL:
         y_hat = predict(X=self.X, betas=self.betas)
         self.residuals = calc_residuals(y=self.y, y_hat=y_hat)
         self.rss = np.sum(self.residuals * self.residuals)
-        self.std = calc_std(rss=self.rss,
-                            n=self.n,
-                            df=self.X.shape[1],
-                            inv_m=inv_m)
+        self.std = calc_std(rss=self.rss, n=self.n, df=self.X.shape[1], inv_m=inv_m)
 
         # Calculate interaction p-value.
-        self.p_value = calc_p_value(rss1=rss_null,
-                                    rss2=self.rss,
-                                    df1=3,
-                                    df2=4,
-                                    n=self.n)
+        self.p_value = calc_p_value(
+            rss1=rss_null, rss2=self.rss, df1=3, df2=4, n=self.n
+        )
 
         # Set the flag.
         self.is_computed = True
@@ -140,12 +144,14 @@ class IeQTL:
             y_values.append(self.rss - rs + adj_rs)
 
         # Determine the coefficients.
-        self.coef_a, self.coef_b = self.calc_parabola_vertex(x1=self.x1,
-                                                             x2=self.X[:, 2],
-                                                             x3=self.x3,
-                                                             y1=y_values[0],
-                                                             y2=self.rss,
-                                                             y3=y_values[1])
+        self.coef_a, self.coef_b = self.calc_parabola_vertex(
+            x1=self.x1,
+            x2=self.X[:, 2],
+            x3=self.x3,
+            y1=y_values[0],
+            y2=self.rss,
+            y3=y_values[1],
+        )
 
         # Set the flag.
         self.is_analyzed = True
@@ -200,21 +206,27 @@ class IeQTL:
             new_X[:, 2] = new_cov[self.mask]
             new_X[:, 3] = new_X[:, 1] * new_X[:, 2]
 
-            residuals = calc_residuals(y=self.y, y_hat=predict(X=new_X, betas=self.betas))
+            residuals = calc_residuals(
+                y=self.y, y_hat=predict(X=new_X, betas=self.betas)
+            )
 
         return calc_regression_log_likelihood(residuals=residuals)
 
     def __str__(self):
-        return "IeQTL(snp={}, gene={}, cov={}, is_computed={}, " \
-               "is_analyzed={}, n={}, betas={}, rss={:.2f}, p_value={:.2e}, " \
-               "coef_a={}, coef_b={})".format(self.snp,
-                                              self.gene,
-                                              self.cov,
-                                              self.is_computed,
-                                              self.is_analyzed,
-                                              self.n,
-                                              self.betas,
-                                              self.rss,
-                                              self.p_value,
-                                              self.coef_a,
-                                              self.coef_b)
+        return (
+            "IeQTL(snp={}, gene={}, cov={}, is_computed={}, "
+            "is_analyzed={}, n={}, betas={}, rss={:.2f}, p_value={:.2e}, "
+            "coef_a={}, coef_b={})".format(
+                self.snp,
+                self.gene,
+                self.cov,
+                self.is_computed,
+                self.is_analyzed,
+                self.n,
+                self.betas,
+                self.rss,
+                self.p_value,
+                self.coef_a,
+                self.coef_b,
+            )
+        )

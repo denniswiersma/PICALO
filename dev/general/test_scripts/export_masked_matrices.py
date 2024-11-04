@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -43,46 +43,54 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.expr_path = getattr(arguments, 'expression')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.pic_path = getattr(arguments, 'pic_loadings')
+        self.expr_path = getattr(arguments, "expression")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.pic_path = getattr(arguments, "pic_loadings")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'export_masked_matrices')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "export_masked_matrices"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            required=True,
-                            help="The path to the expression matrix.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=True,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-pic",
-                            "--pic_loadings",
-                            type=str,
-                            required=True,
-                            help="The path to the PICALO PIC loadings matrix.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            required=True,
+            help="The path to the expression matrix.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=True,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-pic",
+            "--pic_loadings",
+            type=str,
+            required=True,
+            help="The path to the PICALO PIC loadings matrix.",
+        )
 
         return parser.parse_args()
 
@@ -105,29 +113,49 @@ class main():
         datasets = std_df.iloc[:, 1].unique().tolist()
 
         if expr_df is not None and expr_df.columns.tolist() != samples:
-            print("\tThe expression file header does not match "
-                  "the sample-to-dataset link file")
+            print(
+                "\tThe expression file header does not match "
+                "the sample-to-dataset link file"
+            )
             exit()
 
         if pics_df is not None and pics_df.columns.tolist() != samples:
-            print("\tThe PIC loadings file header does not match "
-                  "the sample-to-dataset link file")
+            print(
+                "\tThe PIC loadings file header does not match "
+                "the sample-to-dataset link file"
+            )
             exit()
 
         print("### Step3 ###")
         print("Creating mask")
         n_samples = std_df.shape[0]
         n_datasets = len(datasets)
-        sample_trans_dict = {sample: "sample{:0{}d}".format(i, len(str(n_samples))) for i, sample in enumerate(samples)}
-        dataset_trans_dict = {dataset: "dataset{:0{}d}".format(i, len(str(n_datasets))) for i, dataset in enumerate(datasets)}
+        sample_trans_dict = {
+            sample: "sample{:0{}d}".format(i, len(str(n_samples)))
+            for i, sample in enumerate(samples)
+        }
+        dataset_trans_dict = {
+            dataset: "dataset{:0{}d}".format(i, len(str(n_datasets)))
+            for i, dataset in enumerate(datasets)
+        }
 
-        self.save_dict(dict=sample_trans_dict, order=samples, outpath=os.path.join(self.outdir, "sample_translate.txt.gz"))
-        self.save_dict(dict=dataset_trans_dict, order=datasets, outpath=os.path.join(self.outdir, "dataset_translate.txt.gz"))
+        self.save_dict(
+            dict=sample_trans_dict,
+            order=samples,
+            outpath=os.path.join(self.outdir, "sample_translate.txt.gz"),
+        )
+        self.save_dict(
+            dict=dataset_trans_dict,
+            order=datasets,
+            outpath=os.path.join(self.outdir, "dataset_translate.txt.gz"),
+        )
 
         print("### Step3 ###")
         print("Masking matrices")
         masked_expr_df = expr_df.copy()
-        masked_expr_df.columns = [sample_trans_dict[sample] for sample in masked_expr_df.columns]
+        masked_expr_df.columns = [
+            sample_trans_dict[sample] for sample in masked_expr_df.columns
+        ]
         print(masked_expr_df)
 
         masked_std_df = std_df.copy()
@@ -136,26 +164,62 @@ class main():
         print(masked_std_df)
 
         masked_pics_df = pics_df.copy()
-        masked_pics_df.columns = [sample_trans_dict[sample] for sample in pics_df.columns]
+        masked_pics_df.columns = [
+            sample_trans_dict[sample] for sample in pics_df.columns
+        ]
         print(masked_pics_df)
 
         print("### Step4 ###")
         print("Saving matrices")
-        self.save_file(df=masked_expr_df, outpath=os.path.join(self.outdir, os.path.basename(self.expr_path).replace(".txt.gz", "_masked.txt.gz")))
-        self.save_file(df=masked_std_df, outpath=os.path.join(self.outdir, os.path.basename(self.std_path).replace(".txt.gz", "_masked.txt.gz")), index=False)
-        self.save_file(df=masked_pics_df, outpath=os.path.join(self.outdir, os.path.basename(self.pic_path).replace(".txt.gz", "_masked.txt.gz")))
+        self.save_file(
+            df=masked_expr_df,
+            outpath=os.path.join(
+                self.outdir,
+                os.path.basename(self.expr_path).replace(".txt.gz", "_masked.txt.gz"),
+            ),
+        )
+        self.save_file(
+            df=masked_std_df,
+            outpath=os.path.join(
+                self.outdir,
+                os.path.basename(self.std_path).replace(".txt.gz", "_masked.txt.gz"),
+            ),
+            index=False,
+        )
+        self.save_file(
+            df=masked_pics_df,
+            outpath=os.path.join(
+                self.outdir,
+                os.path.basename(self.pic_path).replace(".txt.gz", "_masked.txt.gz"),
+            ),
+        )
 
     @staticmethod
-    def load_file(inpath, header=None, index_col=None, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
+    def load_file(
+        inpath,
+        header=None,
+        index_col=None,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
         if inpath.endswith(".pkl"):
             df = pd.read_pickle(inpath)
         else:
-            df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                             low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+            df = pd.read_csv(
+                inpath,
+                sep=sep,
+                header=header,
+                index_col=index_col,
+                low_memory=low_memory,
+                nrows=nrows,
+                skiprows=skiprows,
+            )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def save_dict(self, dict, order, outpath):
@@ -163,21 +227,23 @@ class main():
         for value in order:
             data.append([value, dict[value]])
 
-        self.save_file(df=pd.DataFrame(data, columns=["key", "value"]),
-                       outpath=outpath,
-                       index=False)
+        self.save_file(
+            df=pd.DataFrame(data, columns=["key", "value"]),
+            outpath=outpath,
+            index=False,
+        )
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -188,6 +254,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

@@ -31,12 +31,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -48,15 +48,15 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.gene_info_path = getattr(arguments, 'gene_info')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        outdir = getattr(arguments, 'outdir')
-        self.outfile = getattr(arguments, 'outfile')
+        self.data_path = getattr(arguments, "data")
+        self.gene_info_path = getattr(arguments, "gene_info")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        outdir = getattr(arguments, "outdir")
+        self.outfile = getattr(arguments, "outfile")
 
         # Set variables.
         if outdir is None:
@@ -67,44 +67,50 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-gi",
-                            "--gene_info",
-                            type=str,
-                            required=False,
-                            help="The path to the gene info matrix.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-od",
-                            "--outdir",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The name of the output path.")
-        parser.add_argument("-of",
-                            "--outfile",
-                            type=str,
-                            required=False,
-                            default="output",
-                            help="The name of the output filename.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-gi",
+            "--gene_info",
+            type=str,
+            required=False,
+            help="The path to the gene info matrix.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-od",
+            "--outdir",
+            type=str,
+            required=False,
+            default=None,
+            help="The name of the output path.",
+        )
+        parser.add_argument(
+            "-of",
+            "--outfile",
+            type=str,
+            required=False,
+            default="output",
+            help="The name of the output filename.",
+        )
 
         return parser.parse_args()
 
@@ -113,7 +119,12 @@ class main():
 
         print("Processing data files.")
         gene_info_df = self.load_file(self.gene_info_path, header=0, index_col=None)
-        gene_chr_dict = dict(zip([x.split(".")[0] for x in gene_info_df["ArrayAddress"]], gene_info_df["Chr"]))
+        gene_chr_dict = dict(
+            zip(
+                [x.split(".")[0] for x in gene_info_df["ArrayAddress"]],
+                gene_info_df["Chr"],
+            )
+        )
         std_df = self.load_file(self.std_path, header=0, index_col=None)
         expr_df = self.load_file(self.data_path, header=0, index_col=0)
 
@@ -132,8 +143,16 @@ class main():
                     even_mask[i] = True
                 else:
                     odd_mask[i] = True
-        print("\tFound {:,} genes on the even chromosomes [{:.2f}%].".format(np.sum(even_mask), (100 / expr_df.shape[0]) * np.sum(even_mask)))
-        print("\tFound {:,} genes on the odd chromosomes [{:.2f}%].".format(np.sum(odd_mask), (100 / expr_df.shape[0]) * np.sum(odd_mask)))
+        print(
+            "\tFound {:,} genes on the even chromosomes [{:.2f}%].".format(
+                np.sum(even_mask), (100 / expr_df.shape[0]) * np.sum(even_mask)
+            )
+        )
+        print(
+            "\tFound {:,} genes on the odd chromosomes [{:.2f}%].".format(
+                np.sum(odd_mask), (100 / expr_df.shape[0]) * np.sum(odd_mask)
+            )
+        )
 
         print("Filtering samples")
         samples = std_df.iloc[:, 0].tolist()
@@ -141,34 +160,53 @@ class main():
         for i, sample in enumerate(expr_df.columns):
             if sample in samples:
                 sample_mask[i] = True
-        print("\tFound {:,} samples [{:.2f}%].".format(np.sum(sample_mask), (100 / expr_df.shape[1]) * np.sum(sample_mask)))
+        print(
+            "\tFound {:,} samples [{:.2f}%].".format(
+                np.sum(sample_mask), (100 / expr_df.shape[1]) * np.sum(sample_mask)
+            )
+        )
 
         print("")
         for mask, label in ((even_mask, "even"), (odd_mask, "odd")):
             print("Processing {}".format(label))
-            self.save_file(df=expr_df.loc[mask, sample_mask], outpath=os.path.join(self.outdir, "{}.{}.txt.gz".format(self.outfile, label)))
+            self.save_file(
+                df=expr_df.loc[mask, sample_mask],
+                outpath=os.path.join(
+                    self.outdir, "{}.{}.txt.gz".format(self.outfile, label)
+                ),
+            )
             print("")
+
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -179,6 +217,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

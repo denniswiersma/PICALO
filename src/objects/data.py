@@ -21,9 +21,17 @@ from src.utilities import load_dataframe
 
 
 class Data:
-    def __init__(self, eqtl_path, genotype_path, expression_path,
-                 tech_covariate_path, tech_covariate_with_inter_path,
-                 covariate_path, sample_dataset_path, log):
+    def __init__(
+        self,
+        eqtl_path,
+        genotype_path,
+        expression_path,
+        tech_covariate_path,
+        tech_covariate_with_inter_path,
+        covariate_path,
+        sample_dataset_path,
+        log,
+    ):
         # Safe arguments.
         self.eqtl_path = eqtl_path
         self.geno_path = genotype_path
@@ -45,34 +53,40 @@ class Data:
 
     def get_eqtl_df(self, skiprows=None, nrows=None):
         if self.eqtl_df is None:
-            self.eqtl_df = load_dataframe(self.eqtl_path,
-                                          header=0,
-                                          index_col=None,
-                                          skiprows=skiprows,
-                                          nrows=nrows,
-                                          log=self.log)
+            self.eqtl_df = load_dataframe(
+                self.eqtl_path,
+                header=0,
+                index_col=None,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.eqtl_df
 
     def get_geno_df(self, skiprows=None, nrows=None):
         if self.geno_df is None:
-            self.geno_df = load_dataframe(self.geno_path,
-                                          header=0,
-                                          index_col=0,
-                                          skiprows=skiprows,
-                                          nrows=nrows,
-                                          log=self.log)
+            self.geno_df = load_dataframe(
+                self.geno_path,
+                header=0,
+                index_col=0,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.geno_df
 
     def get_expr_df(self, skiprows=None, nrows=None):
         if self.expr_df is None:
-            self.expr_df = load_dataframe(self.expr_path,
-                                          header=0,
-                                          index_col=0,
-                                          skiprows=skiprows,
-                                          nrows=nrows,
-                                          log=self.log)
+            self.expr_df = load_dataframe(
+                self.expr_path,
+                header=0,
+                index_col=0,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.expr_df
 
@@ -81,12 +95,14 @@ class Data:
             return None
 
         if self.tcov_df is None:
-            self.tcov_df = load_dataframe(self.tcov_path,
-                                          header=0,
-                                          index_col=0,
-                                          skiprows=skiprows,
-                                          nrows=nrows,
-                                          log=self.log)
+            self.tcov_df = load_dataframe(
+                self.tcov_path,
+                header=0,
+                index_col=0,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.tcov_df
 
@@ -95,32 +111,35 @@ class Data:
             return None
 
         if self.tcov_inter_df is None:
-            self.tcov_inter_df = load_dataframe(self.tcov_inter_path,
-                                                header=0,
-                                                index_col=0,
-                                                skiprows=skiprows,
-                                                nrows=nrows,
-                                                log=self.log)
+            self.tcov_inter_df = load_dataframe(
+                self.tcov_inter_path,
+                header=0,
+                index_col=0,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.tcov_inter_df
 
     def get_covs_df(self, skiprows=None, nrows=None):
         if self.covs_df is None:
-            self.covs_df = load_dataframe(self.covs_path,
-                                          header=0,
-                                          index_col=0,
-                                          skiprows=skiprows,
-                                          nrows=nrows,
-                                          log=self.log)
+            self.covs_df = load_dataframe(
+                self.covs_path,
+                header=0,
+                index_col=0,
+                skiprows=skiprows,
+                nrows=nrows,
+                log=self.log,
+            )
 
         return self.covs_df
 
     def get_std_df(self):
         if self.std_df is None and self.std_path is not None:
-            self.std_df = load_dataframe(self.std_path,
-                                         header=0,
-                                         index_col=None,
-                                         log=self.log)
+            self.std_df = load_dataframe(
+                self.std_path, header=0, index_col=None, log=self.log
+            )
 
         return self.std_df
 
@@ -148,7 +167,11 @@ class Data:
         self.log.info("  > Genotype input path: {}".format(self.geno_path))
         self.log.info("  > Expression input path: {}".format(self.expr_path))
         self.log.info("  > Technical covariates input path: {}".format(self.tcov_path))
-        self.log.info("  > Technical covariates with interaction input path: {}".format(self.tcov_inter_path))
+        self.log.info(
+            "  > Technical covariates with interaction input path: {}".format(
+                self.tcov_inter_path
+            )
+        )
         self.log.info("  > Covariates input path: {}".format(self.covs_path))
         self.log.info("  > Sample-dataset path: {}".format(self.std_path))
         self.log.info("")

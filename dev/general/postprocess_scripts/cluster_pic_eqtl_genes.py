@@ -36,12 +36,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -49,90 +49,104 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.picalo_indir = getattr(arguments, 'picalo')
-        self.pic_start = getattr(arguments, 'pic_start')
-        self.pic_end = getattr(arguments, 'pic_end')
-        self.gene_network_path = getattr(arguments, 'gene_network')
-        self.gene_correlations_path = getattr(arguments, 'gene_correlations')
-        self.gene_info_path = getattr(arguments, 'gene_info')
-        self.avg_ge_path = getattr(arguments, 'average_gene_expression')
-        self.min_avg_expression = getattr(arguments, 'min_avg_expression')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.picalo_indir = getattr(arguments, "picalo")
+        self.pic_start = getattr(arguments, "pic_start")
+        self.pic_end = getattr(arguments, "pic_end")
+        self.gene_network_path = getattr(arguments, "gene_network")
+        self.gene_correlations_path = getattr(arguments, "gene_correlations")
+        self.gene_info_path = getattr(arguments, "gene_info")
+        self.avg_ge_path = getattr(arguments, "average_gene_expression")
+        self.min_avg_expression = getattr(arguments, "min_avg_expression")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.file_outdir = os.path.join(base_dir, 'cluster_pic_eqtl_genes')
-        self.plot_outdir = os.path.join(self.file_outdir, 'plot')
+        self.file_outdir = os.path.join(base_dir, "cluster_pic_eqtl_genes")
+        self.plot_outdir = os.path.join(self.file_outdir, "plot")
         for outdir in [self.plot_outdir, self.file_outdir]:
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-pi",
-                            "--picalo",
-                            type=str,
-                            required=True,
-                            help="The path to the PICALO output directory.")
-        parser.add_argument("-ps",
-                            "--pic_start",
-                            type=int,
-                            default=1,
-                            help="The PIC start index to analyse."
-                                 "Default: 1.")
-        parser.add_argument("-pe",
-                            "--pic_end",
-                            type=int,
-                            default=5,
-                            help="The PIC end index to analyse."
-                                 "Default: 5.")
-        parser.add_argument("-gn",
-                            "--gene_network",
-                            type=str,
-                            required=True,
-                            help="The path to the gene network matrix.")
-        parser.add_argument("-gc",
-                            "--gene_correlations",
-                            type=str,
-                            default=None,
-                            help="The path to the gene correlations matrix.")
-        parser.add_argument("-gi",
-                            "--gene_info",
-                            type=str,
-                            required=True,
-                            help="The path to the gene info matrix.")
-        parser.add_argument("-avge",
-                            "--average_gene_expression",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the average gene expression "
-                                 "matrix.")
-        parser.add_argument("-mae",
-                            "--min_avg_expression",
-                            type=float,
-                            default=None,
-                            help="The minimal average expression of a gene."
-                                 "Default: None.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            default="output",
-                            help="The name of the outfile. Default: output.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-pi",
+            "--picalo",
+            type=str,
+            required=True,
+            help="The path to the PICALO output directory.",
+        )
+        parser.add_argument(
+            "-ps",
+            "--pic_start",
+            type=int,
+            default=1,
+            help="The PIC start index to analyse." "Default: 1.",
+        )
+        parser.add_argument(
+            "-pe",
+            "--pic_end",
+            type=int,
+            default=5,
+            help="The PIC end index to analyse." "Default: 5.",
+        )
+        parser.add_argument(
+            "-gn",
+            "--gene_network",
+            type=str,
+            required=True,
+            help="The path to the gene network matrix.",
+        )
+        parser.add_argument(
+            "-gc",
+            "--gene_correlations",
+            type=str,
+            default=None,
+            help="The path to the gene correlations matrix.",
+        )
+        parser.add_argument(
+            "-gi",
+            "--gene_info",
+            type=str,
+            required=True,
+            help="The path to the gene info matrix.",
+        )
+        parser.add_argument(
+            "-avge",
+            "--average_gene_expression",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the average gene expression " "matrix.",
+        )
+        parser.add_argument(
+            "-mae",
+            "--min_avg_expression",
+            type=float,
+            default=None,
+            help="The minimal average expression of a gene." "Default: None.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            default="output",
+            help="The name of the outfile. Default: output.",
+        )
 
         return parser.parse_args()
 
@@ -144,13 +158,21 @@ class main():
         snp_stats_df_list = []
         for i in range(1, 50):
             pic = "PIC{}".format(i)
-            pic_eqtl_path = os.path.join(self.picalo_indir, "PIC_interactions", "PIC{}.txt.gz".format(i))
+            pic_eqtl_path = os.path.join(
+                self.picalo_indir, "PIC_interactions", "PIC{}.txt.gz".format(i)
+            )
             if not os.path.exists(pic_eqtl_path):
                 break
 
             pic_eqtl_df = self.load_file(pic_eqtl_path, header=0, index_col=None)
-            pic_eqtl_df.index = pic_eqtl_df.index.astype(str) + "_" + pic_eqtl_df["gene"].str.split(".", n=1, expand=True)[0]
-            pic_eqtl_df["direction"] = ((pic_eqtl_df["beta-genotype"] * pic_eqtl_df["beta-interaction"]) > 0).map({True: "induces", False: "inhibits"})
+            pic_eqtl_df.index = (
+                pic_eqtl_df.index.astype(str)
+                + "_"
+                + pic_eqtl_df["gene"].str.split(".", n=1, expand=True)[0]
+            )
+            pic_eqtl_df["direction"] = (
+                (pic_eqtl_df["beta-genotype"] * pic_eqtl_df["beta-interaction"]) > 0
+            ).map({True: "induces", False: "inhibits"})
 
             pic_eqtl_df["N"] = 1
 
@@ -158,15 +180,23 @@ class main():
                 unique_snp_counts_df = pic_eqtl_df[["gene", "N"]].groupby("gene").sum()
                 snp_stats_df_list.append(unique_snp_counts_df)
 
-            signif_unique_snp_counts_df = pic_eqtl_df.loc[pic_eqtl_df["FDR"] < 0.05, ["gene", "N"]].groupby("gene").sum()
+            signif_unique_snp_counts_df = (
+                pic_eqtl_df.loc[pic_eqtl_df["FDR"] < 0.05, ["gene", "N"]]
+                .groupby("gene")
+                .sum()
+            )
             signif_unique_snp_counts_df.columns = [pic]
             snp_stats_df_list.append(signif_unique_snp_counts_df)
         snp_stats_df = pd.concat(snp_stats_df_list, axis=1)
         snp_stats_df.fillna(0, inplace=True)
         print(snp_stats_df)
-        self.save_file(df=snp_stats_df,
-                       outpath=os.path.join(self.file_outdir, "gene_stats_df.txt.gz".format(self.out_filename)),
-                       index=True)
+        self.save_file(
+            df=snp_stats_df,
+            outpath=os.path.join(
+                self.file_outdir, "gene_stats_df.txt.gz".format(self.out_filename)
+            ),
+            index=True,
+        )
         exit()
 
         # print("Loading gene network data.")
@@ -251,9 +281,24 @@ class main():
         #                outpath=os.path.join(self.file_outdir, "gene_network_coregulations.pkl".format(self.out_filename)))
         # exit()
 
-        pic_eqtl_df = self.load_file(os.path.join(self.file_outdir, "pic_eqtl_annotation_df.txt.gz".format(self.out_filename)))
-        gn_annot_df = self.load_file(os.path.join(self.file_outdir, "gene_network_annotation_df.txt.gz".format(self.out_filename)))
-        gn_df = self.load_file(os.path.join(self.file_outdir, "gene_network_coregulations.pkl".format(self.out_filename)))
+        pic_eqtl_df = self.load_file(
+            os.path.join(
+                self.file_outdir,
+                "pic_eqtl_annotation_df.txt.gz".format(self.out_filename),
+            )
+        )
+        gn_annot_df = self.load_file(
+            os.path.join(
+                self.file_outdir,
+                "gene_network_annotation_df.txt.gz".format(self.out_filename),
+            )
+        )
+        gn_df = self.load_file(
+            os.path.join(
+                self.file_outdir,
+                "gene_network_coregulations.pkl".format(self.out_filename),
+            )
+        )
 
         pic_eqtl_df = pic_eqtl_df.iloc[:500, :]
         gn_annot_df = gn_annot_df.iloc[:500, :]
@@ -288,41 +333,62 @@ class main():
         print("Visualising")
         for i in range(self.pic_start, self.pic_end + 1):
             # Create output directory.
-            pic_plot_outdir = os.path.join(self.plot_outdir, 'PIC{}'.format(i))
+            pic_plot_outdir = os.path.join(self.plot_outdir, "PIC{}".format(i))
             if not os.path.exists(pic_plot_outdir):
                 os.makedirs(pic_plot_outdir)
 
             # Select the eQTLs that have a sginificant interaction with the PIC.
-            signif_pic_eqlt_genes = pic_eqtl_df.loc[pic_eqtl_df["PIC{} FDR".format(i)] < 0.05, ["gene"]].copy()
+            signif_pic_eqlt_genes = pic_eqtl_df.loc[
+                pic_eqtl_df["PIC{} FDR".format(i)] < 0.05, ["gene"]
+            ].copy()
 
             # Subset those genes.
             pic_gn_df = gn_df.loc[signif_pic_eqlt_genes.index, :].copy()
-            signif_row_colors_df = row_colors_df.loc[signif_pic_eqlt_genes.index, ["avg expr", "PIC{} direction".format(i), "PIC{} r".format(i)]].copy()
+            signif_row_colors_df = row_colors_df.loc[
+                signif_pic_eqlt_genes.index,
+                ["avg expr", "PIC{} direction".format(i), "PIC{} r".format(i)],
+            ].copy()
             signif_row_colors_df.columns = ["avg expr", "direction", "correlation"]
-            pic_col_colors_df = col_colors_df.loc[:, ["avg expr", "PIC{} r".format(i)]].copy()
+            pic_col_colors_df = col_colors_df.loc[
+                :, ["avg expr", "PIC{} r".format(i)]
+            ].copy()
             pic_col_colors_df.columns = ["avg expr", "correlation"]
 
             # Cluster.
             pic_dissimilarity_gn_df = self.zscore_to_dissimilarity(df=pic_gn_df)
             row_linkage = self.cluster(pic_dissimilarity_gn_df)
 
-            self.plot(df=pic_dissimilarity_gn_df,
-                      row_colors=signif_row_colors_df,
-                      row_linkage=row_linkage,
-                      col_colors=signif_row_colors_df,
-                      col_linkage=row_linkage,
-                      name="PIC{}_gene_network_clustermap".format(i),
-                      outdir=pic_plot_outdir)
+            self.plot(
+                df=pic_dissimilarity_gn_df,
+                row_colors=signif_row_colors_df,
+                row_linkage=row_linkage,
+                col_colors=signif_row_colors_df,
+                col_linkage=row_linkage,
+                name="PIC{}_gene_network_clustermap".format(i),
+                outdir=pic_plot_outdir,
+            )
             exit()
 
             for direction in ["inhibits", "induces", "positive", "negative"]:
                 signif_pic_eqlt_genes = None
                 if direction in ["inhibits", "induces"]:
-                    signif_pic_eqlt_genes = pic_eqtl_df.loc[(pic_eqtl_df["PIC{} FDR".format(i)] < 0.05) & (pic_eqtl_df["PIC{} direction".format(i)] == direction), ["PIC{} FDR".format(i), "PIC{} direction".format(i), "gene"]].copy()
+                    signif_pic_eqlt_genes = pic_eqtl_df.loc[
+                        (pic_eqtl_df["PIC{} FDR".format(i)] < 0.05)
+                        & (pic_eqtl_df["PIC{} direction".format(i)] == direction),
+                        ["PIC{} FDR".format(i), "PIC{} direction".format(i), "gene"],
+                    ].copy()
                 elif direction == "positive":
-                    signif_pic_eqlt_genes = pic_eqtl_df.loc[(pic_eqtl_df["PIC{} FDR".format(i)] < 0.05) & (pic_eqtl_df["PIC{} r".format(i)] > 0), ["PIC{} FDR".format(i), "PIC{} r".format(i), "gene"]].copy()
+                    signif_pic_eqlt_genes = pic_eqtl_df.loc[
+                        (pic_eqtl_df["PIC{} FDR".format(i)] < 0.05)
+                        & (pic_eqtl_df["PIC{} r".format(i)] > 0),
+                        ["PIC{} FDR".format(i), "PIC{} r".format(i), "gene"],
+                    ].copy()
                 elif direction == "negative":
-                    signif_pic_eqlt_genes = pic_eqtl_df.loc[(pic_eqtl_df["PIC{} FDR".format(i)] < 0.05) & (pic_eqtl_df["PIC{} r".format(i)] < 0), ["PIC{} FDR".format(i), "PIC{} r".format(i), "gene"]].copy()
+                    signif_pic_eqlt_genes = pic_eqtl_df.loc[
+                        (pic_eqtl_df["PIC{} FDR".format(i)] < 0.05)
+                        & (pic_eqtl_df["PIC{} r".format(i)] < 0),
+                        ["PIC{} FDR".format(i), "PIC{} r".format(i), "gene"],
+                    ].copy()
                 else:
                     print("huh")
                     exit()
@@ -330,46 +396,70 @@ class main():
 
                 # Subset those genes.
                 pic_gn_df = gn_df.loc[signif_pic_eqlt_genes.index, :].copy()
-                signif_row_colors_df = row_colors_df.loc[signif_pic_eqlt_genes.index, ["avg expr", "PIC{} direction".format(i), "PIC{} r".format(i)]].copy()
+                signif_row_colors_df = row_colors_df.loc[
+                    signif_pic_eqlt_genes.index,
+                    ["avg expr", "PIC{} direction".format(i), "PIC{} r".format(i)],
+                ].copy()
                 signif_row_colors_df.columns = ["avg expr", "direction", "correlation"]
-                pic_col_colors_df = col_colors_df.loc[:, ["avg expr", "PIC{} r".format(i)]].copy()
+                pic_col_colors_df = col_colors_df.loc[
+                    :, ["avg expr", "PIC{} r".format(i)]
+                ].copy()
                 pic_col_colors_df.columns = ["avg expr", "correlation"]
 
-                self.plot(df=pic_gn_df,
-                          row_colors=signif_row_colors_df,
-                          col_colors=pic_col_colors_df,
-                          row_cluster=True,
-                          col_cluster=True,
-                          name="PIC{}_{}_gene_network_clustermap".format(i, direction),
-                          outdir=pic_plot_outdir)
+                self.plot(
+                    df=pic_gn_df,
+                    row_colors=signif_row_colors_df,
+                    col_colors=pic_col_colors_df,
+                    row_cluster=True,
+                    col_cluster=True,
+                    name="PIC{}_{}_gene_network_clustermap".format(i, direction),
+                    outdir=pic_plot_outdir,
+                )
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
         if inpath.endswith("pkl"):
             df = pd.read_pickle(inpath)
         else:
-            df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                             low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+            df = pd.read_csv(
+                inpath,
+                sep=sep,
+                header=header,
+                index_col=index_col,
+                low_memory=low_memory,
+                nrows=nrows,
+                skiprows=skiprows,
+            )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=False, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
         if outpath.endswith("pkl"):
             df.to_pickle(outpath)
         else:
-            df.to_csv(outpath, sep=sep, index=index, header=header,
-                      compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+            df.to_csv(
+                outpath, sep=sep, index=index, header=header, compression=compression
+            )
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     @staticmethod
     def zscore_to_dissimilarity(df):
@@ -385,15 +475,11 @@ class main():
 
     @staticmethod
     def cluster(df, metric="euclidean", method="centroid"):
-        euclidean = metric == 'euclidean' and method in ('centroid', 'median', 'ward')
-        if euclidean or method == 'single':
-            linkage = fastcluster.linkage_vector(df,
-                                                 method=method,
-                                                 metric=metric)
+        euclidean = metric == "euclidean" and method in ("centroid", "median", "ward")
+        if euclidean or method == "single":
+            linkage = fastcluster.linkage_vector(df, method=method, metric=metric)
         else:
-            linkage = fastcluster.linkage(df,
-                                          method=method,
-                                          metric=metric)
+            linkage = fastcluster.linkage(df, method=method, metric=metric)
 
         return linkage
 
@@ -408,25 +494,38 @@ class main():
         row_color_data = {}
 
         avg_expr_palette = self.create_palette_gradient(annot_df["avg expression"])
-        row_color_data["avg expr"] = [avg_expr_palette[round(avg_expr, 2)] for avg_expr in annot_df["avg expression"]]
+        row_color_data["avg expr"] = [
+            avg_expr_palette[round(avg_expr, 2)]
+            for avg_expr in annot_df["avg expression"]
+        ]
 
         for i in range(self.pic_start, self.pic_end + 1):
             # FDR column.
             pic_column = "PIC{} FDR".format(i)
             if pic_column in annot_df.columns:
-                row_color_data[pic_column] = [Color("#000000").rgb if fdr_value <= a else Color("#FFFFFF").rgb for fdr_value in annot_df[pic_column]]
+                row_color_data[pic_column] = [
+                    Color("#000000").rgb if fdr_value <= a else Color("#FFFFFF").rgb
+                    for fdr_value in annot_df[pic_column]
+                ]
 
             # direction column.
             pic_column = "PIC{} direction".format(i)
             palette = {"induces": "#ac3e40", "inhibits": "#2f6ebc"}
             if pic_column in annot_df.columns:
-                row_color_data[pic_column] = [Color(palette[direction]).rgb if direction in palette.keys() else Color("#000000").rgb for direction in annot_df[pic_column]]
+                row_color_data[pic_column] = [
+                    Color(palette[direction]).rgb
+                    if direction in palette.keys()
+                    else Color("#000000").rgb
+                    for direction in annot_df[pic_column]
+                ]
 
             # r column.
             pic_column = "PIC{} r".format(i)
             if pic_column in annot_df.columns:
                 pic_r_palette = self.create_palette_diverging(annot_df[pic_column])
-                row_color_data[pic_column] = [pic_r_palette[round(pic_r, 2)] for pic_r in annot_df[pic_column]]
+                row_color_data[pic_column] = [
+                    pic_r_palette[round(pic_r, 2)] for pic_r in annot_df[pic_column]
+                ]
 
         return pd.DataFrame(row_color_data, index=annot_df.index)
 
@@ -434,14 +533,19 @@ class main():
         col_color_data = {}
 
         avg_expr_palette = self.create_palette_gradient(annot_df["avg expression"])
-        col_color_data["avg expr"] = [avg_expr_palette[round(avg_expr, 2)] for avg_expr in annot_df["avg expression"]]
+        col_color_data["avg expr"] = [
+            avg_expr_palette[round(avg_expr, 2)]
+            for avg_expr in annot_df["avg expression"]
+        ]
 
         for i in range(self.pic_start, self.pic_end + 1):
             # r column.
             pic_column = "PIC{} r".format(i)
             if pic_column in annot_df.columns:
                 pic_r_palette = self.create_palette_diverging(annot_df[pic_column])
-                col_color_data[pic_column] = [pic_r_palette[round(pic_r, 2)] for pic_r in annot_df[pic_column]]
+                col_color_data[pic_column] = [
+                    pic_r_palette[round(pic_r, 2)] for pic_r in annot_df[pic_column]
+                ]
 
         return pd.DataFrame(col_color_data, index=annot_df.index)
 
@@ -464,7 +568,10 @@ class main():
         max_value = x.max().round(2)
         negative_range = math.ceil(min_value * -100)
         positive_range = math.ceil(max_value * 100)
-        colors = sns.color_palette("vlag", (negative_range * 2) + 1)[:negative_range] + sns.color_palette("vlag", (positive_range * 2) + 1)[positive_range:]
+        colors = (
+            sns.color_palette("vlag", (negative_range * 2) + 1)[:negative_range]
+            + sns.color_palette("vlag", (positive_range * 2) + 1)[positive_range:]
+        )
         values = [x for x in np.arange(min_value, max_value + 0.01, 0.01)]
         palette = {}
         for val, col in zip(values, colors):
@@ -472,10 +579,23 @@ class main():
 
         return palette
 
-    def plot(self, df, vmin=None, vmax=None, center=0, row_colors=None,
-             row_cluster=False, row_linkage=None, col_colors=None,
-             col_cluster=False, col_linkage=None, yticklabels=False,
-             xticklabels=False, name="plot", outdir=None):
+    def plot(
+        self,
+        df,
+        vmin=None,
+        vmax=None,
+        center=0,
+        row_colors=None,
+        row_cluster=False,
+        row_linkage=None,
+        col_colors=None,
+        col_cluster=False,
+        col_linkage=None,
+        yticklabels=False,
+        xticklabels=False,
+        name="plot",
+        outdir=None,
+    ):
         if outdir is None:
             outdir = self.plot_outdir
         sns.set(color_codes=True)
@@ -485,22 +605,27 @@ class main():
         if col_linkage is not None and not col_cluster:
             col_cluster = True
 
-        g = sns.clustermap(df,
-                           cmap=sns.diverging_palette(246, 24, as_cmap=True),
-                           vmin=vmin,
-                           vmax=vmax,
-                           center=center,
-                           row_colors=row_colors,
-                           row_linkage=row_linkage,
-                           row_cluster=row_cluster,
-                           col_colors=col_colors,
-                           col_linkage=col_linkage,
-                           col_cluster=col_cluster,
-                           yticklabels=yticklabels,
-                           xticklabels=xticklabels,
-                           figsize=(24, 12)
-                           )
-        plt.setp(g.ax_heatmap.set_yticklabels(g.ax_heatmap.get_ymajorticklabels(),fontsize=10))
+        g = sns.clustermap(
+            df,
+            cmap=sns.diverging_palette(246, 24, as_cmap=True),
+            vmin=vmin,
+            vmax=vmax,
+            center=center,
+            row_colors=row_colors,
+            row_linkage=row_linkage,
+            row_cluster=row_cluster,
+            col_colors=col_colors,
+            col_linkage=col_linkage,
+            col_cluster=col_cluster,
+            yticklabels=yticklabels,
+            xticklabels=xticklabels,
+            figsize=(24, 12),
+        )
+        plt.setp(
+            g.ax_heatmap.set_yticklabels(
+                g.ax_heatmap.get_ymajorticklabels(), fontsize=10
+            )
+        )
         g.fig.subplots_adjust(bottom=0.05, top=0.7)
         plt.tight_layout()
 
@@ -524,6 +649,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

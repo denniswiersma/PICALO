@@ -29,12 +29,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -42,57 +42,66 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.gte_path = getattr(arguments, 'genotype_to_expression')
-        self.e_gte_path = getattr(arguments, 'exclude_genotype_to_expression')
-        self.n_samples = getattr(arguments, 'n_samples')
-        outdir = getattr(arguments, 'outdir')
+        self.gte_path = getattr(arguments, "genotype_to_expression")
+        self.e_gte_path = getattr(arguments, "exclude_genotype_to_expression")
+        self.n_samples = getattr(arguments, "n_samples")
+        outdir = getattr(arguments, "outdir")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'filter_gte_file', outdir)
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "filter_gte_file", outdir
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__,
-                                         )
+        parser = argparse.ArgumentParser(
+            prog=__program__,
+            description=__description__,
+        )
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-gte",
-                            "--genotype_to_expression",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the genotype-to-expression"
-                                 " link matrix.")
-        parser.add_argument("-e",
-                            "--exclude_genotype_to_expression",
-                            type=str,
-                            default=None,
-                            help="The path to the samples to remove"
-                                 "in GTE format.")
-        parser.add_argument("-ns",
-                            "--n_samples",
-                            type=int,
-                            default=30,
-                            help="The number of required samples per dataet. "
-                                 "Default: 30.")
-        parser.add_argument("-o",
-                            "--outdir",
-                            type=str,
-                            required=True,
-                            help="The path to the output directory.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-gte",
+            "--genotype_to_expression",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the genotype-to-expression" " link matrix.",
+        )
+        parser.add_argument(
+            "-e",
+            "--exclude_genotype_to_expression",
+            type=str,
+            default=None,
+            help="The path to the samples to remove" "in GTE format.",
+        )
+        parser.add_argument(
+            "-ns",
+            "--n_samples",
+            type=int,
+            default=30,
+            help="The number of required samples per dataet. " "Default: 30.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outdir",
+            type=str,
+            required=True,
+            help="The path to the output directory.",
+        )
 
         return parser.parse_args()
 
@@ -113,7 +122,10 @@ class main():
         if se_df is not None:
             print("Removing samples.")
             remove_rnaseq_ids = set(se_df["rnaseq_id"])
-            mask = [False if sample in remove_rnaseq_ids else True for sample in gte_df["rnaseq_id"]]
+            mask = [
+                False if sample in remove_rnaseq_ids else True
+                for sample in gte_df["rnaseq_id"]
+            ]
             gte_df = gte_df.loc[mask, :]
 
         print("Filtering on dataset sample size")
@@ -125,7 +137,7 @@ class main():
                 remove_datasets.append(dataset)
 
         if len(remove_datasets) > 0:
-            subset_gte_df = gte_df[~gte_df['dataset'].isin(remove_datasets)]
+            subset_gte_df = gte_df[~gte_df["dataset"].isin(remove_datasets)]
 
         dataset_sizes = gte_df["dataset"].value_counts().to_frame()
         print(dataset_sizes)
@@ -134,42 +146,64 @@ class main():
 
         print("Saving files.")
         # Gene-to-expression file.
-        self.save_file(df=gte_df, outpath=os.path.join(self.outdir, "GenotypeToExpression.txt.gz"), index=False)
+        self.save_file(
+            df=gte_df,
+            outpath=os.path.join(self.outdir, "GenotypeToExpression.txt.gz"),
+            index=False,
+        )
 
         # Sample-to-dataset file.
         std_df = gte_df.loc[:, ["rnaseq_id", "dataset"]]
         std_df.columns = ["sample", "dataset"]
-        self.save_file(df=std_df, outpath=os.path.join(self.outdir, "SampleToDataset.txt.gz"), index=False)
+        self.save_file(
+            df=std_df,
+            outpath=os.path.join(self.outdir, "SampleToDataset.txt.gz"),
+            index=False,
+        )
 
         # Family-genotype file (for MDS analyses).
         gte_fid_df = gte_df.loc[:, ["genotype_id"]].copy()
         gte_fid_df.insert(0, "family_id", 0)
-        self.save_file(df=gte_fid_df, outpath=os.path.join(self.outdir, "FamilyToGenotype.txt"), header=False, index=False)
+        self.save_file(
+            df=gte_fid_df,
+            outpath=os.path.join(self.outdir, "FamilyToGenotype.txt"),
+            header=False,
+            index=False,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
         if inpath.endswith(".pkl"):
             df = pd.read_pickle(inpath)
         else:
-            df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                             low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+            df = pd.read_csv(
+                inpath,
+                sep=sep,
+                header=header,
+                index_col=index_col,
+                low_memory=low_memory,
+                nrows=nrows,
+                skiprows=skiprows,
+            )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -180,6 +214,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

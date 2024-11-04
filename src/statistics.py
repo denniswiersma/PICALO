@@ -61,10 +61,16 @@ def remove_covariates(y_m, X_m=None, X_inter_m=None, inter_m=None, log=None):
     for i in range(n_rows):
         # Update user on progress.
         now_time = int(time.time())
-        if log is not None and (last_print_time is None or (now_time - last_print_time) >= 30 or i == (n_rows - 1)):
-            log.debug("\t\t{:,}/{:,} rows processed [{:.2f}%]".format(i,
-                                                                      (n_rows - 1),
-                                                                      (100 / (n_rows - 1)) * i))
+        if log is not None and (
+            last_print_time is None
+            or (now_time - last_print_time) >= 30
+            or i == (n_rows - 1)
+        ):
+            log.debug(
+                "\t\t{:,}/{:,} rows processed [{:.2f}%]".format(
+                    i, (n_rows - 1), (100 / (n_rows - 1)) * i
+                )
+            )
             last_print_time = now_time
 
         # Mask the Nan values.
@@ -75,7 +81,9 @@ def remove_covariates(y_m, X_m=None, X_inter_m=None, inter_m=None, log=None):
 
         # Add the covariates with interaction termn.
         if X_inter_m_tmp is not None:
-            X_inter_times_inter_m = X_inter_m_tmp[sample_mask, :] * inter_m[i, sample_mask][:, np.newaxis]
+            X_inter_times_inter_m = (
+                X_inter_m_tmp[sample_mask, :] * inter_m[i, sample_mask][:, np.newaxis]
+            )
             X = np.hstack((X, X_inter_times_inter_m))
 
         # Mask the features with 0 std except for the first one.
@@ -84,7 +92,9 @@ def remove_covariates(y_m, X_m=None, X_inter_m=None, inter_m=None, log=None):
 
         # Calculate residuals using OLS.
         y_corrected_m[i, ~sample_mask] = np.nan
-        y_corrected_m[i, sample_mask] = calculate_residuals_ols(X=X[:, feature_mask], y=y_m[i, sample_mask])
+        y_corrected_m[i, sample_mask] = calculate_residuals_ols(
+            X=X[:, feature_mask], y=y_m[i, sample_mask]
+        )
 
     del X_m_tmp, X_inter_m_tmp
 
@@ -113,9 +123,12 @@ def remove_covariates_elementwise(y_m, X_m, a):
 
         # Calculate residuals using OLS.
         y_corrected_m[i, ~sample_mask] = np.nan
-        y_corrected_m[i, sample_mask] = calc_residuals(y=y_m[i, sample_mask],
-                                                       y_hat=fit_and_predict(X=X[sample_mask, :][:, feature_mask],
-                                                                             y=y_m[i, sample_mask]))
+        y_corrected_m[i, sample_mask] = calc_residuals(
+            y=y_m[i, sample_mask],
+            y_hat=fit_and_predict(
+                X=X[sample_mask, :][:, feature_mask], y=y_m[i, sample_mask]
+            ),
+        )
 
     return y_corrected_m
 
@@ -204,4 +217,8 @@ def calc_regression_log_likelihood(residuals):
     """
     n = np.size(residuals)
     s = np.std(residuals)
-    return -(n / 2) * math.log(2 * math.pi) - n * math.log(s) - (1 / (2 * s ** 2)) * np.sum(residuals ** 2)
+    return (
+        -(n / 2) * math.log(2 * math.pi)
+        - n * math.log(s)
+        - (1 / (2 * s**2)) * np.sum(residuals**2)
+    )

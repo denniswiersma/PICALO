@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -43,33 +43,37 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
+        self.indir = getattr(arguments, "indir")
 
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'count_n_ieqtls')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "count_n_ieqtls"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to input directory.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to input directory.",
+        )
 
         return parser.parse_args()
 
@@ -85,7 +89,9 @@ class main():
             print(fpath2)
             if os.path.exists(fpath2):
                 df = pd.read_csv(fpath2, sep="\t", header=0, index_col=0)
-                coef, _ = stats.spearmanr(df.loc[df.index[0], :], df.loc[df.index[-1], :])
+                coef, _ = stats.spearmanr(
+                    df.loc[df.index[0], :], df.loc[df.index[-1], :]
+                )
                 coefficient_data.append([covariate, coef])
 
         coef_df = pd.DataFrame(coefficient_data, columns=["covariate", "coef"])
@@ -112,6 +118,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

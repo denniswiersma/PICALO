@@ -26,7 +26,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import upsetplot as up
 import matplotlib.patches as mpatches
@@ -40,12 +41,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -53,41 +54,46 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.input_directory = getattr(arguments, 'indir')
-        self.n_files = getattr(arguments, 'n_files')
+        self.input_directory = getattr(arguments, "indir")
+        self.n_files = getattr(arguments, "n_files")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to the input directory.")
-        parser.add_argument("-n",
-                            "--n_files",
-                            type=int,
-                            default=None,
-                            help="The number of files to load. "
-                                 "Default: all.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to the input directory.",
+        )
+        parser.add_argument(
+            "-n",
+            "--n_files",
+            type=int,
+            default=None,
+            help="The number of files to load. " "Default: all.",
+        )
 
         return parser.parse_args()
 
@@ -115,7 +121,9 @@ class main():
             component_data = {}
             eqtl_level_counts_data = {}
 
-            fpaths = glob.glob(os.path.join(self.input_directory, pic, "results_*.txt.gz"))
+            fpaths = glob.glob(
+                os.path.join(self.input_directory, pic, "results_*.txt.gz")
+            )
             fpaths.sort()
 
             for j, fpath in enumerate(fpaths):
@@ -129,12 +137,23 @@ class main():
 
                 eqtl_df.loc[:, iter_abbreviation] = 0
                 eqtl_df.loc[eqtl_df.index.isin(signif_ieqtl), iter_abbreviation] = 1
-                eqtl_level_counts_data[iter_abbreviation] = dict(zip(*np.unique(eqtl_df.loc[eqtl_df[iter_abbreviation] == 1, "eQTL level"], return_counts=True)))
+                eqtl_level_counts_data[iter_abbreviation] = dict(
+                    zip(
+                        *np.unique(
+                            eqtl_df.loc[eqtl_df[iter_abbreviation] == 1, "eQTL level"],
+                            return_counts=True,
+                        )
+                    )
+                )
 
                 if eqtl_hlines is None:
                     overlap_df = eqtl_df.loc[eqtl_df.index.isin(df.index), :]
-                    eqtl_hlines = zip(*np.unique(overlap_df["eQTL level"], return_counts=True))
-                    eqtl_hlines = {a: (b / overlap_df.shape[0]) * 100 for a, b in eqtl_hlines}
+                    eqtl_hlines = zip(
+                        *np.unique(overlap_df["eQTL level"], return_counts=True)
+                    )
+                    eqtl_hlines = {
+                        a: (b / overlap_df.shape[0]) * 100 for a, b in eqtl_hlines
+                    }
 
             # plot lineplot.
             if has_iteration and len(eqtl_level_counts_data.keys()) > 0:
@@ -142,10 +161,17 @@ class main():
                 level_df = (level_df / level_df.sum(axis=0)) * 100
                 level_df.reset_index(drop=False, inplace=True)
                 level_df_m = level_df.melt(id_vars=["index"])
-                self.plot(df_m=level_df_m, x="variable", y="value", hue="index",
-                          ylabel="%", palette=self.palette,
-                          filename=self.out_filename + "_" + pic, outdir=self.outdir,
-                          hlines=eqtl_hlines)
+                self.plot(
+                    df_m=level_df_m,
+                    x="variable",
+                    y="value",
+                    hue="index",
+                    ylabel="%",
+                    palette=self.palette,
+                    filename=self.out_filename + "_" + pic,
+                    outdir=self.outdir,
+                    hlines=eqtl_hlines,
+                )
 
             n_iterations = len(component_data.keys())
             modulo = math.floor((n_iterations - 2) / 8)
@@ -163,8 +189,15 @@ class main():
                 print(counts)
 
                 print("Creating plot.")
-                up.plot(counts, sort_by='cardinality', show_counts=True)
-                plt.savefig(os.path.join(self.outdir, "{}_included_ieQTLs_{}_upsetplot.png".format(self.out_filename, pic)))
+                up.plot(counts, sort_by="cardinality", show_counts=True)
+                plt.savefig(
+                    os.path.join(
+                        self.outdir,
+                        "{}_included_ieQTLs_{}_upsetplot.png".format(
+                            self.out_filename, pic
+                        ),
+                    )
+                )
                 plt.close()
 
         del eqtl_df, filtered_component_data, counts, eqtl_level_counts_data
@@ -173,7 +206,9 @@ class main():
         for i in range(1, 11):
             pic = "PIC{}".format(i)
 
-            fpath = os.path.join(self.input_directory, "PIC_interactions", "{}.txt.gz".format(pic))
+            fpath = os.path.join(
+                self.input_directory, "PIC_interactions", "{}.txt.gz".format(pic)
+            )
             if not os.path.exists(fpath):
                 continue
 
@@ -189,18 +224,31 @@ class main():
             print(counts)
 
             print("Creating plot.")
-            up.plot(counts, sort_by='cardinality', show_counts=True)
-            plt.savefig(os.path.join(self.outdir, "{}_PICS_upsetplot.png".format(self.out_filename)))
+            up.plot(counts, sort_by="cardinality", show_counts=True)
+            plt.savefig(
+                os.path.join(
+                    self.outdir, "{}_PICS_upsetplot.png".format(self.out_filename)
+                )
+            )
             plt.close()
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
@@ -210,11 +258,13 @@ class main():
         for i in range(1, len(cols) + 1):
             combinations.extend(list(itertools.combinations(cols, i)))
 
-        abbreviations = {"CellMapNNLS_Neuron": "neuro",
-                         "CellMapNNLS_Oligodendrocyte": "oligo",
-                         "CellMapNNLS_EndothelialCell": "endo",
-                         "CellMapNNLS_Macrophage": "macro",
-                         "CellMapNNLS_Astrocyte": "astro"}
+        abbreviations = {
+            "CellMapNNLS_Neuron": "neuro",
+            "CellMapNNLS_Oligodendrocyte": "oligo",
+            "CellMapNNLS_EndothelialCell": "endo",
+            "CellMapNNLS_Macrophage": "macro",
+            "CellMapNNLS_Astrocyte": "astro",
+        }
         abbr_cols = []
         for col in cols:
             if col in abbreviations.keys():
@@ -252,48 +302,54 @@ class main():
             indices.append(index)
             data.append(length)
 
-        s = pd.Series(data,
-                      index=pd.MultiIndex.from_tuples(indices, names=abbr_cols))
+        s = pd.Series(data, index=pd.MultiIndex.from_tuples(indices, names=abbr_cols))
         s.name = "value"
         return s
 
     @staticmethod
-    def plot(df_m, x="x", y="y", hue=None, title="", xlabel="", ylabel="",
-             palette=None, filename="plot", outdir=None, hlines=None):
-        sns.set(rc={'figure.figsize': (12, 9)})
+    def plot(
+        df_m,
+        x="x",
+        y="y",
+        hue=None,
+        title="",
+        xlabel="",
+        ylabel="",
+        palette=None,
+        filename="plot",
+        outdir=None,
+        hlines=None,
+    ):
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
-        fig, (ax1, ax2) = plt.subplots(nrows=1,
-                                       ncols=2,
-                                       gridspec_kw={"width_ratios": [0.99, 0.01]})
+        fig, (ax1, ax2) = plt.subplots(
+            nrows=1, ncols=2, gridspec_kw={"width_ratios": [0.99, 0.01]}
+        )
         sns.despine(fig=fig, ax=ax1)
 
-        g = sns.lineplot(data=df_m,
-                         x=x,
-                         y=y,
-                         units=hue,
-                         hue=hue,
-                         palette=palette,
-                         estimator=None,
-                         legend=None,
-                         ax=ax1)
+        g = sns.lineplot(
+            data=df_m,
+            x=x,
+            y=y,
+            units=hue,
+            hue=hue,
+            palette=palette,
+            estimator=None,
+            legend=None,
+            ax=ax1,
+        )
 
         for label, value in hlines.items():
             color = "#000000"
             if palette is not None:
                 color = palette[label]
-            ax1.axhline(value, ls='--', color=color, zorder=-1)
+            ax1.axhline(value, ls="--", color=color, zorder=-1)
 
         ax1.set_ylim((0, 100))
 
-        ax1.set_title(title,
-                      fontsize=14,
-                      fontweight='bold')
-        ax1.set_xlabel(xlabel,
-                       fontsize=10,
-                       fontweight='bold')
-        ax1.set_ylabel(ylabel,
-                       fontsize=10,
-                       fontweight='bold')
+        ax1.set_title(title, fontsize=14, fontweight="bold")
+        ax1.set_xlabel(xlabel, fontsize=10, fontweight="bold")
+        ax1.set_ylabel(ylabel, fontsize=10, fontweight="bold")
 
         plt.setp(ax1.set_xticklabels(ax1.get_xmajorticklabels(), rotation=45))
 
@@ -320,6 +376,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

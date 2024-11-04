@@ -22,7 +22,8 @@ import pandas as pd
 import seaborn as sns
 from scipy import stats
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -35,12 +36,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -48,28 +49,31 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         self.expression_path = "/groups/umcg-bios/tmp01/projects/PICALO/preprocess_scripts/prepare_bios_picalo_files/BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics/expression_table_TMM_Log2Transformed.txt.gz"
         self.filter_path = "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics/genotype_stats.txt.gz"
-        self.interaction_paths = {"PIC1": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC1/results_iteration049.txt.gz",
-                                  "PIC2": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC2/results_iteration049.txt.gz",
-                                  "PIC3": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC3/results_iteration049.txt.gz",
-                                  "PIC4": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC4/results_iteration099.txt.gz",
-                                  "PIC5": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC5/results_iteration099.txt.gz",
-                                  "PIC6": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC6/results_iteration049.txt.gz",
-                                  "PIC7": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC7/results_iteration049.txt.gz",
-                                  "PIC8": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC8/results_iteration049.txt.gz",
-                                  "PIC9": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC9/results_iteration049.txt.gz",
-                                  "PIC10": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC10/results_iteration049.txt.gz",
-                                  "PIC11": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC11/results_iteration049.txt.gz",
-                                  "PIC12": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC12/results_iteration049.txt.gz",
-                                  "PIC13": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC13/results_iteration049.txt.gz",
-                                  "PIC14": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC14/results_iteration049.txt.gz",
-                                  "PIC15": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC15/results_iteration049.txt.gz",
-                                  }
+        self.interaction_paths = {
+            "PIC1": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC1/results_iteration049.txt.gz",
+            "PIC2": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC2/results_iteration049.txt.gz",
+            "PIC3": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC3/results_iteration049.txt.gz",
+            "PIC4": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC4/results_iteration099.txt.gz",
+            "PIC5": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC5/results_iteration099.txt.gz",
+            "PIC6": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC6/results_iteration049.txt.gz",
+            "PIC7": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC7/results_iteration049.txt.gz",
+            "PIC8": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC8/results_iteration049.txt.gz",
+            "PIC9": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC9/results_iteration049.txt.gz",
+            "PIC10": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC10/results_iteration049.txt.gz",
+            "PIC11": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC11/results_iteration049.txt.gz",
+            "PIC12": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC12/results_iteration049.txt.gz",
+            "PIC13": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC13/results_iteration049.txt.gz",
+            "PIC14": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC14/results_iteration049.txt.gz",
+            "PIC15": "/groups/umcg-biogen/tmp01/output/2020-11-10-PICALO/output/2021-11-24-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-PIC-Combined/PIC15/results_iteration049.txt.gz",
+        }
 
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -86,18 +90,24 @@ class main():
 
         print("Calculate stats")
         n, mm, m, v, sk, kurt = stats.describe(expr_df, axis=1)
-        describe_df = pd.DataFrame({"min": mm[0],
-                                    "max": mm[1],
-                                    "mean": m,
-                                    "variance": v,
-                                    "skewness": sk,
-                                    "kurtosis": kurt})
+        describe_df = pd.DataFrame(
+            {
+                "min": mm[0],
+                "max": mm[1],
+                "mean": m,
+                "variance": v,
+                "skewness": sk,
+                "kurtosis": kurt,
+            }
+        )
         describe_df.insert(3, "median", expr_df.median(axis=1).to_numpy())
         describe_df.insert(4, "sum", expr_df.sum(axis=1).to_numpy())
         print(describe_df)
 
         for column in describe_df:
-            self.histplot(df=describe_df, x=column, title=column, filename="_{}".format(column))
+            self.histplot(
+                df=describe_df, x=column, title=column, filename="_{}".format(column)
+            )
 
         describe_df_m_list = []
         x_order = []
@@ -117,17 +127,32 @@ class main():
                 exit()
 
             describe_df[pic] = "not signif"
-            describe_df.loc[(interaction_df["FDR"] <= 0.05).to_numpy(bool), pic] = "signif"
+            describe_df.loc[
+                (interaction_df["FDR"] <= 0.05).to_numpy(bool), pic
+            ] = "signif"
 
             if pic in ["PIC1", "PIC2", "PIC15"]:
-                self.plot_overview(df=describe_df,
-                                   columns=["min", "max", "mean", "variance", "skewness", "kurtosis"],
-                                   hue=pic,
-                                   palette={"not signif": "#808080", "signif": "#009E73"},
-                                   name="_{}".format(pic))
+                self.plot_overview(
+                    df=describe_df,
+                    columns=["min", "max", "mean", "variance", "skewness", "kurtosis"],
+                    hue=pic,
+                    palette={"not signif": "#808080", "signif": "#009E73"},
+                    name="_{}".format(pic),
+                )
 
             signif_df = describe_df.loc[describe_df[pic] == "signif", :].copy()
-            signif_df_m = signif_df.melt(value_vars=["min", "max", "mean", "median", "sum", "variance", "skewness", "kurtosis"])
+            signif_df_m = signif_df.melt(
+                value_vars=[
+                    "min",
+                    "max",
+                    "mean",
+                    "median",
+                    "sum",
+                    "variance",
+                    "skewness",
+                    "kurtosis",
+                ]
+            )
             label = "{} [n={}]".format(pic, signif_df.shape[0])
             signif_df_m["pic"] = label
             signif_df_m["hue"] = "unique"
@@ -139,22 +164,42 @@ class main():
         describe_df_m = pd.concat(describe_df_m_list, axis=0)
         print(describe_df_m)
 
-        self.plot_boxplot(df_m=describe_df_m,
-                          x="pic",
-                          hue="hue",
-                          palette={"unique": "#009E73", "recurring": "#0072B2"},
-                          col="variable",
-                          col_order=["min", "max", "mean", "median", "sum", "variance", "skewness", "kurtosis"],
-                          x_order=x_order)
+        self.plot_boxplot(
+            df_m=describe_df_m,
+            x="pic",
+            hue="hue",
+            palette={"unique": "#009E73", "recurring": "#0072B2"},
+            col="variable",
+            col_order=[
+                "min",
+                "max",
+                "mean",
+                "median",
+                "sum",
+                "variance",
+                "skewness",
+                "kurtosis",
+            ],
+            x_order=x_order,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def plot_overview(self, df, columns, hue, palette, name=""):
@@ -162,11 +207,13 @@ class main():
         nrows = len(columns)
 
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='col',
-                                 sharey='row',
-                                 figsize=(10 * ncols, 10 * nrows))
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            sharex="col",
+            sharey="row",
+            figsize=(10 * ncols, 10 * nrows),
+        )
         sns.set(color_codes=True)
 
         for i, y_col in enumerate(columns):
@@ -190,77 +237,86 @@ class main():
                 elif i == j:
                     ax.set_axis_off()
 
-                    ax.annotate(y_col,
-                                xy=(0.5, 0.5),
-                                ha='center',
-                                xycoords=ax.transAxes,
-                                color="#000000",
-                                fontsize=40,
-                                fontweight='bold')
+                    ax.annotate(
+                        y_col,
+                        xy=(0.5, 0.5),
+                        ha="center",
+                        xycoords=ax.transAxes,
+                        color="#000000",
+                        fontsize=40,
+                        fontweight="bold",
+                    )
                 else:
                     sns.despine(fig=fig, ax=ax)
 
-                    sns.scatterplot(x=x_col,
-                                    y=y_col,
-                                    hue=hue,
-                                    data=df.loc[df[hue] == "not signif", :],
-                                    s=100,
-                                    palette=palette,
-                                    linewidth=0,
-                                    legend=False,
-                                    ax=ax)
-                    sns.scatterplot(x=x_col,
-                                    y=y_col,
-                                    hue=hue,
-                                    data=df.loc[df[hue] == "signif", :],
-                                    s=100,
-                                    palette=palette,
-                                    linewidth=0,
-                                    legend=False,
-                                    ax=ax)
+                    sns.scatterplot(
+                        x=x_col,
+                        y=y_col,
+                        hue=hue,
+                        data=df.loc[df[hue] == "not signif", :],
+                        s=100,
+                        palette=palette,
+                        linewidth=0,
+                        legend=False,
+                        ax=ax,
+                    )
+                    sns.scatterplot(
+                        x=x_col,
+                        y=y_col,
+                        hue=hue,
+                        data=df.loc[df[hue] == "signif", :],
+                        s=100,
+                        palette=palette,
+                        linewidth=0,
+                        legend=False,
+                        ax=ax,
+                    )
 
-                    ax.set_ylabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
-                    ax.set_xlabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
+                    ax.set_ylabel("", fontsize=20, fontweight="bold")
+                    ax.set_xlabel("", fontsize=20, fontweight="bold")
 
-        fig.savefig(os.path.join(self.outdir, "expression_describe_overview{}.png".format(name)))
+        fig.savefig(
+            os.path.join(self.outdir, "expression_describe_overview{}.png".format(name))
+        )
         plt.close()
 
     def histplot(self, df, x="x", xlabel="", ylabel="", title="", filename="plot"):
-        sns.set(rc={'figure.figsize': (12, 9)})
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
         fig, ax = plt.subplots()
         sns.despine(fig=fig, ax=ax)
 
         range = abs(df[x].max() - df[x].min())
 
-        g = sns.histplot(data=df,
-                         x=x,
-                         kde=True,
-                         binwidth=range / 100,
-                         color="#000000",
-                         ax=ax)
+        g = sns.histplot(
+            data=df, x=x, kde=True, binwidth=range / 100, color="#000000", ax=ax
+        )
 
-        ax.set_title(title,
-                     fontsize=14,
-                     fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=10,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=10,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=10, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=10, fontweight="bold")
 
         plt.tight_layout()
-        fig.savefig(os.path.join(self.outdir, "expression_describe_histplot{}.png".format(filename)))
+        fig.savefig(
+            os.path.join(
+                self.outdir, "expression_describe_histplot{}.png".format(filename)
+            )
+        )
         plt.close()
 
-    def plot_boxplot(self, df_m, x="x", y="value", col=None, hue=None,
-                     palette=None, x_order=None, col_order=None, xlabel="",
-                     ylabel=""):
+    def plot_boxplot(
+        self,
+        df_m,
+        x="x",
+        y="value",
+        col=None,
+        hue=None,
+        palette=None,
+        x_order=None,
+        col_order=None,
+        xlabel="",
+        ylabel="",
+    ):
         cols = [None]
         if col is not None:
             cols = df_m[col].unique().tolist()
@@ -280,11 +336,9 @@ class main():
         nrows = int(np.ceil(ngroups / ncols))
 
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex="all",
-                                 figsize=(12 * ncols, 12 * nrows)
-                                 )
+        fig, axes = plt.subplots(
+            nrows=nrows, ncols=ncols, sharex="all", figsize=(12 * ncols, 12 * nrows)
+        )
         sns.set(color_codes=True)
 
         row_index = 0
@@ -309,42 +363,40 @@ class main():
 
                 sns.despine(fig=fig, ax=ax)
 
-                sns.violinplot(x=x,
-                               y=y,
-                               hue=hue,
-                               data=subset,
-                               order=x_order,
-                               palette=palette,
-                               cut=0,
-                               dodge=False,
-                               ax=ax)
+                sns.violinplot(
+                    x=x,
+                    y=y,
+                    hue=hue,
+                    data=subset,
+                    order=x_order,
+                    palette=palette,
+                    cut=0,
+                    dodge=False,
+                    ax=ax,
+                )
 
-                plt.setp(ax.collections, alpha=.75)
+                plt.setp(ax.collections, alpha=0.75)
 
-                sns.boxplot(x=x,
-                            y=y,
-                            hue=hue,
-                            data=subset,
-                            order=x_order,
-                            whis=np.inf,
-                            color="white",
-                            dodge=False,
-                            ax=ax)
+                sns.boxplot(
+                    x=x,
+                    y=y,
+                    hue=hue,
+                    data=subset,
+                    order=x_order,
+                    whis=np.inf,
+                    color="white",
+                    dodge=False,
+                    ax=ax,
+                )
 
-                ax.set_title(title,
-                             fontsize=20,
-                             fontweight='bold')
-                ax.set_ylabel(ylabel,
-                              fontsize=20,
-                              fontweight='bold')
-                ax.set_xlabel(xlabel,
-                              fontsize=20,
-                              fontweight='bold')
+                ax.set_title(title, fontsize=20, fontweight="bold")
+                ax.set_ylabel(ylabel, fontsize=20, fontweight="bold")
+                ax.set_xlabel(xlabel, fontsize=20, fontweight="bold")
 
                 if ax.get_legend() is not None:
                     ax.get_legend().remove()
 
-                ax.tick_params(axis='both', which='major', labelsize=14)
+                ax.tick_params(axis="both", which="major", labelsize=14)
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
             else:
                 ax.set_axis_off()
@@ -361,10 +413,12 @@ class main():
                 col_index = 0
                 row_index += 1
 
-        fig.savefig(os.path.join(self.outdir, "expression_describe_overview_boxplot.png"))
+        fig.savefig(
+            os.path.join(self.outdir, "expression_describe_overview_boxplot.png")
+        )
         plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

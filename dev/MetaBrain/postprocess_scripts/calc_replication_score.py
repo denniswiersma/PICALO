@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -43,47 +43,56 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.pec_path = getattr(arguments, 'pic_expr_corr')
-        self.expr_path = getattr(arguments, 'expression')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.pec_path = getattr(arguments, "pic_expr_corr")
+        self.expr_path = getattr(arguments, "expression")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'calc_replication_score', self.out_filename)
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "calc_replication_score",
+            self.out_filename,
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-pec",
-                            "--pic_expr_corr",
-                            type=str,
-                            required=True,
-                            help="The path to the component ~ gene correlation"
-                                 " matrix")
-        parser.add_argument("-e",
-                            "--expression",
-                            type=str,
-                            required=True,
-                            help="The path to the expression matrix")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            default="output",
-                            help="The name of the outfile. Default: output.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-pec",
+            "--pic_expr_corr",
+            type=str,
+            required=True,
+            help="The path to the component ~ gene correlation" " matrix",
+        )
+        parser.add_argument(
+            "-e",
+            "--expression",
+            type=str,
+            required=True,
+            help="The path to the expression matrix",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            default="output",
+            help="The name of the outfile. Default: output.",
+        )
 
         return parser.parse_args()
 
@@ -129,32 +138,50 @@ class main():
 
         print("### Step5 ###")
         print("Saving results")
-        self.save_file(df=score_df, outpath=os.path.join(self.outdir, "{}.txt.gz".format(self.out_filename)))
+        self.save_file(
+            df=score_df,
+            outpath=os.path.join(self.outdir, "{}.txt.gz".format(self.out_filename)),
+        )
 
     @staticmethod
-    def load_file(inpath, header=None, index_col=None, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
+    def load_file(
+        inpath,
+        header=None,
+        index_col=None,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
         if inpath.endswith(".pkl"):
             df = pd.read_pickle(inpath)
         else:
-            df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                             low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+            df = pd.read_csv(
+                inpath,
+                sep=sep,
+                header=header,
+                index_col=index_col,
+                low_memory=low_memory,
+                nrows=nrows,
+                skiprows=skiprows,
+            )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -165,6 +192,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

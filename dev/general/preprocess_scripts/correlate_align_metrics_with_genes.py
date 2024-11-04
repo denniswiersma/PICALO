@@ -32,12 +32,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -45,47 +45,55 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.am_path = getattr(arguments, 'alignment_metrics')
-        self.expr_path = getattr(arguments, 'expression')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.am_path = getattr(arguments, "alignment_metrics")
+        self.expr_path = getattr(arguments, "expression")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'correlate_align_metrics_with_genes')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "correlate_align_metrics_with_genes",
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-am",
-                            "--alignment_metrics",
-                            type=str,
-                            required=True,
-                            help="The path to RNAseq alignment metrics "
-                                 "matrix.")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            required=True,
-                            help="The path to the deconvolution matrix")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            default="output",
-                            help="The name of the outfile. Default: output.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-am",
+            "--alignment_metrics",
+            type=str,
+            required=True,
+            help="The path to RNAseq alignment metrics " "matrix.",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            required=True,
+            help="The path to the deconvolution matrix",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            default="output",
+            help="The name of the outfile. Default: output.",
+        )
 
         return parser.parse_args()
 
@@ -103,7 +111,9 @@ class main():
         am_df = am_df.T
 
         # Make sure order is the same.
-        samples = set(am_df.columns.tolist()).intersection(set(expr_df.columns.tolist()))
+        samples = set(am_df.columns.tolist()).intersection(
+            set(expr_df.columns.tolist())
+        )
         am_df = am_df.loc[:, samples]
         expr_df = expr_df.loc[:, samples]
 
@@ -159,41 +169,67 @@ class main():
         del am_df, expr_df
 
         print("Correlating.")
-        corr_m = np.corrcoef(am_m, expr_m)[:am_m.shape[0], am_m.shape[0]:]
+        corr_m = np.corrcoef(am_m, expr_m)[: am_m.shape[0], am_m.shape[0] :]
         corr_df = pd.DataFrame(corr_m, index=metrics, columns=genes)
         print(corr_df)
 
         print("Saving file.")
-        self.save_file(df=corr_df,
-                       outpath=os.path.join(self.outdir, "{}_correlations.txt.gz".format(self.out_filename)))
+        self.save_file(
+            df=corr_df,
+            outpath=os.path.join(
+                self.outdir, "{}_correlations.txt.gz".format(self.out_filename)
+            ),
+        )
         # corr_df = self.load_file(os.path.join(self.outdir, "{}_correlations.txt.gz".format(self.out_filename)), header=0, index_col=0)
 
         print("Ranking top metrics.")
-        summary_df = pd.DataFrame({"max abs correlation": corr_df.abs().max(axis=1),
-                                   "mean abs correlation": corr_df.abs().mean(axis=1),
-                                   "std abs correlation": corr_df.abs().std(axis=1)})
+        summary_df = pd.DataFrame(
+            {
+                "max abs correlation": corr_df.abs().max(axis=1),
+                "mean abs correlation": corr_df.abs().mean(axis=1),
+                "std abs correlation": corr_df.abs().std(axis=1),
+            }
+        )
         summary_df.sort_values(by="max abs correlation", inplace=True, ascending=False)
         print(summary_df)
 
         print("Saving file.")
-        self.save_file(df=summary_df,
-                       outpath=os.path.join(self.outdir, "{}_summary.txt.gz".format(self.out_filename)))
+        self.save_file(
+            df=summary_df,
+            outpath=os.path.join(
+                self.outdir, "{}_summary.txt.gz".format(self.out_filename)
+            ),
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def remove_multicollinearity(self, df, threshold=1):
         indices = np.arange(df.shape[1])
         max_r2 = np.inf
         while len(indices) > 1 and max_r2 >= threshold:
-            r2 = np.array([self.calc_ols_rsquared(df.iloc[:, indices], ix) for ix in range(len(indices))])
+            r2 = np.array(
+                [
+                    self.calc_ols_rsquared(df.iloc[:, indices], ix)
+                    for ix in range(len(indices))
+                ]
+            )
             max_r2 = max(r2)
 
             if max_r2 >= threshold:
@@ -205,7 +241,11 @@ class main():
 
     @staticmethod
     def calc_ols_rsquared(df, idx):
-        return OLS(df.iloc[:, idx], df.loc[:, np.arange(df.shape[1]) != idx]).fit().rsquared
+        return (
+            OLS(df.iloc[:, idx], df.loc[:, np.arange(df.shape[1]) != idx])
+            .fit()
+            .rsquared
+        )
 
     @staticmethod
     def calculate_residuals(df, correction_df):
@@ -214,9 +254,17 @@ class main():
         n_tests = df.shape[0]
         for i in range(n_tests):
             now_time = int(time.time())
-            if last_print_time is None or (now_time - last_print_time) >= 10 or (i + 1) == n_tests:
+            if (
+                last_print_time is None
+                or (now_time - last_print_time) >= 10
+                or (i + 1) == n_tests
+            ):
                 last_print_time = now_time
-                print("\t{}/{} genes corrected [{:.2f}%]".format((i + 1), n_tests, (100 / n_tests) * (i + 1)))
+                print(
+                    "\t{}/{} genes corrected [{:.2f}%]".format(
+                        (i + 1), n_tests, (100 / n_tests) * (i + 1)
+                    )
+                )
 
             ols = OLS(df.iloc[i, :], correction_df)
             results = ols.fit()
@@ -227,15 +275,15 @@ class main():
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -245,6 +293,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

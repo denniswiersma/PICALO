@@ -32,12 +32,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -45,44 +45,52 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
-        self.conditional = getattr(arguments, 'conditional')
-        self.outname = getattr(arguments, 'outname')
+        self.indir = getattr(arguments, "indir")
+        self.conditional = getattr(arguments, "conditional")
+        self.outname = getattr(arguments, "outname")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'save_ieqtl_fdr_matrix')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "save_ieqtl_fdr_matrix"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to input directory.")
-        parser.add_argument("-conditional",
-                            action='store_true',
-                            help="Perform conditional analysis. Default: False.")
-        parser.add_argument("-o",
-                            "--outname",
-                            type=str,
-                            required=True,
-                            help="The name of the output file.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to input directory.",
+        )
+        parser.add_argument(
+            "-conditional",
+            action="store_true",
+            help="Perform conditional analysis. Default: False.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outname",
+            type=str,
+            required=True,
+            help="The name of the output file.",
+        )
 
         return parser.parse_args()
 
@@ -93,12 +101,20 @@ class main():
         ieqtl_fdr_df_list = []
         inpaths = glob.glob(os.path.join(self.indir, "*.txt.gz"))
         if self.conditional:
-            inpaths = [inpath for inpath in inpaths if inpath.endswith("_conditional.txt.gz")]
+            inpaths = [
+                inpath for inpath in inpaths if inpath.endswith("_conditional.txt.gz")
+            ]
         else:
-            inpaths = [inpath for inpath in inpaths if not inpath.endswith("_conditional.txt.gz")]
+            inpaths = [
+                inpath
+                for inpath in inpaths
+                if not inpath.endswith("_conditional.txt.gz")
+            ]
         inpaths.sort(key=self.natural_keys)
         for i, inpath in enumerate(inpaths):
-            filename = os.path.basename(inpath).split(".")[0].replace("_conditional", "")
+            filename = (
+                os.path.basename(inpath).split(".")[0].replace("_conditional", "")
+            )
             if filename in ["call_rate", "genotype_stats"]:
                 continue
 
@@ -117,33 +133,50 @@ class main():
         print(ieqtl_fdr_df)
 
         print("Saving file")
-        self.save_file(df=ieqtl_fdr_df, outpath=os.path.join(self.outdir, self.outname + ".txt.gz"))
+        self.save_file(
+            df=ieqtl_fdr_df, outpath=os.path.join(self.outdir, self.outname + ".txt.gz")
+        )
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def natural_keys(text):
-        return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', text)]
+        return [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", text)]
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -153,6 +186,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

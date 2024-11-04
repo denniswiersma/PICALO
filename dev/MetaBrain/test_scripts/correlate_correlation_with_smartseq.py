@@ -23,7 +23,8 @@ import pandas as pd
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # Local application imports.
@@ -35,12 +36,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -48,16 +49,18 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.gc_path = getattr(arguments, 'gene_correlations')
-        self.ss_path = getattr(arguments, 'smart_seq')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.gc_path = getattr(arguments, "gene_correlations")
+        self.ss_path = getattr(arguments, "smart_seq")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -66,36 +69,42 @@ class main():
             "GLUT": "#56B4E9",
             "Oligodendro/OPC": "#5d9166",
             "Astrocytes": "#9b7bb8",
-            "undefined": "#000000"
+            "undefined": "#000000",
         }
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-gc",
-                            "--gene_correlations",
-                            type=str,
-                            required=True,
-                            help="The path to the gene correlations matrix.")
-        parser.add_argument("-ss",
-                            "--smart_seq",
-                            type=str,
-                            required=True,
-                            help="The path to the smart seq matrix.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            default="output",
-                            help="The name of the outfile. Default: output.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-gc",
+            "--gene_correlations",
+            type=str,
+            required=True,
+            help="The path to the gene correlations matrix.",
+        )
+        parser.add_argument(
+            "-ss",
+            "--smart_seq",
+            type=str,
+            required=True,
+            help="The path to the smart seq matrix.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            default="output",
+            help="The name of the outfile. Default: output.",
+        )
 
         return parser.parse_args()
 
@@ -106,7 +115,9 @@ class main():
         print("Loading data.")
         gc_df = self.load_file(self.gc_path, header=0, index_col=None)
         print(gc_df)
-        ss_df = self.load_file(self.ss_path, skiprows=[0, 1, 2, 3, 4, 5], header=0, index_col=None)
+        ss_df = self.load_file(
+            self.ss_path, skiprows=[0, 1, 2, 3, 4, 5], header=0, index_col=None
+        )
         ss_df.index = ss_df.iloc[:, 0]
         ss_df = ss_df.iloc[:, 11:]
         ss_df = ss_df.astype(float)
@@ -141,7 +152,9 @@ class main():
             counts = {}
             for ss_cell_type in ss_cell_types:
                 cell_type = ss_cell_type.split(".")[0].split("_")[0]
-                coef, p = stats.pearsonr(component_ss_df[ss_cell_type], component_gc_df["correlation"])
+                coef, p = stats.pearsonr(
+                    component_ss_df[ss_cell_type], component_gc_df["correlation"]
+                )
                 if cell_type in coefficients.keys():
                     coefs = coefficients[cell_type]
                     coefs.append(coef)
@@ -157,13 +170,26 @@ class main():
             comp_results = []
             for cell_type in cell_types:
                 comp_results.append(np.mean(coefficients[cell_type]))
-                forest_data.append([component, cell_type, np.mean(coefficients[cell_type]), np.std(coefficients[cell_type]), counts[cell_type]])
+                forest_data.append(
+                    [
+                        component,
+                        cell_type,
+                        np.mean(coefficients[cell_type]),
+                        np.std(coefficients[cell_type]),
+                        counts[cell_type],
+                    ]
+                )
 
-            results = [(key, np.mean(value), np.std(value), np.abs(np.mean(value))) for key, value in coefficients.items()]
+            results = [
+                (key, np.mean(value), np.std(value), np.abs(np.mean(value)))
+                for key, value in coefficients.items()
+            ]
 
             results.sort(key=lambda x: -x[3])
             for ss_cell_type, mean, std, _ in results:
-                print("\t  {}: mean = {:.2f} std = {:.2f}".format(ss_cell_type, mean, std))
+                print(
+                    "\t  {}: mean = {:.2f} std = {:.2f}".format(ss_cell_type, mean, std)
+                )
             print("")
 
             correlations.append(comp_results)
@@ -183,13 +209,22 @@ class main():
         #     self.plot_stripplot(df=forest_df.loc[forest_df["component"] == component, :], name=component)
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def plot_heatmap(self, corr_df):
@@ -198,70 +233,89 @@ class main():
         col_colors = [self.colormap[ct.split("_")[0]] for ct in corr_df.columns]
 
         sns.set(color_codes=True)
-        g = sns.clustermap(corr_df, cmap=cmap,
-                           row_cluster=False, col_cluster=True,
-                           yticklabels=True, xticklabels=True, square=True,
-                           vmin=-1, vmax=1, annot=corr_df.round(2),
-                           col_colors=col_colors, fmt='',
-                           annot_kws={"size": 16, "color": "#000000"},
-                           figsize=(12, 12))
+        g = sns.clustermap(
+            corr_df,
+            cmap=cmap,
+            row_cluster=False,
+            col_cluster=True,
+            yticklabels=True,
+            xticklabels=True,
+            square=True,
+            vmin=-1,
+            vmax=1,
+            annot=corr_df.round(2),
+            col_colors=col_colors,
+            fmt="",
+            annot_kws={"size": 16, "color": "#000000"},
+            figsize=(12, 12),
+        )
         plt.setp(
             g.ax_heatmap.set_yticklabels(
-                g.ax_heatmap.get_ymajorticklabels(),
-                fontsize=16, rotation=0))
+                g.ax_heatmap.get_ymajorticklabels(), fontsize=16, rotation=0
+            )
+        )
         plt.setp(
             g.ax_heatmap.set_xticklabels(
-                g.ax_heatmap.get_xmajorticklabels(),
-                fontsize=16, rotation=90))
+                g.ax_heatmap.get_xmajorticklabels(), fontsize=16, rotation=90
+            )
+        )
 
         plt.tight_layout()
-        g.savefig(os.path.join(self.outdir, "{}_SmartSeq_corr_heatmap.png".format(self.out_filename)))
+        g.savefig(
+            os.path.join(
+                self.outdir, "{}_SmartSeq_corr_heatmap.png".format(self.out_filename)
+            )
+        )
         plt.close()
 
     def plot_stripplot(self, df, name=""):
-        sns.set(rc={'figure.figsize': (12, 9)})
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
         fig, ax = plt.subplots()
         sns.despine(fig=fig, ax=ax)
 
         df_m = df.melt(id_vars=["component", "cell type"], value_vars=["LB", "UB"])
-        sns.pointplot(x="value",
-                      y="cell type",
-                      data=df_m,
-                      join=False,
-                      palette=self.colormap,
-                      ax=ax)
+        sns.pointplot(
+            x="value",
+            y="cell type",
+            data=df_m,
+            join=False,
+            palette=self.colormap,
+            ax=ax,
+        )
 
-        sns.catplot(x="mean",
-                    y="cell type",
-                      data=df,
-                      size=25,
-                      dodge=False,
-                      orient="h",
-                      palette=self.colormap,
-                      linewidth=1,
-                      edgecolor="w",
-                      jitter=0,
-                      ax=ax)
+        sns.catplot(
+            x="mean",
+            y="cell type",
+            data=df,
+            size=25,
+            dodge=False,
+            orient="h",
+            palette=self.colormap,
+            linewidth=1,
+            edgecolor="w",
+            jitter=0,
+            ax=ax,
+        )
 
-        ax.set_ylabel('',
-                      fontsize=12,
-                      fontweight='bold')
-        ax.set_xlabel('Spearman r',
-                      fontsize=12,
-                      fontweight='bold')
-        ax.set_title(name,
-                     fontsize=20,
-                     fontweight='bold')
-        ax.tick_params(axis='x', labelsize=8)
-        ax.tick_params(axis='y', labelsize=10)
+        ax.set_ylabel("", fontsize=12, fontweight="bold")
+        ax.set_xlabel("Spearman r", fontsize=12, fontweight="bold")
+        ax.set_title(name, fontsize=20, fontweight="bold")
+        ax.tick_params(axis="x", labelsize=8)
+        ax.tick_params(axis="y", labelsize=10)
 
         ax.xaxis.grid(False)
         ax.yaxis.grid(True)
 
         ax.set_xlim([-1, 1])
 
-        fig.savefig(os.path.join(self.outdir, "{}_SmartSeq_forestplot_{}.pdf".format(self.out_filename, name)), dpi=300)
+        fig.savefig(
+            os.path.join(
+                self.outdir,
+                "{}_SmartSeq_forestplot_{}.pdf".format(self.out_filename, name),
+            ),
+            dpi=300,
+        )
         plt.close()
 
     def print_arguments(self):
@@ -273,6 +327,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

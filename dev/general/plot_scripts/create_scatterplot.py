@@ -24,7 +24,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -37,12 +38,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -50,22 +51,24 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.header_row = getattr(arguments, 'header_row')
-        self.index_col = getattr(arguments, 'index_col')
-        self.axis = getattr(arguments, 'axis')
-        self.log_transform = getattr(arguments, 'log_transform')
-        self.plot_index = getattr(arguments, 'plot_index')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.palette_path = getattr(arguments, 'palette')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.data_path = getattr(arguments, "data")
+        self.header_row = getattr(arguments, "header_row")
+        self.index_col = getattr(arguments, "index_col")
+        self.axis = getattr(arguments, "axis")
+        self.log_transform = getattr(arguments, "log_transform")
+        self.plot_index = getattr(arguments, "plot_index")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.palette_path = getattr(arguments, "palette")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -78,70 +81,74 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-hr",
-                            "--header_row",
-                            type=int,
-                            default=None,
-                            help="Position of the data header. "
-                                 "Default: None.")
-        parser.add_argument("-ic",
-                            "--index_col",
-                            type=int,
-                            default=None,
-                            help="Position of the index column. "
-                                 "Default: None.")
-        parser.add_argument("-a",
-                            "--axis",
-                            type=int,
-                            default=1,
-                            choices=[0, 1],
-                            help="The axis of the index to plot. "
-                                 "Default: 0")
-        parser.add_argument("-log_transform",
-                            action='store_true',
-                            help="-log10 transform the values."
-                                 " Default: False.")
-        parser.add_argument("-pi",
-                            "--plot_index",
-                            nargs="*",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="Index label to plot. Default: all overlapping"
-                                 "indices.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-hr",
+            "--header_row",
+            type=int,
+            default=None,
+            help="Position of the data header. " "Default: None.",
+        )
+        parser.add_argument(
+            "-ic",
+            "--index_col",
+            type=int,
+            default=None,
+            help="Position of the index column. " "Default: None.",
+        )
+        parser.add_argument(
+            "-a",
+            "--axis",
+            type=int,
+            default=1,
+            choices=[0, 1],
+            help="The axis of the index to plot. " "Default: 0",
+        )
+        parser.add_argument(
+            "-log_transform",
+            action="store_true",
+            help="-log10 transform the values." " Default: False.",
+        )
+        parser.add_argument(
+            "-pi",
+            "--plot_index",
+            nargs="*",
+            type=str,
+            required=False,
+            default=None,
+            help="Index label to plot. Default: all overlapping" "indices.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
 
         return parser.parse_args()
 
@@ -149,7 +156,9 @@ class main():
         self.print_arguments()
 
         print("Loading data.")
-        df = self.load_file(self.data_path, header=self.header_row, index_col=self.index_col)
+        df = self.load_file(
+            self.data_path, header=self.header_row, index_col=self.index_col
+        )
 
         if self.axis == 1:
             df = df.T
@@ -169,13 +178,22 @@ class main():
         self.plot(df=df, sa_df=sa_df, columns=columns)
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def plot(self, df, sa_df, columns):
@@ -183,11 +201,13 @@ class main():
         ncols = math.ceil(np.sqrt(nplots))
         nrows = math.ceil(nplots / ncols)
 
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 # sharex='col',
-                                 # sharey='row',
-                                 figsize=(12 * ncols, 12 * nrows))
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            # sharex='col',
+            # sharey='row',
+            figsize=(12 * ncols, 12 * nrows),
+        )
         sns.set(color_codes=True)
 
         row_index = 0
@@ -225,7 +245,7 @@ class main():
                     plot_df = plot_df.merge(sa_df, left_index=True, right_index=True)
 
                 # set order.
-                #plot_df["x"] = df[pi].argsort()
+                # plot_df["x"] = df[pi].argsort()
                 counter = 0
                 for group in plot_df[sa_df.columns[0]].unique():
                     mask = plot_df[sa_df.columns[0]] == group
@@ -235,8 +255,9 @@ class main():
                     groups_present.add(group)
 
                 # Plot.
-                self.plot_scatterplot(ax=ax, df=plot_df, hue=hue,
-                                      palette=palette, title=pi)
+                self.plot_scatterplot(
+                    ax=ax, df=plot_df, hue=hue, palette=palette, title=pi
+                )
             else:
                 ax.set_axis_off()
 
@@ -252,32 +273,30 @@ class main():
                 col_index = 0
                 row_index += 1
 
-        fig.savefig(os.path.join(self.outdir, "{}_scatterplot.png".format(self.out_filename)))
+        fig.savefig(
+            os.path.join(self.outdir, "{}_scatterplot.png".format(self.out_filename))
+        )
         plt.close()
 
     @staticmethod
-    def plot_scatterplot(ax, df, x="x", y="y", hue=None, palette=None,
-                     xlabel="", ylabel="", title=""):
-
+    def plot_scatterplot(
+        ax, df, x="x", y="y", hue=None, palette=None, xlabel="", ylabel="", title=""
+    ):
         # Plot.
-        sns.scatterplot(x=x,
-                        y=y,
-                        hue=hue,
-                        data=df,
-                        palette=palette,
-                        linewidth=0,
-                        legend=False,
-                        ax=ax)
+        sns.scatterplot(
+            x=x,
+            y=y,
+            hue=hue,
+            data=df,
+            palette=palette,
+            linewidth=0,
+            legend=False,
+            ax=ax,
+        )
 
-        ax.set_title(title,
-                     fontsize=40,
-                     fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=20,
-                      fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=20,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=40, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=20, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=20, fontweight="bold")
 
     def print_arguments(self):
         print("Arguments:")
@@ -294,6 +313,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

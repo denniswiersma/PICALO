@@ -29,12 +29,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -42,12 +42,15 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         self.pheno_path = "/groups/umcg-biogen/tmp01/output/2019-11-06-FreezeTwoDotOne/2020-02-03-phenotype-table/2020-03-09.brain.phenotypes.txt"
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'prepare_metabrain_phenotype_matrix')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "prepare_metabrain_phenotype_matrix",
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -58,14 +61,76 @@ class main():
 
         encoded_dfs = []
         for index, row in df.T.iterrows():
-            if index in ["SpecificBrainRegion", "BroadBrainRegion", "cohort", "MetaCohort", "Diagnosis", "BrodmannArea", "library_selection", "Comorbidities", "Reported_Genomic_Mutations", "OtherDiagnosis", "libraryPrep", "TissueState", "RnaSequencingPlatform", "Detailed.Diagnosis", "Agonal.State", "predicted.brain.region", "EtohResults"]:
+            if index in [
+                "SpecificBrainRegion",
+                "BroadBrainRegion",
+                "cohort",
+                "MetaCohort",
+                "Diagnosis",
+                "BrodmannArea",
+                "library_selection",
+                "Comorbidities",
+                "Reported_Genomic_Mutations",
+                "OtherDiagnosis",
+                "libraryPrep",
+                "TissueState",
+                "RnaSequencingPlatform",
+                "Detailed.Diagnosis",
+                "Agonal.State",
+                "predicted.brain.region",
+                "EtohResults",
+            ]:
                 encoded_df = self.to_dummies(index=index, row=row)
                 encoded_dfs.append(encoded_df)
-            elif index in ["apoe_genotype", "PMI_(in_hours)", "RIN", "educ", "cts_mmse30", "braaksc", "ceradsc", "cogdx", "CDR", "NP.1", "PlaqueMean", "RNA_isolation_28S_18S_ratio", "RNA_isolation_TotalYield_ug", "RNA_isolation_260_280_ratio", "Total_DNA_ug", "Brain_Weight_(in_grams)", "Height_(Inches)", "Weight_(pounds)", "DNA_isolation_Total_Yield_ug", "DNA_isolation_260_280_ratio", "DNA_isolation_260_230_ratio", "Disease_Duration_(Onset_to_Tracheostomy_or_Death)_in_Months", "C9_repeat_size", "ATXN2_repeat_size", "YearAutopsy", "AgeOnset", "Lifetime_Antipsychotics", "IQ", "ADI.R.A..cut.off.10.", "ADI.R.C..cut.off.3.", "ADI.R.D..cut.off.1."]:
+            elif index in [
+                "apoe_genotype",
+                "PMI_(in_hours)",
+                "RIN",
+                "educ",
+                "cts_mmse30",
+                "braaksc",
+                "ceradsc",
+                "cogdx",
+                "CDR",
+                "NP.1",
+                "PlaqueMean",
+                "RNA_isolation_28S_18S_ratio",
+                "RNA_isolation_TotalYield_ug",
+                "RNA_isolation_260_280_ratio",
+                "Total_DNA_ug",
+                "Brain_Weight_(in_grams)",
+                "Height_(Inches)",
+                "Weight_(pounds)",
+                "DNA_isolation_Total_Yield_ug",
+                "DNA_isolation_260_280_ratio",
+                "DNA_isolation_260_230_ratio",
+                "Disease_Duration_(Onset_to_Tracheostomy_or_Death)_in_Months",
+                "C9_repeat_size",
+                "ATXN2_repeat_size",
+                "YearAutopsy",
+                "AgeOnset",
+                "Lifetime_Antipsychotics",
+                "IQ",
+                "ADI.R.A..cut.off.10.",
+                "ADI.R.C..cut.off.3.",
+                "ADI.R.D..cut.off.1.",
+            ]:
                 encoded_df = row.astype(np.float64).to_frame()
                 encoded_df.columns = [index.split("_(")[0]]
                 encoded_dfs.append(encoded_df)
-            elif index in ["Gender", "Family_History_of_ALS/FTD?", "has_C9orf27_repeat_expansion", "has_ATXN2_repeat_expansion", "Modifier_of_ALS_Spectrum_MND_-_Family_History_of_ALS/FTD?", "Modifier_of_ALS_Spectrum_MND_-_FTD?", "Modifier_of_ALS_Spectrum_MND_-_Dementia?", "ERCC_Added", "Smoker", "Seizures", "Pyschiatric.Medications"]:
+            elif index in [
+                "Gender",
+                "Family_History_of_ALS/FTD?",
+                "has_C9orf27_repeat_expansion",
+                "has_ATXN2_repeat_expansion",
+                "Modifier_of_ALS_Spectrum_MND_-_Family_History_of_ALS/FTD?",
+                "Modifier_of_ALS_Spectrum_MND_-_FTD?",
+                "Modifier_of_ALS_Spectrum_MND_-_Dementia?",
+                "ERCC_Added",
+                "Smoker",
+                "Seizures",
+                "Pyschiatric.Medications",
+            ]:
                 codes, _ = pd.factorize(row)
                 encoded_df = pd.Series(codes, index=row.index).to_frame()
                 encoded_df.columns = [index]
@@ -79,8 +144,16 @@ class main():
             elif index in ["Age", "AgeDeath", "AgeAtDiagnosis"]:
                 encoded_df = row.to_frame()
                 encoded_df.columns = [index]
-                encoded_df.loc[~encoded_df[index].isnull(), index] = encoded_df.loc[~encoded_df[index].isnull(), index].map(lambda x: x.rstrip('+').replace(' or Older', '').replace('?', '').replace('Unknown', '').replace('Not Applicable', ''))
-                encoded_df.replace(r'^\s*$', np.nan, regex=True, inplace=True)
+                encoded_df.loc[~encoded_df[index].isnull(), index] = encoded_df.loc[
+                    ~encoded_df[index].isnull(), index
+                ].map(
+                    lambda x: x.rstrip("+")
+                    .replace(" or Older", "")
+                    .replace("?", "")
+                    .replace("Unknown", "")
+                    .replace("Not Applicable", "")
+                )
+                encoded_df.replace(r"^\s*$", np.nan, regex=True, inplace=True)
                 encoded_df.loc[:, index] = encoded_df.loc[:, index].astype(np.float64)
                 encoded_dfs.append(encoded_df)
             elif index in ["Antipsychotics", "Antidepressants", "Cotinine", "Nicotine"]:
@@ -95,7 +168,14 @@ class main():
                 encoded_dfs.append(encoded_df)
             elif index in ["Site_of_Motor_Onset", "Site_of_Motor_Onset_Detail"]:
                 encoded_df = self.to_dummies(index=index, row=row)
-                encoded_df = encoded_df.loc[:, [x for x in encoded_df.columns if x.split("-")[1] not in ["Not Applicable", "Unknown"]]]
+                encoded_df = encoded_df.loc[
+                    :,
+                    [
+                        x
+                        for x in encoded_df.columns
+                        if x.split("-")[1] not in ["Not Applicable", "Unknown"]
+                    ],
+                ]
                 encoded_dfs.append(encoded_df)
             elif index in ["ADI.R.B..NV..cut.off.7.", "ADI.R.B..V..cut.off.8."]:
                 encoded_df = row.to_frame()
@@ -121,7 +201,12 @@ class main():
             else:
                 mask.append(True)
 
-            values_str = ', '.join(["{} [N={:,}]".format(name, value) for name, value in value_counts.iteritems()])
+            values_str = ", ".join(
+                [
+                    "{} [N={:,}]".format(name, value)
+                    for name, value in value_counts.iteritems()
+                ]
+            )
             print("{}{}: {}".format(prefix, index, values_str))
 
         print("Removing columns with too little samples or that are duplicated.")
@@ -132,42 +217,58 @@ class main():
         print(encoded_df)
 
         print("Saving data")
-        self.save_file(df=encoded_df, outpath=os.path.join(self.outdir, "MetaBrain_phenotypes.txt.gz"))
+        self.save_file(
+            df=encoded_df,
+            outpath=os.path.join(self.outdir, "MetaBrain_phenotypes.txt.gz"),
+        )
 
         sex_df = encoded_df.loc[:, ["sex.by.expression"]]
         sex_df.dropna(inplace=True)
-        self.save_file(df=sex_df, outpath=os.path.join(self.outdir, "MetaBrain_sex.txt.gz"))
+        self.save_file(
+            df=sex_df, outpath=os.path.join(self.outdir, "MetaBrain_sex.txt.gz")
+        )
         del sex_df, encoded_df
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def to_dummies(self, index, row):
         dummies = pd.get_dummies(row)
-        dummies.columns = ["{}-{}".format(index, colname) for colname in dummies.columns]
+        dummies.columns = [
+            "{}-{}".format(index, colname) for colname in dummies.columns
+        ]
 
         return dummies
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

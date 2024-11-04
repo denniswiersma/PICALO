@@ -25,7 +25,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from scipy import stats
@@ -39,12 +40,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -52,102 +53,110 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.x_data_path = getattr(arguments, 'x_data')
-        self.x_transpose = getattr(arguments, 'x_transpose')
-        self.x_index = " ".join(getattr(arguments, 'x_index'))
-        x_label = getattr(arguments, 'x_label')
+        self.x_data_path = getattr(arguments, "x_data")
+        self.x_transpose = getattr(arguments, "x_transpose")
+        self.x_index = " ".join(getattr(arguments, "x_index"))
+        x_label = getattr(arguments, "x_label")
         if x_label is None:
             x_label = self.x_index
         self.x_label = x_label
-        self.y_data_path = getattr(arguments, 'y_data')
-        self.y_transpose = getattr(arguments, 'y_transpose')
-        self.y_index = " ".join(getattr(arguments, 'y_index'))
-        y_label = getattr(arguments, 'y_label')
+        self.y_data_path = getattr(arguments, "y_data")
+        self.y_transpose = getattr(arguments, "y_transpose")
+        self.y_index = " ".join(getattr(arguments, "y_index"))
+        y_label = getattr(arguments, "y_label")
         if y_label is None:
             y_label = self.y_index
         self.y_label = y_label
-        self.out_filename = getattr(arguments, 'outfile')
-        self.extensions = getattr(arguments, 'extension')
+        self.out_filename = getattr(arguments, "outfile")
+        self.extensions = getattr(arguments, "extension")
 
         # Set variables.
         self.outdir = os.path.join(
-            str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         # Set the right pdf font for exporting.
-        matplotlib.rcParams['pdf.fonttype'] = 42
-        matplotlib.rcParams['ps.fonttype'] = 42
+        matplotlib.rcParams["pdf.fonttype"] = 42
+        matplotlib.rcParams["ps.fonttype"] = 42
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-xd",
-                            "--x_data",
-                            type=str,
-                            required=True,
-                            help="The path to the x-axis data matrix.")
-        parser.add_argument("-x_transpose",
-                            action='store_true',
-                            help="Transpose X.")
-        parser.add_argument("-xi",
-                            "--x_index",
-                            nargs="*",
-                            type=str,
-                            required=True,
-                            help="The index name.")
-        parser.add_argument("-xl",
-                            "--x_label",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The x-axis label.")
-        parser.add_argument("-yd",
-                            "--y_data",
-                            type=str,
-                            required=True,
-                            help="The path to the y-axis data matrix.")
-        parser.add_argument("-y_transpose",
-                            action='store_true',
-                            help="Transpose Y.")
-        parser.add_argument("-yi",
-                            "--y_index",
-                            nargs="*",
-                            type=str,
-                            required=True,
-                            help="The index name.")
-        parser.add_argument("-yl",
-                            "--y_label",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The y-axis label.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
-        parser.add_argument("-e",
-                            "--extension",
-                            nargs="+",
-                            type=str,
-                            choices=["png", "pdf", "eps"],
-                            default=["png"],
-                            help="The figure file extension. "
-                                 "Default: 'png'.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-xd",
+            "--x_data",
+            type=str,
+            required=True,
+            help="The path to the x-axis data matrix.",
+        )
+        parser.add_argument("-x_transpose", action="store_true", help="Transpose X.")
+        parser.add_argument(
+            "-xi",
+            "--x_index",
+            nargs="*",
+            type=str,
+            required=True,
+            help="The index name.",
+        )
+        parser.add_argument(
+            "-xl",
+            "--x_label",
+            type=str,
+            required=False,
+            default=None,
+            help="The x-axis label.",
+        )
+        parser.add_argument(
+            "-yd",
+            "--y_data",
+            type=str,
+            required=True,
+            help="The path to the y-axis data matrix.",
+        )
+        parser.add_argument("-y_transpose", action="store_true", help="Transpose Y.")
+        parser.add_argument(
+            "-yi",
+            "--y_index",
+            nargs="*",
+            type=str,
+            required=True,
+            help="The index name.",
+        )
+        parser.add_argument(
+            "-yl",
+            "--y_label",
+            type=str,
+            required=False,
+            default=None,
+            help="The y-axis label.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
+        parser.add_argument(
+            "-e",
+            "--extension",
+            nargs="+",
+            type=str,
+            choices=["png", "pdf", "eps"],
+            default=["png"],
+            help="The figure file extension. " "Default: 'png'.",
+        )
 
         return parser.parse_args()
 
@@ -188,63 +197,63 @@ class main():
         plot_df.loc[plot_df["x"] > 0, "group"] = "positive"
         print(plot_df)
 
-        print(stats.mannwhitneyu(plot_df.loc[plot_df["group"] == "negative", "y"], plot_df.loc[plot_df["group"] == "positive", "y"]))
+        print(
+            stats.mannwhitneyu(
+                plot_df.loc[plot_df["group"] == "negative", "y"],
+                plot_df.loc[plot_df["group"] == "positive", "y"],
+            )
+        )
 
         print("Plotting.")
-        self.plot(df=plot_df,
-                  x="group",
-                  y="y",
-                  xlabel=self.x_label,
-                  ylabel=self.y_label,
-                  name=self.out_filename)
+        self.plot(
+            df=plot_df,
+            x="group",
+            y="y",
+            xlabel=self.x_label,
+            ylabel=self.y_label,
+            name=self.out_filename,
+        )
 
     @staticmethod
-    def load_file(path, sep="\t", header=0, index_col=0, nrows=None,
-                  low_memory=True):
-        df = pd.read_csv(path, sep=sep, header=header, index_col=index_col,
-                         nrows=nrows, low_memory=low_memory)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(path),
-                                      df.shape))
+    def load_file(path, sep="\t", header=0, index_col=0, nrows=None, low_memory=True):
+        df = pd.read_csv(
+            path,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            nrows=nrows,
+            low_memory=low_memory,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(path), df.shape)
+        )
         return df
 
-    def plot(self, df, x="variable", y="value", hue=None, xlabel="",
-             ylabel="", name=""):
-        sns.set(rc={'figure.figsize': (12, 9)})
+    def plot(
+        self, df, x="variable", y="value", hue=None, xlabel="", ylabel="", name=""
+    ):
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
         fig, ax = plt.subplots()
         sns.despine(fig=fig, ax=ax)
 
-        sns.violinplot(x=x,
-                       y=y,
-                       hue=hue,
-                       data=df,
-                       color="#808080",
-                       cut=0,
-                       dodge=True,
-                       ax=ax)
+        sns.violinplot(
+            x=x, y=y, hue=hue, data=df, color="#808080", cut=0, dodge=True, ax=ax
+        )
 
-        plt.setp(ax.collections, alpha=.75)
+        plt.setp(ax.collections, alpha=0.75)
 
-        sns.boxplot(x=x,
-                    y=y,
-                    hue=hue,
-                    data=df,
-                    whis=np.inf,
-                    color="white",
-                    dodge=True,
-                    ax=ax)
+        sns.boxplot(
+            x=x, y=y, hue=hue, data=df, whis=np.inf, color="white", dodge=True, ax=ax
+        )
 
         if ax.get_legend() is not None:
             ax.get_legend().remove()
 
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
 
         # Annotate the mean.
         for i, x_value in enumerate(df[x].unique()):
@@ -252,19 +261,22 @@ class main():
             print(subset)
             print(i, x_value, subset.max())
             ax.annotate(
-                'N={:,}\n{:.2f}%'.format(subset.shape[0], subset.median()),
+                "N={:,}\n{:.2f}%".format(subset.shape[0], subset.median()),
                 xy=(i, subset.max() + 0.3),
                 ha="center",
                 va="center",
                 color="#000000",
                 fontsize=15,
-                fontweight='bold')
+                fontweight="bold",
+            )
 
         ax.set_ylim(ax.get_ylim()[0], df[y].max() + 0.5)
 
         plt.tight_layout()
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "{}_boxplot.{}".format(name, extension)))
+            fig.savefig(
+                os.path.join(self.outdir, "{}_boxplot.{}".format(name, extension))
+            )
         plt.close()
 
     def print_arguments(self):
@@ -285,6 +297,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

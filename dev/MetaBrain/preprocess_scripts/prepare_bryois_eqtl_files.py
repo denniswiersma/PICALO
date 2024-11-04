@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -43,86 +43,100 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.bryois_path = getattr(arguments, 'bryois')
-        self.min_avg_expression = getattr(arguments, 'min_avg_expression')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.expression_path = getattr(arguments, 'expression')
+        self.bryois_path = getattr(arguments, "bryois")
+        self.min_avg_expression = getattr(arguments, "min_avg_expression")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.expression_path = getattr(arguments, "expression")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'prepare_bryois_eqtl_files')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "prepare_bryois_eqtl_files"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         if self.min_avg_expression is not None:
             if self.std_path is None:
-                print("Argument -std / --sample_to_dataset is required if -mae / --min_avg_expression is not None.")
+                print(
+                    "Argument -std / --sample_to_dataset is required if -mae / --min_avg_expression is not None."
+                )
                 exit()
             if self.expression_path is None:
-                print("Argument -ex / --expression is required if -mae / --min_avg_expression is not None.")
+                print(
+                    "Argument -ex / --expression is required if -mae / --min_avg_expression is not None."
+                )
                 exit()
 
         self.bryois_ct_trans = {
-            'Astrocytes': 'Astrocytes',
-            'Endothelial cells': 'EndothelialCells',
-            'Excitatory neurons': 'ExcitatoryNeurons',
-            'Inhibitory neurons': 'InhibitoryNeurons',
-            'Microglia': 'Microglia',
-            'OPCs / COPs': 'Oligodendrocytes',
-            'Oligodendrocytes': 'OPCsCOPs',
-            'Pericytes': 'Pericytes'
+            "Astrocytes": "Astrocytes",
+            "Endothelial cells": "EndothelialCells",
+            "Excitatory neurons": "ExcitatoryNeurons",
+            "Inhibitory neurons": "InhibitoryNeurons",
+            "Microglia": "Microglia",
+            "OPCs / COPs": "Oligodendrocytes",
+            "Oligodendrocytes": "OPCsCOPs",
+            "Pericytes": "Pericytes",
         }
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-b",
-                            "--bryois",
-                            type=str,
-                            required=True,
-                            help="The path to the bryois eqtl matrix.")
-        parser.add_argument("-ni",
-                            "--n_iterations",
-                            type=int,
-                            default=4,
-                            help="The number of eQTL iterations to include. "
-                                 "Default: 4.")
-        parser.add_argument("-nd",
-                            "--n_datasets",
-                            type=int,
-                            default=2,
-                            help="The number of required datasets per SNP. "
-                                 "Default: 2.")
-        parser.add_argument("-mae",
-                            "--min_avg_expression",
-                            type=float,
-                            default=None,
-                            help="The minimal average expression of a gene."
-                                 "Default: None.")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            default=None,
-                            help="The path to the expression matrix in TMM"
-                                 "format.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-b",
+            "--bryois",
+            type=str,
+            required=True,
+            help="The path to the bryois eqtl matrix.",
+        )
+        parser.add_argument(
+            "-ni",
+            "--n_iterations",
+            type=int,
+            default=4,
+            help="The number of eQTL iterations to include. " "Default: 4.",
+        )
+        parser.add_argument(
+            "-nd",
+            "--n_datasets",
+            type=int,
+            default=2,
+            help="The number of required datasets per SNP. " "Default: 2.",
+        )
+        parser.add_argument(
+            "-mae",
+            "--min_avg_expression",
+            type=float,
+            default=None,
+            help="The minimal average expression of a gene." "Default: None.",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            default=None,
+            help="The path to the expression matrix in TMM" "format.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
 
         return parser.parse_args()
 
@@ -140,8 +154,28 @@ class main():
 
         print("Constructing eQTL matrix.")
         eqtl_df["ProbeName"] = eqtl_df["ensembl"].map(ensembl_version_trans_dict)
-        eqtl_df = eqtl_df[["cell_type", "bpval", "SNPName", "ProbeName", "symbol", "slope", "adj_p", "dist_to_TSS"]]
-        eqtl_df.columns = ["cell_type", "PValue", "SNPName", "ProbeName", "HGNCName", "Beta", "FDR", "TSSDistance"]
+        eqtl_df = eqtl_df[
+            [
+                "cell_type",
+                "bpval",
+                "SNPName",
+                "ProbeName",
+                "symbol",
+                "slope",
+                "adj_p",
+                "dist_to_TSS",
+            ]
+        ]
+        eqtl_df.columns = [
+            "cell_type",
+            "PValue",
+            "SNPName",
+            "ProbeName",
+            "HGNCName",
+            "Beta",
+            "FDR",
+            "TSSDistance",
+        ]
         eqtl_df["ID"] = eqtl_df["SNPName"] + "_" + eqtl_df["ProbeName"]
 
         print("Removing non-unique eQTLs.")
@@ -168,7 +202,11 @@ class main():
                 else:
                     missing_genes.append(gene)
             if len(missing_genes) > 0:
-                print("Warning: {} genes are not in the expression matrix: {}".format(len(missing_genes), ", ".join(missing_genes)))
+                print(
+                    "Warning: {} genes are not in the expression matrix: {}".format(
+                        len(missing_genes), ", ".join(missing_genes)
+                    )
+                )
                 eqtl_df = eqtl_df.loc[eqtl_df["ProbeName"].isin(present_genes), :]
             del missing_genes
 
@@ -197,33 +235,49 @@ class main():
             ct_eqtl_df = ct_eqtl_df.iloc[:, 1:]
             print("\t  Shape: {}".format(ct_eqtl_df.shape))
             if ct_eqtl_df.shape[0] > 0:
-                ct_eqtl_df.to_csv(os.path.join(self.outdir, "bryois-eQTLProbesFDR0.05-ProbeLevel{}-{}.txt.gz".format(file_appendix, self.bryois_ct_trans[ct])),
-                                  sep="\t",
-                                  header=True,
-                                  index=False,
-                                  compression="gzip")
+                ct_eqtl_df.to_csv(
+                    os.path.join(
+                        self.outdir,
+                        "bryois-eQTLProbesFDR0.05-ProbeLevel{}-{}.txt.gz".format(
+                            file_appendix, self.bryois_ct_trans[ct]
+                        ),
+                    ),
+                    sep="\t",
+                    header=True,
+                    index=False,
+                    compression="gzip",
+                )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -235,6 +289,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

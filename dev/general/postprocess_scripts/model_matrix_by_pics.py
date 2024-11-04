@@ -34,12 +34,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -47,24 +47,24 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.pics_path = getattr(arguments, 'pics')
-        outdir = getattr(arguments, 'outdir')
-        self.outname = getattr(arguments, 'outname')
+        self.data_path = getattr(arguments, "data")
+        self.pics_path = getattr(arguments, "pics")
+        outdir = getattr(arguments, "outdir")
+        self.outname = getattr(arguments, "outname")
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.file_outdir = os.path.join(base_dir, 'model_matrix_by_pics', outdir)
-        self.plot_outdir = os.path.join(self.file_outdir, 'plot')
+        self.file_outdir = os.path.join(base_dir, "model_matrix_by_pics", outdir)
+        self.plot_outdir = os.path.join(self.file_outdir, "plot")
         for outdir in [self.plot_outdir, self.file_outdir]:
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
 
-        self.ct_trans_dict ={
+        self.ct_trans_dict = {
             "Baso": "Basophil",
             "Neut": "Neutrophil",
             "Eos": "Eosinophil",
@@ -75,33 +75,33 @@ class main():
         }
 
         self.palette = {
-            'Adult-Ex1': '#56B4E9',
-            'Adult-Ex2': '#56B4E9',
-            'Adult-Ex3': '#56B4E9',
-            'Adult-Ex4': '#56B4E9',
-            'Adult-Ex5': '#56B4E9',
-            'Adult-Ex6': '#56B4E9',
-            'Adult-Ex7': '#56B4E9',
-            'Adult-Ex8': '#56B4E9',
-            'Adult-In1': '#2690ce',
-            'Adult-In2': '#2690ce',
-            'Adult-In3': '#2690ce',
-            'Adult-In4': '#2690ce',
-            'Adult-In5': '#2690ce',
-            'Adult-In6': '#2690ce',
-            'Adult-In7': '#2690ce',
-            'Adult-In8': '#2690ce',
-            'Adult-Microglia': '#E69F00',
-            'Adult-OPC': '#1b8569',
-            'Adult-Endothelial': '#CC79A7',
-            'Adult-Astrocytes': '#D55E00',
-            'Adult-Oligo': '#009E73',
-            'Adult-OtherNeuron': '#2690ce',
-            'Dev-Replicating': '#000000',
-            'Dev-Quiescent': '#808080',
+            "Adult-Ex1": "#56B4E9",
+            "Adult-Ex2": "#56B4E9",
+            "Adult-Ex3": "#56B4E9",
+            "Adult-Ex4": "#56B4E9",
+            "Adult-Ex5": "#56B4E9",
+            "Adult-Ex6": "#56B4E9",
+            "Adult-Ex7": "#56B4E9",
+            "Adult-Ex8": "#56B4E9",
+            "Adult-In1": "#2690ce",
+            "Adult-In2": "#2690ce",
+            "Adult-In3": "#2690ce",
+            "Adult-In4": "#2690ce",
+            "Adult-In5": "#2690ce",
+            "Adult-In6": "#2690ce",
+            "Adult-In7": "#2690ce",
+            "Adult-In8": "#2690ce",
+            "Adult-Microglia": "#E69F00",
+            "Adult-OPC": "#1b8569",
+            "Adult-Endothelial": "#CC79A7",
+            "Adult-Astrocytes": "#D55E00",
+            "Adult-Oligo": "#009E73",
+            "Adult-OtherNeuron": "#2690ce",
+            "Dev-Replicating": "#000000",
+            "Dev-Quiescent": "#808080",
             "Excitatory": "#56B4E9",
             "Inhibitory": "#2690ce",
-            'OtherNeuron': '#0072B2',
+            "OtherNeuron": "#0072B2",
             "Oligodendrocyte": "#009E73",
             "EndothelialCell": "#CC79A7",
             "Microglia": "#E69F00",
@@ -117,37 +117,37 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-p",
-                            "--pics",
-                            type=str,
-                            required=True,
-                            help="The path to the PICS matrix.")
-        parser.add_argument("-od",
-                            "--outdir",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The name of the output path.")
-        parser.add_argument("-on",
-                            "--outname",
-                            type=str,
-                            required=True,
-                            help="The name of the output files.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-p", "--pics", type=str, required=True, help="The path to the PICS matrix."
+        )
+        parser.add_argument(
+            "-od",
+            "--outdir",
+            type=str,
+            required=False,
+            default=None,
+            help="The name of the output path.",
+        )
+        parser.add_argument(
+            "-on",
+            "--outname",
+            type=str,
+            required=True,
+            help="The name of the output files.",
+        )
 
         return parser.parse_args()
 
@@ -170,7 +170,12 @@ class main():
         data_df = data_df.loc[samples, :]
         pics = pics_df.columns
 
-        data_df.columns = [self.ct_trans_dict[col.split("_")[0]] if col.split("_")[0] in self.ct_trans_dict else col for col in data_df.columns]
+        data_df.columns = [
+            self.ct_trans_dict[col.split("_")[0]]
+            if col.split("_")[0] in self.ct_trans_dict
+            else col
+            for col in data_df.columns
+        ]
 
         pics_df.insert(0, "INTERCEPT", 1)
 
@@ -179,7 +184,9 @@ class main():
         pvalue_m = np.empty((data_df.shape[1], len(pics)), dtype=np.float64)
         y_hat_m = np.empty_like(data_df, dtype=np.float64)
         y_hat_m[:] = np.nan
-        ols_results_m = np.empty((data_df.shape[1], 2 + (len(pics) * 2)), dtype=np.float64)
+        ols_results_m = np.empty(
+            (data_df.shape[1], 2 + (len(pics) * 2)), dtype=np.float64
+        )
         index = []
         full_index = []
         for i, cell_type in enumerate(data_df.columns):
@@ -191,7 +198,9 @@ class main():
 
             # Correlations.
             for j, pic in enumerate(pics):
-                coef, pvalue = stats.pearsonr(data_df.loc[mask, cell_type], pics_df.loc[mask, pic])
+                coef, pvalue = stats.pearsonr(
+                    data_df.loc[mask, cell_type], pics_df.loc[mask, pic]
+                )
                 correlation_m[i, j] = coef
                 pvalue_m[i, j] = pvalue
 
@@ -201,41 +210,50 @@ class main():
 
             # Save results.
             y_hat_m[mask, i] = results.predict()
-            ols_results_m[i, :] = np.hstack((np.array([n, results.rsquared]), results.params[1:], results.bse[1:]))
+            ols_results_m[i, :] = np.hstack(
+                (np.array([n, results.rsquared]), results.params[1:], results.bse[1:])
+            )
             index.append(cell_type)
             full_index.append("{} [N={:,}]".format(cell_type, n))
 
-        correlation_df = pd.DataFrame(correlation_m,
-                                      index=index,
-                                      columns=pics
-                                      )
-        pvalue_df = pd.DataFrame(pvalue_m,
-                                 index=index,
-                                 columns=pics
-                                 )
+        correlation_df = pd.DataFrame(correlation_m, index=index, columns=pics)
+        pvalue_df = pd.DataFrame(pvalue_m, index=index, columns=pics)
 
-        y_hat_df = pd.DataFrame(y_hat_m,
-                                index=samples,
-                                columns=data_df.columns
-                                )
+        y_hat_df = pd.DataFrame(y_hat_m, index=samples, columns=data_df.columns)
 
-        ols_results_df = pd.DataFrame(ols_results_m,
-                                      index=index,
-                                      columns=["N", "R2"] +
-                                              ["{} beta".format(pic) for pic in pics] +
-                                              ["{} std err".format(pic) for pic in pics]
-                                      )
+        ols_results_df = pd.DataFrame(
+            ols_results_m,
+            index=index,
+            columns=["N", "R2"]
+            + ["{} beta".format(pic) for pic in pics]
+            + ["{} std err".format(pic) for pic in pics],
+        )
         for pic in pics:
-            ols_results_df["{} t-value".format(pic)] = ols_results_df["{} beta".format(pic)] / ols_results_df["{} std err".format(pic)]
+            ols_results_df["{} t-value".format(pic)] = (
+                ols_results_df["{} beta".format(pic)]
+                / ols_results_df["{} std err".format(pic)]
+            )
         print(ols_results_df)
 
         print("Saving file.")
-        self.save_file(df=correlation_df,
-                       outpath=os.path.join(self.file_outdir, "{}_correlation_df.txt.gz".format(self.outname)))
-        self.save_file(df=y_hat_df,
-                       outpath=os.path.join(self.file_outdir, "{}_y_hat_df.txt.gz".format(self.outname)))
-        self.save_file(df=ols_results_df,
-                       outpath=os.path.join(self.file_outdir, "{}_ols_results_df.txt.gz".format(self.outname)))
+        self.save_file(
+            df=correlation_df,
+            outpath=os.path.join(
+                self.file_outdir, "{}_correlation_df.txt.gz".format(self.outname)
+            ),
+        )
+        self.save_file(
+            df=y_hat_df,
+            outpath=os.path.join(
+                self.file_outdir, "{}_y_hat_df.txt.gz".format(self.outname)
+            ),
+        )
+        self.save_file(
+            df=ols_results_df,
+            outpath=os.path.join(
+                self.file_outdir, "{}_ols_results_df.txt.gz".format(self.outname)
+            ),
+        )
 
         print("Visualising")
         bar_df = ols_results_df[["R2"]].copy()
@@ -252,7 +270,7 @@ class main():
             xlabel="R\u00b2",
             ylabel="cell type",
             palette=palette,
-            filename="{}_R2_barplot".format(self.outname)
+            filename="{}_R2_barplot".format(self.outname),
         )
 
         correlation_df.index = full_index
@@ -260,52 +278,82 @@ class main():
         correlation_annot_df.index = full_index
         correlation_annot_df = correlation_annot_df.round(2).astype(str)
         correlation_df[pvalue_df > 0.05] = 0
-        self.plot_heatmap(df=correlation_df,
-                          annot_df=correlation_annot_df,
-                          vmin=-1,
-                          vmax=1,
-                          xlabel="PICs",
-                          ylabel="cell fraction %",
-                          title="Pearson correlations",
-                          filename="{}_correlation_heatmap".format(self.outname))
+        self.plot_heatmap(
+            df=correlation_df,
+            annot_df=correlation_annot_df,
+            vmin=-1,
+            vmax=1,
+            xlabel="PICs",
+            ylabel="cell fraction %",
+            title="Pearson correlations",
+            filename="{}_correlation_heatmap".format(self.outname),
+        )
 
-        tvalue_df = ols_results_df.loc[:, [col for col in ols_results_df.columns if col.endswith(" t-value")]].copy()
+        tvalue_df = ols_results_df.loc[
+            :, [col for col in ols_results_df.columns if col.endswith(" t-value")]
+        ].copy()
         tvalue_df.index = full_index
         tvalue_df.columns = [col.replace(" t-value", "") for col in tvalue_df.columns]
         tvalue_annot_df = tvalue_df.copy()
         tvalue_annot_df = tvalue_annot_df.round(2).astype(str)
         tvalue_df[tvalue_df.abs() < 1.96] = 0
-        self.plot_heatmap(df=tvalue_df,
-                          annot_df=tvalue_annot_df,
-                          xlabel="PICs",
-                          ylabel="cell fraction %",
-                          title="OLS t-values",
-                          filename="{}_tvalue_heatmap".format(self.outname))
+        self.plot_heatmap(
+            df=tvalue_df,
+            annot_df=tvalue_annot_df,
+            xlabel="PICs",
+            ylabel="cell fraction %",
+            title="OLS t-values",
+            filename="{}_tvalue_heatmap".format(self.outname),
+        )
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
-    def plot_barplot(self, df, x="x", y="y", xlabel="", ylabel="", title="",
-                     palette=None, filename=""):
+    def plot_barplot(
+        self,
+        df,
+        x="x",
+        y="y",
+        xlabel="",
+        ylabel="",
+        title="",
+        palette=None,
+        filename="",
+    ):
         sns.set_style("ticks")
         fig, ax = plt.subplots(figsize=(12, 12))
 
@@ -315,62 +363,61 @@ class main():
         if palette is None:
             color = "#808080"
 
-        g = sns.barplot(x=x,
-                        y=y,
-                        data=df,
-                        color=color,
-                        palette=palette,
-                        dodge=False,
-                        ax=ax)
+        g = sns.barplot(
+            x=x, y=y, data=df, color=color, palette=palette, dodge=False, ax=ax
+        )
 
-        ax.set_title(title,
-                     fontsize=22,
-                     fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=22, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
 
         plt.tight_layout()
         fig.savefig(os.path.join(self.plot_outdir, "{}.png".format(filename)))
         plt.close()
 
-    def plot_heatmap(self, df, annot_df, vmin=None, vmax=None, xlabel="",
-                     ylabel="", title="", filename=""):
+    def plot_heatmap(
+        self,
+        df,
+        annot_df,
+        vmin=None,
+        vmax=None,
+        xlabel="",
+        ylabel="",
+        title="",
+        filename="",
+    ):
         sns.set_style("ticks")
         annot_df.fillna("", inplace=True)
 
         fig, ax = plt.subplots(figsize=(df.shape[1], df.shape[0]))
         sns.set(color_codes=True)
 
-        sns.heatmap(df,
-                    vmin=vmin,
-                    vmax=vmax,
-                    cmap=sns.diverging_palette(246, 24, as_cmap=True),
-                    cbar=False,
-                    center=0,
-                    square=True,
-                    annot=annot_df,
-                    fmt='',
-                    annot_kws={"size": 14, "color": "#000000"},
-                    ax=ax)
+        sns.heatmap(
+            df,
+            vmin=vmin,
+            vmax=vmax,
+            cmap=sns.diverging_palette(246, 24, as_cmap=True),
+            cbar=False,
+            center=0,
+            square=True,
+            annot=annot_df,
+            fmt="",
+            annot_kws={"size": 14, "color": "#000000"},
+            ax=ax,
+        )
 
-        plt.setp(ax.set_yticklabels(ax.get_ymajorticklabels(), fontsize=20,
-                                    rotation=0))
-        plt.setp(ax.set_xticklabels(ax.get_xmajorticklabels(), fontsize=20,
-                                    rotation=90))
+        plt.setp(ax.set_yticklabels(ax.get_ymajorticklabels(), fontsize=20, rotation=0))
+        plt.setp(
+            ax.set_xticklabels(ax.get_xmajorticklabels(), fontsize=20, rotation=90)
+        )
 
         ax.set_xlabel(xlabel, fontsize=14)
-        ax.xaxis.set_label_position('top')
+        ax.xaxis.set_label_position("top")
 
         ax.set_ylabel(ylabel, fontsize=14)
-        ax.yaxis.set_label_position('right')
+        ax.yaxis.set_label_position("right")
 
-        fig.suptitle(title,
-                     fontsize=22,
-                     fontweight='bold')
+        fig.suptitle(title, fontsize=22, fontweight="bold")
 
         plt.tight_layout()
         fig.savefig(os.path.join(self.plot_outdir, "{}.png".format(filename)))
@@ -386,6 +433,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

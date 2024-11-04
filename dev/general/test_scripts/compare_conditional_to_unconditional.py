@@ -32,12 +32,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -45,29 +45,31 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
+        self.indir = getattr(arguments, "indir")
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to input directory.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to input directory.",
+        )
 
         return parser.parse_args()
 
@@ -99,7 +101,9 @@ class main():
         for i in range(101):
             pic = "PIC{}".format(i)
 
-            fpath = os.path.join(self.indir, "PIC_interactions", "{}.txt.gz".format(pic))
+            fpath = os.path.join(
+                self.indir, "PIC_interactions", "{}.txt.gz".format(pic)
+            )
             if os.path.exists(fpath):
                 df = pd.read_csv(fpath, sep="\t", header=0, index_col=None)
                 fdr_df = df[["FDR"]]
@@ -114,16 +118,30 @@ class main():
         unconditional_total_ieqtls = 0
         for i in range(101):
             pic = "PIC{}".format(i)
-            if pic in conditional_fdr_df.columns and pic in unconditional_fdr_df.columns:
-                n_conditional_ieqtls = conditional_fdr_df.loc[conditional_fdr_df[pic] <= 0.05, :].shape[0]
-                n_unconditional_ieqtls = unconditional_fdr_df.loc[unconditional_fdr_df[pic] <= 0.05, :].shape[0]
-                print("{}:\tconditional: {:,}\tunconditional: {:,}".format(pic, n_conditional_ieqtls, n_unconditional_ieqtls))
+            if (
+                pic in conditional_fdr_df.columns
+                and pic in unconditional_fdr_df.columns
+            ):
+                n_conditional_ieqtls = conditional_fdr_df.loc[
+                    conditional_fdr_df[pic] <= 0.05, :
+                ].shape[0]
+                n_unconditional_ieqtls = unconditional_fdr_df.loc[
+                    unconditional_fdr_df[pic] <= 0.05, :
+                ].shape[0]
+                print(
+                    "{}:\tconditional: {:,}\tunconditional: {:,}".format(
+                        pic, n_conditional_ieqtls, n_unconditional_ieqtls
+                    )
+                )
 
                 conditional_total_ieqtls += n_conditional_ieqtls
                 unconditional_total_ieqtls += n_unconditional_ieqtls
         print("------------------------")
-        print("Total:\tconditional: {:,}\tunconditional: {:,}".format(conditional_total_ieqtls, unconditional_total_ieqtls))
-
+        print(
+            "Total:\tconditional: {:,}\tunconditional: {:,}".format(
+                conditional_total_ieqtls, unconditional_total_ieqtls
+            )
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -131,6 +149,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

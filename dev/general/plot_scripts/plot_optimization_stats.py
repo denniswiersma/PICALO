@@ -25,7 +25,8 @@ import pandas as pd
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -38,12 +39,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -51,15 +52,15 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
-        components = getattr(arguments, 'components')
-        self.gene_info_path = getattr(arguments, 'gene_info')
-        out_filename = getattr(arguments, 'outfile')
-        self.extensions = getattr(arguments, 'extensions')
+        self.indir = getattr(arguments, "indir")
+        components = getattr(arguments, "components")
+        self.gene_info_path = getattr(arguments, "gene_info")
+        out_filename = getattr(arguments, "outfile")
+        self.extensions = getattr(arguments, "extensions")
 
         if components is None:
             components = []
@@ -71,8 +72,12 @@ class main():
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.data_outdir = os.path.join(base_dir, 'plot_optimization_stats', out_filename, "data")
-        self.plot_outdir = os.path.join(base_dir, 'plot_optimization_stats', out_filename, "plot")
+        self.data_outdir = os.path.join(
+            base_dir, "plot_optimization_stats", out_filename, "data"
+        )
+        self.plot_outdir = os.path.join(
+            base_dir, "plot_optimization_stats", out_filename, "plot"
+        )
         for outdir in [self.data_outdir, self.plot_outdir]:
             if not os.path.exists(outdir):
                 os.makedirs(outdir)
@@ -81,49 +86,55 @@ class main():
             "not signif": "#808080",
             "before signif": "#0072B2",
             "after signif": "#D55E00",
-            "both signif": "#009E73"
+            "both signif": "#009E73",
         }
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to input directory.")
-        parser.add_argument("-c",
-                            "--components",
-                            nargs="*",
-                            type=str,
-                            required=False,
-                            help="The components to plot.")
-        parser.add_argument("-gi",
-                            "--gene_info",
-                            type=str,
-                            required=True,
-                            help="The path to the gene info matrix.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
-        parser.add_argument("-e",
-                            "--extensions",
-                            type=str,
-                            nargs="+",
-                            default=["png"],
-                            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
-                            help="The output file format(s), default: ['png']")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to input directory.",
+        )
+        parser.add_argument(
+            "-c",
+            "--components",
+            nargs="*",
+            type=str,
+            required=False,
+            help="The components to plot.",
+        )
+        parser.add_argument(
+            "-gi",
+            "--gene_info",
+            type=str,
+            required=True,
+            help="The path to the gene info matrix.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
+        parser.add_argument(
+            "-e",
+            "--extensions",
+            type=str,
+            nargs="+",
+            default=["png"],
+            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            help="The output file format(s), default: ['png']",
+        )
 
         return parser.parse_args()
 
@@ -132,7 +143,9 @@ class main():
 
         print("Loading gene info data")
         gene_trans_df = self.load_file(self.gene_info_path, header=0, index_col=None)
-        gene_trans_df.iloc[:, 0] = gene_trans_df.iloc[:, 0].str.split(".", n=1, expand=True)[0]
+        gene_trans_df.iloc[:, 0] = gene_trans_df.iloc[:, 0].str.split(
+            ".", n=1, expand=True
+        )[0]
         gene_trans_dict = dict(zip(gene_trans_df.iloc[:, 0], gene_trans_df.iloc[:, 1]))
         del gene_trans_df
 
@@ -143,7 +156,9 @@ class main():
             #     break
 
             print("  Processing {}".format(component))
-            iterations_files = glob.glob(os.path.join(self.indir, component, "results_iteration*.txt.gz"))
+            iterations_files = glob.glob(
+                os.path.join(self.indir, component, "results_iteration*.txt.gz")
+            )
             iterations_files.sort(key=self.natural_keys)
 
             print("\tLoading data")
@@ -154,18 +169,25 @@ class main():
             last_df.index = last_df["SNP"] + "_" + last_df["gene"]
             last_df.drop(["SNP", "gene", "covariate", "N"], axis=1, inplace=True)
 
-            first_df.columns = ["{} before".format(col) if col not in ["SNP", "gene", "covariate", "N"] else col for col in first_df.columns]
+            first_df.columns = [
+                "{} before".format(col)
+                if col not in ["SNP", "gene", "covariate", "N"]
+                else col
+                for col in first_df.columns
+            ]
             last_df.columns = ["{} after".format(col) for col in last_df.columns]
 
             print("\tAdding z-scores")
             for df, appendix in ((first_df, "before"), (last_df, "after")):
                 p_values = np.copy(df["p-value {}".format(appendix)].to_numpy())
                 p_values = p_values / 2
-                p_values[p_values > (1 - 1e-16)] = (1 - 1e-16)
+                p_values[p_values > (1 - 1e-16)] = 1 - 1e-16
                 p_values[p_values < 2.4703282292062328e-324] = 2.4703282292062328e-324
                 mask = np.ones_like(p_values)
                 mask[df["beta-interaction {}".format(appendix)] > 0] = -1
-                df["zscore-interaction {}".format(appendix)] = stats.norm.ppf(p_values) * mask
+                df["zscore-interaction {}".format(appendix)] = (
+                    stats.norm.ppf(p_values) * mask
+                )
 
             print("\tMerging file")
             df = first_df.merge(last_df, left_index=True, right_index=True)
@@ -173,7 +195,10 @@ class main():
             df["index"] = [i for i in range(df.shape[0])]
 
             print("\tSaving file")
-            self.save_file(df=df, outpath=os.path.join(self.data_outdir, "{}.txt.gz".format(component)))
+            self.save_file(
+                df=df,
+                outpath=os.path.join(self.data_outdir, "{}.txt.gz".format(component)),
+            )
             df_list.append(df)
             continue
 
@@ -196,35 +221,43 @@ class main():
             fig, axes = plt.subplots(nrows=4, ncols=4, figsize=(48, 48))
             sns.set(color_codes=True)
 
-            for row_index, term in enumerate(["interaction", "covariate", "genotype", "intercept"]):
-                self.scatterplot(fig=fig,
-                                 ax=axes[row_index, 0],
-                                 x="beta-{} before".format(term),
-                                 y="beta-{} after".format(term),
-                                 df=df,
-                                 hue="hue",
-                                 palette=self.palette,
-                                 ylabel=term,
-                                 title="Beta" if row_index == 0 else "")
+            for row_index, term in enumerate(
+                ["interaction", "covariate", "genotype", "intercept"]
+            ):
+                self.scatterplot(
+                    fig=fig,
+                    ax=axes[row_index, 0],
+                    x="beta-{} before".format(term),
+                    y="beta-{} after".format(term),
+                    df=df,
+                    hue="hue",
+                    palette=self.palette,
+                    ylabel=term,
+                    title="Beta" if row_index == 0 else "",
+                )
 
-                self.scatterplot(fig=fig,
-                                 ax=axes[row_index, 1],
-                                 x="std-{} before".format(term),
-                                 y="std-{} after".format(term),
-                                 df=df,
-                                 hue="hue",
-                                 palette=self.palette,
-                                 title="Standard error" if row_index == 0 else "")
+                self.scatterplot(
+                    fig=fig,
+                    ax=axes[row_index, 1],
+                    x="std-{} before".format(term),
+                    y="std-{} after".format(term),
+                    df=df,
+                    hue="hue",
+                    palette=self.palette,
+                    title="Standard error" if row_index == 0 else "",
+                )
 
                 if term == "interaction":
-                    self.scatterplot(fig=fig,
-                                     ax=axes[row_index, 2],
-                                     x="zscore-{} before".format(term),
-                                     y="zscore-{} after".format(term),
-                                     df=df,
-                                     hue="hue",
-                                     palette=self.palette,
-                                     title="Z-score")
+                    self.scatterplot(
+                        fig=fig,
+                        ax=axes[row_index, 2],
+                        x="zscore-{} before".format(term),
+                        y="zscore-{} after".format(term),
+                        df=df,
+                        hue="hue",
+                        palette=self.palette,
+                        title="Z-score",
+                    )
                 else:
                     axes[row_index, 2].set_axis_off()
 
@@ -235,19 +268,20 @@ class main():
                     group_counts = df["hue"].value_counts()
                     for i, (index, value) in enumerate(group_counts.iteritems()):
                         annotation_ax.annotate(
-                            '{} = {:,}'.format(index, value),
+                            "{} = {:,}".format(index, value),
                             xy=(0.03, 0.94 - (i * 0.08)),
                             xycoords=annotation_ax.transAxes,
                             color=self.palette[index],
                             fontsize=40,
-                            fontweight='bold')
+                            fontweight="bold",
+                        )
 
-            fig.suptitle(component,
-                         fontsize=80,
-                         fontweight='bold')
+            fig.suptitle(component, fontsize=80, fontweight="bold")
 
             for extension in self.extensions:
-                fig.savefig(os.path.join(self.plot_outdir, "{}.{}".format(component, extension)))
+                fig.savefig(
+                    os.path.join(self.plot_outdir, "{}.{}".format(component, extension))
+                )
             plt.close()
 
         print("Combining data")
@@ -259,37 +293,68 @@ class main():
         df["p-value delta"] = df["p-value before"] - df["p-value after"]
 
         print("Saving combined file")
-        self.save_file(df=df, outpath=os.path.join(self.data_outdir, "combined_stats.txt.gz".format(component)), index=False)
+        self.save_file(
+            df=df,
+            outpath=os.path.join(
+                self.data_outdir, "combined_stats.txt.gz".format(component)
+            ),
+            index=False,
+        )
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def natural_keys(text):
-        return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', text)]
+        return [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", text)]
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     @staticmethod
-    def scatterplot(fig, ax, df, x="x", y="y", hue=None, palette=None,
-                    xlabel="", ylabel="", title=""):
+    def scatterplot(
+        fig,
+        ax,
+        df,
+        x="x",
+        y="y",
+        hue=None,
+        palette=None,
+        xlabel="",
+        ylabel="",
+        title="",
+    ):
         sns.despine(fig=fig, ax=ax)
 
         group_column = hue
@@ -302,31 +367,27 @@ class main():
             if subset.shape[0] < 1:
                 continue
 
-            sns.scatterplot(x=x,
-                            y=y,
-                            data=subset,
-                            color=palette[hue_group],
-                            linewidth=0,
-                            legend=False,
-                            ax=ax)
+            sns.scatterplot(
+                x=x,
+                y=y,
+                data=subset,
+                color=palette[hue_group],
+                linewidth=0,
+                legend=False,
+                ax=ax,
+            )
 
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
         if xlim[0] < 0:
-            ax.axvline(0, ls='--', color="#000000", alpha=0.15, zorder=-1)
+            ax.axvline(0, ls="--", color="#000000", alpha=0.15, zorder=-1)
         if ylim[0] < 0:
-            ax.axhline(0, ls='--', color="#000000", alpha=0.15, zorder=-1)
-        ax.axline((0, 0), slope=1, ls='--', color="#000000", alpha=0.15, zorder=-1)
+            ax.axhline(0, ls="--", color="#000000", alpha=0.15, zorder=-1)
+        ax.axline((0, 0), slope=1, ls="--", color="#000000", alpha=0.15, zorder=-1)
 
-        ax.set_xlabel(xlabel,
-                      fontsize=30,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=30,
-                      fontweight='bold')
-        ax.set_title(title,
-                     fontsize=40,
-                     fontweight='bold')
+        ax.set_xlabel(xlabel, fontsize=30, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=30, fontweight="bold")
+        ax.set_title(title, fontsize=40, fontweight="bold")
 
     def print_arguments(self):
         print("Arguments:")
@@ -339,6 +400,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

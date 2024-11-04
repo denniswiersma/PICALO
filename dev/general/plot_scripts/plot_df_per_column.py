@@ -21,7 +21,8 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -34,12 +35,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -47,20 +48,22 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.n_columns = getattr(arguments, 'n_columns')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.transpose = getattr(arguments, 'transpose')
-        self.extensions = getattr(arguments, 'extension')
-        self.output_filename = getattr(arguments, 'output')
+        self.data_path = getattr(arguments, "data")
+        self.n_columns = getattr(arguments, "n_columns")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.transpose = getattr(arguments, "transpose")
+        self.extensions = getattr(arguments, "extension")
+        self.output_filename = getattr(arguments, "output")
         self.sd = 3
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -97,7 +100,7 @@ class main():
             "NTR_GONL": "#48b2e5",
             "GONL": "#eae453",
             0.0: "#DC106C",
-            1.0: "#03165e"
+            1.0: "#03165e",
         }
 
         self.dataset_to_cohort = {
@@ -117,57 +120,63 @@ class main():
             "GTE-EUR-CMC_HBCC_set3": "CMC HBCC",
             "GTE-EUR-UCLA_ASD": "UCLA ASD",
             "GTE-EUR-CMC": "CMC",
-            "GTE-EUR-CMC_HBCC_set1": "CMC HBCC"
+            "GTE-EUR-CMC_HBCC_set1": "CMC HBCC",
         }
 
         # Set the right pdf font for exporting.
-        matplotlib.rcParams['pdf.fonttype'] = 42
-        matplotlib.rcParams['ps.fonttype'] = 42
+        matplotlib.rcParams["pdf.fonttype"] = 42
+        matplotlib.rcParams["ps.fonttype"] = 42
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the input data.")
-        parser.add_argument("-n",
-                            "--n_columns",
-                            type=int,
-                            default=None,
-                            help="The number of columns to plot.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=True,
-                            help="The path to the sample-to-dataset matrix.")
-        parser.add_argument("-transpose",
-                            action='store_true',
-                            help="Combine the created files with force."
-                                 " Default: False.")
-        parser.add_argument("-e",
-                            "--extension",
-                            nargs="+",
-                            type=str,
-                            choices=["png", "pdf", "eps"],
-                            default=["png"],
-                            help="The figure file extension. "
-                                 "Default: 'png'.")
-        parser.add_argument("-o",
-                            "--output",
-                            type=str,
-                            default="PlotPerColumn_ColorByCohort",
-                            help="The name of the output file.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the input data."
+        )
+        parser.add_argument(
+            "-n",
+            "--n_columns",
+            type=int,
+            default=None,
+            help="The number of columns to plot.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=True,
+            help="The path to the sample-to-dataset matrix.",
+        )
+        parser.add_argument(
+            "-transpose",
+            action="store_true",
+            help="Combine the created files with force." " Default: False.",
+        )
+        parser.add_argument(
+            "-e",
+            "--extension",
+            nargs="+",
+            type=str,
+            choices=["png", "pdf", "eps"],
+            default=["png"],
+            help="The figure file extension. " "Default: 'png'.",
+        )
+        parser.add_argument(
+            "-o",
+            "--output",
+            type=str,
+            default="PlotPerColumn_ColorByCohort",
+            help="The name of the output file.",
+        )
 
         return parser.parse_args()
 
@@ -179,7 +188,7 @@ class main():
         if self.transpose:
             df = df.T
         if self.n_columns is not None:
-            df = df.iloc[:, :self.n_columns]
+            df = df.iloc[:, : self.n_columns]
         columns = list(df.columns)
 
         print("Loading sample to dataset")
@@ -194,51 +203,79 @@ class main():
         df["dataset"] = df.index.map(std_dict)
 
         print("\tPlotting")
-        self.plot(df=df,
-                  columns=columns,
-                  hue="dataset",
-                  palette=self.palette,
-                  name=self.output_filename)
+        self.plot(
+            df=df,
+            columns=columns,
+            hue="dataset",
+            palette=self.palette,
+            name=self.output_filename,
+        )
 
         print("\tAdding z-score color")
         for name in columns:
-            df["{} z-score".format(name)] = (df[name] - df[name].mean()) / df[name].std()
+            df["{} z-score".format(name)] = (df[name] - df[name].mean()) / df[
+                name
+            ].std()
 
         df["outlier"] = "False"
-        df.loc[(df["{} z-score".format(columns[0])].abs() > self.sd) | (df["{} z-score".format(columns[1])].abs() > self.sd) | (df["{} z-score".format(columns[2])].abs() > self.sd) | (df["{} z-score".format(columns[3])].abs() > self.sd), "outlier"] = "True"
+        df.loc[
+            (df["{} z-score".format(columns[0])].abs() > self.sd)
+            | (df["{} z-score".format(columns[1])].abs() > self.sd)
+            | (df["{} z-score".format(columns[2])].abs() > self.sd)
+            | (df["{} z-score".format(columns[3])].abs() > self.sd),
+            "outlier",
+        ] = "True"
         print(df)
         outlier_df = df.loc[df["outlier"] == "True", :].copy()
         print(outlier_df)
         print(outlier_df["dataset"].value_counts())
-        outlier_df.to_csv(os.path.join(self.outdir, self.output_filename + "_outliers.txt.gz"), compression="gzip", sep="\t", header=True, index=True)
+        outlier_df.to_csv(
+            os.path.join(self.outdir, self.output_filename + "_outliers.txt.gz"),
+            compression="gzip",
+            sep="\t",
+            header=True,
+            index=True,
+        )
 
         print("\tPlotting")
-        self.plot(df=df,
-                  columns=columns,
-                  hue="outlier",
-                  palette={"True": "#b22222", "False": "#000000"},
-                  name=self.output_filename + "_Outlier")
-
+        self.plot(
+            df=df,
+            columns=columns,
+            hue="outlier",
+            palette={"True": "#b22222", "False": "#000000"},
+            name=self.output_filename + "_Outlier",
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def plot(self, df, columns, hue, palette, name, title=""):
         ncols = len(columns)
         nrows = len(columns)
 
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='col',
-                                 sharey='row',
-                                 figsize=(10 * ncols, 10 * nrows))
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            sharex="col",
+            sharey="row",
+            figsize=(10 * ncols, 10 * nrows),
+        )
         sns.set(color_codes=True)
         sns.set_style("ticks")
 
@@ -258,7 +295,9 @@ class main():
                                 if key in self.dataset_to_cohort:
                                     label = self.dataset_to_cohort[key]
                                 if value + label not in added_handles:
-                                    handles.append(mpatches.Patch(color=value, label=label))
+                                    handles.append(
+                                        mpatches.Patch(color=value, label=label)
+                                    )
                                     added_handles.append(value + label)
                         ax.legend(handles=handles, loc=4, fontsize=25)
 
@@ -268,36 +307,34 @@ class main():
                 elif i == j:
                     ax.set_axis_off()
 
-                    ax.annotate(y_col,
-                                xy=(0.5, 0.5),
-                                ha='center',
-                                xycoords=ax.transAxes,
-                                color="#000000",
-                                fontsize=40,
-                                fontweight='bold')
+                    ax.annotate(
+                        y_col,
+                        xy=(0.5, 0.5),
+                        ha="center",
+                        xycoords=ax.transAxes,
+                        color="#000000",
+                        fontsize=40,
+                        fontweight="bold",
+                    )
                 else:
                     sns.despine(fig=fig, ax=ax)
 
-                    sns.scatterplot(x=x_col,
-                                    y=y_col,
-                                    hue=hue,
-                                    data=df,
-                                    s=100,
-                                    palette=palette,
-                                    linewidth=0,
-                                    legend=False,
-                                    ax=ax)
+                    sns.scatterplot(
+                        x=x_col,
+                        y=y_col,
+                        hue=hue,
+                        data=df,
+                        s=100,
+                        palette=palette,
+                        linewidth=0,
+                        legend=False,
+                        ax=ax,
+                    )
 
-                    ax.set_ylabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
-                    ax.set_xlabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
+                    ax.set_ylabel("", fontsize=20, fontweight="bold")
+                    ax.set_xlabel("", fontsize=20, fontweight="bold")
 
-        fig.suptitle(title,
-                     fontsize=40,
-                     fontweight='bold')
+        fig.suptitle(title, fontsize=40, fontweight="bold")
 
         for extension in self.extensions:
             fig.savefig(os.path.join(self.outdir, "{}.{}".format(name, extension)))
@@ -315,6 +352,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

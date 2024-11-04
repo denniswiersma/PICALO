@@ -33,12 +33,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 
 class GraphicalAbstractPart3(Scene):
@@ -59,9 +59,30 @@ class GraphicalAbstractPart3(Scene):
         }
 
         # Loading data.
-        iterations_df = pd.read_csv(os.path.join("/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/PIC1/iteration.txt.gz"), sep="\t", header=0, index_col=0)
-        std_df = pd.read_csv(os.path.join("/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/sample_to_dataset.txt.gz"), sep="\t", header=0, index_col=None)
-        info_df = pd.read_csv(os.path.join("/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/PIC1/info.txt.gz"), sep="\t", header=0, index_col=0)
+        iterations_df = pd.read_csv(
+            os.path.join(
+                "/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/PIC1/iteration.txt.gz"
+            ),
+            sep="\t",
+            header=0,
+            index_col=0,
+        )
+        std_df = pd.read_csv(
+            os.path.join(
+                "/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/sample_to_dataset.txt.gz"
+            ),
+            sep="\t",
+            header=0,
+            index_col=None,
+        )
+        info_df = pd.read_csv(
+            os.path.join(
+                "/Users/mvochteloo/Documents/PhD/Presentations/FrankeSwertzMeeting/20220214/animation_real_data/PIC1/info.txt.gz"
+            ),
+            sep="\t",
+            header=0,
+            index_col=0,
+        )
 
         iterations_df = iterations_df.iloc[:17, :]
         info_df = info_df.iloc[:16, :]
@@ -83,12 +104,20 @@ class GraphicalAbstractPart3(Scene):
         n_samples = iterations_df.shape[1]
         n_samples = 2932
         scatter_xstep = 250
-        scatter_xlim = (0, math.ceil(n_samples / scatter_xstep) * scatter_xstep, scatter_xstep)
+        scatter_xlim = (
+            0,
+            math.ceil(n_samples / scatter_xstep) * scatter_xstep,
+            scatter_xstep,
+        )
 
         min_value = iterations_df.min(axis=1).min()
         max_value = iterations_df.max(axis=1).max()
         scatter_ystep = 1
-        scatter_ylim = (math.floor(min_value / scatter_ystep) * scatter_ystep, math.ceil(max_value / scatter_ystep) * scatter_ystep, scatter_ystep)
+        scatter_ylim = (
+            math.floor(min_value / scatter_ystep) * scatter_ystep,
+            math.ceil(max_value / scatter_ystep) * scatter_ystep,
+            scatter_ystep,
+        )
 
         print(line_xlim, line_ylim)
         print(scatter_xlim, scatter_ylim)
@@ -102,15 +131,14 @@ class GraphicalAbstractPart3(Scene):
             axis_config={
                 "include_tip": False,
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         line_axes.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         line_axes_labels = line_axes.get_axis_labels(
-            x_label_tex='iteration',
-            y_label_tex='ieQTLs'
+            x_label_tex="iteration", y_label_tex="ieQTLs"
         ).set_color(GREY)
         VGroup(line_axes, line_axes_labels).scale(0.5).shift(UP * 1.75)
 
@@ -121,11 +149,10 @@ class GraphicalAbstractPart3(Scene):
             axis_config={
                 "include_tip": False,
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         scatter_axes_labels = scatter_axes.get_axis_labels(
-            x_label_tex='',
-            y_label_tex='value'
+            x_label_tex="", y_label_tex="value"
         ).set_color(GREY)
         VGroup(scatter_axes, scatter_axes_labels).scale(0.5).shift(DOWN * 2)
 
@@ -135,39 +162,48 @@ class GraphicalAbstractPart3(Scene):
             DrawBorderThenFill(scatter_axes),
             Write(line_axes_labels),
             Write(scatter_axes_labels),
-            run_time=2 * scale_wait
+            run_time=2 * scale_wait,
         )
 
         # Initialize start positions.
-        n_ieqtls_dot = Dot(point=line_axes.c2p(0, 0), radius=0.08, color=WHITE, fill_opacity=1)
+        n_ieqtls_dot = Dot(
+            point=line_axes.c2p(0, 0), radius=0.08, color=WHITE, fill_opacity=1
+        )
 
         sample_dots = []
-        for i, (scatter_ypos, color) in enumerate(zip(iterations_df.iloc[0, :], colors)):
-            sample_dot = Dot(point=scatter_axes.c2p(i, scatter_ypos), radius=0.02, color=color, fill_opacity=0.8)
+        for i, (scatter_ypos, color) in enumerate(
+            zip(iterations_df.iloc[0, :], colors)
+        ):
+            sample_dot = Dot(
+                point=scatter_axes.c2p(i, scatter_ypos),
+                radius=0.02,
+                color=color,
+                fill_opacity=0.8,
+            )
             sample_dots.append(sample_dot)
 
         # Add the text.
         iteration = "start"
-        iteration_text = always_redraw(lambda: Text("{}".format(iteration), color=WHITE).scale(0.8).shift(UP * 3.5))
+        iteration_text = always_redraw(
+            lambda: Text("{}".format(iteration), color=WHITE).scale(0.8).shift(UP * 3.5)
+        )
 
         n_ieqtls = np.nan
         n_ieqtls_text = always_redraw(
-            lambda: Text("N = {:,}".format(n_ieqtls), color=GREY_B).scale(0.4).move_to(
-                line_axes.c2p(line_xlim[1] * 0.9, line_ylim[1] * 0.8)
-            )
+            lambda: Text("N = {:,}".format(n_ieqtls), color=GREY_B)
+            .scale(0.4)
+            .move_to(line_axes.c2p(line_xlim[1] * 0.9, line_ylim[1] * 0.8))
         )
 
         pearson_r = np.nan
         pearson_r_text = always_redraw(
-            lambda: Text("r = {:.4f}".format(pearson_r), color=GREY_B).scale(0.4).move_to(
-                scatter_axes.c2p(scatter_xlim[1] * 0.9, scatter_ylim[1] * 0.8)
-            )
+            lambda: Text("r = {:.4f}".format(pearson_r), color=GREY_B)
+            .scale(0.4)
+            .move_to(scatter_axes.c2p(scatter_xlim[1] * 0.9, scatter_ylim[1] * 0.8))
         )
 
         self.play(
-            FadeIn(n_ieqtls_dot),
-            FadeIn(VGroup(*sample_dots)),
-            FadeIn(iteration_text)
+            FadeIn(n_ieqtls_dot), FadeIn(VGroup(*sample_dots)), FadeIn(iteration_text)
         )
         self.wait(3 * scale_wait)
 
@@ -193,25 +229,32 @@ class GraphicalAbstractPart3(Scene):
             # Construct the new ieQTLs line.
             line = None
             if prev_index is not None and prev_label is not None:
-                line = Line(start=line_axes.c2p(prev_index, info_df.loc[prev_label, "N"]),
-                            end=line_axes.c2p(row_index, info_df.loc[iteration_label, "N"]),
-                            stroke_width=5,
-                            color=WHITE)
+                line = Line(
+                    start=line_axes.c2p(prev_index, info_df.loc[prev_label, "N"]),
+                    end=line_axes.c2p(row_index, info_df.loc[iteration_label, "N"]),
+                    stroke_width=5,
+                    color=WHITE,
+                )
 
             # Play the animations.
             new_n_ieqtls = info_df.loc[iteration_label, "N"]
             if line is not None:
                 self.play(
                     *animations,
-                    ApplyMethod(n_ieqtls_dot.move_to, line_axes.c2p(row_index, new_n_ieqtls)),
+                    ApplyMethod(
+                        n_ieqtls_dot.move_to, line_axes.c2p(row_index, new_n_ieqtls)
+                    ),
                     ShowCreation(line),
-                    run_time=run_time)
+                    run_time=run_time
+                )
             else:
                 self.play(
                     *animations,
-                    ApplyMethod(n_ieqtls_dot.move_to,
-                                line_axes.c2p(row_index, new_n_ieqtls)),
-                    run_time=run_time)
+                    ApplyMethod(
+                        n_ieqtls_dot.move_to, line_axes.c2p(row_index, new_n_ieqtls)
+                    ),
+                    run_time=run_time
+                )
             self.wait(1 * scale_wait)
 
             # Update the text.
@@ -236,7 +279,11 @@ class GraphicalAbstractPart4(Scene):
         radius = 0.15
         y_values = np.array([func(x) for x in np.arange(x_range[0], x_range[1], 0.01)])
         y_step = 2
-        y_range = ((math.floor(np.min(y_values) / y_step) * y_step, (math.ceil(np.max(y_values) / y_step) + 2) * y_step, y_step))
+        y_range = (
+            math.floor(np.min(y_values) / y_step) * y_step,
+            (math.ceil(np.max(y_values) / y_step) + 2) * y_step,
+            y_step,
+        )
 
         # Construct the axis for the scatterplot.
         axes = Axes(
@@ -245,7 +292,7 @@ class GraphicalAbstractPart4(Scene):
             axis_config={
                 "include_tip": False,
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         axes.add_coordinate_labels(
             font_size=20,
@@ -254,22 +301,17 @@ class GraphicalAbstractPart4(Scene):
 
         graph = axes.get_graph(func, color=WHITE)
 
-        self.play(
-            DrawBorderThenFill(axes),
-            run_time=1 * scale_wait
-        )
-        self.play(
-            ShowCreation(graph),
-            run_time=2 * scale_wait
-        )
+        self.play(DrawBorderThenFill(axes), run_time=1 * scale_wait)
+        self.play(ShowCreation(graph), run_time=2 * scale_wait)
         self.wait(1 * scale_wait)
 
-        local_text = Text("local minima").scale(0.6).move_to(axes.c2p(2.1, func(2.1) - 1.5))
-        global_text = Text("global minima").scale(0.6).move_to(axes.c2p(8, func(8) - 1.5))
-        self.play(
-            FadeIn(VGroup(local_text, global_text)),
-            run_time=1 * scale_wait
+        local_text = (
+            Text("local minima").scale(0.6).move_to(axes.c2p(2.1, func(2.1) - 1.5))
         )
+        global_text = (
+            Text("global minima").scale(0.6).move_to(axes.c2p(8, func(8) - 1.5))
+        )
+        self.play(FadeIn(VGroup(local_text, global_text)), run_time=1 * scale_wait)
         self.wait(1 * scale_wait)
 
         # Drop ball 1.
@@ -281,8 +323,9 @@ class GraphicalAbstractPart4(Scene):
         run_time = (data.iloc[-1, :]["time"] / data.shape[0]) * 50 * scale_wait
         print(run_time, data.shape[0] * run_time)
         for i, row in data.iterrows():
-            self.play(dot1.animate.move_to(axes.c2p(row["x"], row["y"])),
-                      run_time=run_time)
+            self.play(
+                dot1.animate.move_to(axes.c2p(row["x"], row["y"])), run_time=run_time
+            )
         self.wait(3 * scale_wait)
 
         # Drop ball 2.
@@ -293,15 +336,13 @@ class GraphicalAbstractPart4(Scene):
         run_time = (data.iloc[-1, :]["time"] / data.shape[0]) * 50 * scale_wait
         print(run_time, data.shape[0] * run_time)
         for i, row in data.iterrows():
-            self.play(dot2.animate.move_to(axes.c2p(row["x"], row["y"])),
-                      run_time=run_time)
+            self.play(
+                dot2.animate.move_to(axes.c2p(row["x"], row["y"])), run_time=run_time
+            )
         self.wait(1 * scale_wait)
 
         # Remove.
-        self.play(
-            FadeOut(VGroup(dot1, dot2)),
-            run_time=1 * scale_wait
-        )
+        self.play(FadeOut(VGroup(dot1, dot2)), run_time=1 * scale_wait)
 
         combined_data = []
         max_time = 0
@@ -321,13 +362,14 @@ class GraphicalAbstractPart4(Scene):
         run_time = (max_time / max_rows) * 50 * scale_wait
         for i in range(max_rows):
             animations = []
-            for (dot, data) in combined_data:
+            for dot, data in combined_data:
                 if i < data.shape[0]:
                     row = data.iloc[i, :]
-                    animations.append(ApplyMethod(dot.move_to, axes.c2p(row["x"], row["y"])))
+                    animations.append(
+                        ApplyMethod(dot.move_to, axes.c2p(row["x"], row["y"]))
+                    )
             if len(animations) > 0:
-                self.play(*animations,
-                          run_time=run_time)
+                self.play(*animations, run_time=run_time)
         self.wait(1 * scale_wait)
 
 
@@ -350,7 +392,7 @@ def calculate_drop(x, y, func, x_range):
 
     # initial energy state (per unit mass)
     Ep = grav * y  # potential energy
-    Ek = 0.5 * speed ** 2  # kinetic energy
+    Ek = 0.5 * speed**2  # kinetic energy
     Etot = Ep + Ek  # total system energy
 
     # initialize saved data table
@@ -370,7 +412,7 @@ def calculate_drop(x, y, func, x_range):
 
             # update energy states
             Ep = grav * y
-            Ek = 0.5 * speed ** 2
+            Ek = 0.5 * speed**2
             Etot = Ep + Ek
 
             # set speed to zero once we land.
@@ -390,7 +432,7 @@ def calculate_drop(x, y, func, x_range):
             dy = (func(x + dx / 2) - func(x - dx / 2)) / dx  # first derivative
             deltax = dx  # step change in X value
             deltay = dy * dx  # corresponding change in Y value
-            mag = np.sqrt(deltax ** 2 + deltay ** 2)  # magnitude of step change
+            mag = np.sqrt(deltax**2 + deltay**2)  # magnitude of step change
 
             # compute the unit tangent vector
             Tx = deltax / mag
@@ -408,11 +450,11 @@ def calculate_drop(x, y, func, x_range):
 
             # update energy states
             Ep = grav * y
-            Ek = 0.5 * speed ** 2
+            Ek = 0.5 * speed**2
             Etot = Ep + Ek
 
             # Check if we go uphill.
-            if func(x) <= data[cnt-1, 2]:
+            if func(x) <= data[cnt - 1, 2]:
                 stop = False
 
             # check if we exit the x_range.
@@ -436,6 +478,7 @@ def calculate_drop(x, y, func, x_range):
         if stop:
             break
 
-    data_df = pd.DataFrame(data, columns=["time", "x", "y", "speed", "ep", "ek", "etot"])
+    data_df = pd.DataFrame(
+        data, columns=["time", "x", "y", "speed", "ep", "ek", "etot"]
+    )
     return data_df.iloc[:cnt, :]
-

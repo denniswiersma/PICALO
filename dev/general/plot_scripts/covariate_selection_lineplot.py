@@ -22,7 +22,8 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -35,12 +36,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -48,16 +49,18 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.input_directory = getattr(arguments, 'indir')
-        self.palette_path = getattr(arguments, 'palette')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.input_directory = getattr(arguments, "indir")
+        self.palette_path = getattr(arguments, "palette")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -70,33 +73,34 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to the input directory.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to the input directory.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
 
         return parser.parse_args()
 
@@ -106,7 +110,9 @@ class main():
         print("Loading data")
         df_list = []
         for i in range(1, 50):
-            fpath = os.path.join(self.input_directory, "PIC{}".format(i), "covariate_selection.txt.gz")
+            fpath = os.path.join(
+                self.input_directory, "PIC{}".format(i), "covariate_selection.txt.gz"
+            )
             if os.path.exists(fpath):
                 df = self.load_file(fpath, header=0, index_col=None)
                 df["index"] = i
@@ -120,50 +126,73 @@ class main():
         print(df)
 
         print("Plotting")
-        self.lineplot(df_m=df, x="index", y="N-ieQTLs", units="Covariate",
-                      xlabel="PIC", ylabel="#ieQTLs (FDR <=0.05)",
-                      filename=self.out_filename + "covariate_selection_lineplot",
-                      outdir=self.outdir)
+        self.lineplot(
+            df_m=df,
+            x="index",
+            y="N-ieQTLs",
+            units="Covariate",
+            xlabel="PIC",
+            ylabel="#ieQTLs (FDR <=0.05)",
+            filename=self.out_filename + "covariate_selection_lineplot",
+            outdir=self.outdir,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
-    def lineplot(df_m, x="x", y="y", units=None, hue=None, palette=None, title="",
-                 xlabel="", ylabel="", filename="plot", info=None, outdir=None):
-        sns.set(rc={'figure.figsize': (12, 9)})
+    def lineplot(
+        df_m,
+        x="x",
+        y="y",
+        units=None,
+        hue=None,
+        palette=None,
+        title="",
+        xlabel="",
+        ylabel="",
+        filename="plot",
+        info=None,
+        outdir=None,
+    ):
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
-        fig, (ax1, ax2) = plt.subplots(nrows=1,
-                                       ncols=2,
-                                       gridspec_kw={"width_ratios": [0.99, 0.01]})
+        fig, (ax1, ax2) = plt.subplots(
+            nrows=1, ncols=2, gridspec_kw={"width_ratios": [0.99, 0.01]}
+        )
         sns.despine(fig=fig, ax=ax1)
 
-        g = sns.lineplot(data=df_m,
-                         x=x,
-                         y=y,
-                         units=units,
-                         hue=hue,
-                         palette=palette,
-                         estimator=None,
-                         legend=None,
-                         ax=ax1)
+        g = sns.lineplot(
+            data=df_m,
+            x=x,
+            y=y,
+            units=units,
+            hue=hue,
+            palette=palette,
+            estimator=None,
+            legend=None,
+            ax=ax1,
+        )
 
-        ax1.set_title(title,
-                      fontsize=14,
-                      fontweight='bold')
-        ax1.set_xlabel(xlabel,
-                       fontsize=10,
-                       fontweight='bold')
-        ax1.set_ylabel(ylabel,
-                       fontsize=10,
-                       fontweight='bold')
+        ax1.set_title(title, fontsize=14, fontweight="bold")
+        ax1.set_xlabel(xlabel, fontsize=10, fontweight="bold")
+        ax1.set_ylabel(ylabel, fontsize=10, fontweight="bold")
 
         if palette is not None:
             handles = []
@@ -192,6 +221,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

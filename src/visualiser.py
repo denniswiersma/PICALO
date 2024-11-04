@@ -19,11 +19,22 @@ import pandas as pd
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # Local application imports.
-from src.statistics import calc_vertex_xpos, calc_pearsonr_vector, fit_and_predict, calc_rss, inverse, fit, predict, calc_std, calc_p_value
+from src.statistics import (
+    calc_vertex_xpos,
+    calc_pearsonr_vector,
+    fit_and_predict,
+    calc_rss,
+    inverse,
+    fit,
+    predict,
+    calc_std,
+    calc_p_value,
+)
 
 
 class Visualiser:
@@ -55,66 +66,80 @@ class Visualiser:
         eqtl_p_value = calc_p_value(rss1=rss_model1, rss2=rss_model2, df1=1, df2=2, n=n)
 
         # Construct plot data frames.
-        df = pd.DataFrame(X, columns=["intercept", "genotype", "covariate", "interaction"])
+        df = pd.DataFrame(
+            X, columns=["intercept", "genotype", "covariate", "interaction"]
+        )
         df["expression"] = y
         df["group"] = df["genotype"].round(0)
 
-        annot1 = ["N = {:,}".format(ieqtl.n),
-                  "r = {:.2f}".format(eqtl_pearsonr),
-                  "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in eqtl_betas])),
-                  "SD = {}".format(", ".join(["{:.2f}".format(x) for x in eqtl_std])),
-                  "t-values = {}".format(", ".join(["{:.2f}".format(x) for x in eqtl_betas / eqtl_std])),
-                  "p-value = {:.2e}".format(eqtl_p_value)]
-        annot2 = ["N = {:,}".format(ieqtl.n),
-                  "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas])),
-                  "SD = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.std])),
-                  "t-values = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas / ieqtl.std])),
-                  "p-value = {:.2e}".format(ieqtl.p_value)]
+        annot1 = [
+            "N = {:,}".format(ieqtl.n),
+            "r = {:.2f}".format(eqtl_pearsonr),
+            "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in eqtl_betas])),
+            "SD = {}".format(", ".join(["{:.2f}".format(x) for x in eqtl_std])),
+            "t-values = {}".format(
+                ", ".join(["{:.2f}".format(x) for x in eqtl_betas / eqtl_std])
+            ),
+            "p-value = {:.2e}".format(eqtl_p_value),
+        ]
+        annot2 = [
+            "N = {:,}".format(ieqtl.n),
+            "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas])),
+            "SD = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.std])),
+            "t-values = {}".format(
+                ", ".join(["{:.2f}".format(x) for x in ieqtl.betas / ieqtl.std])
+            ),
+            "p-value = {:.2e}".format(ieqtl.p_value),
+        ]
 
         # Plot.
-        self.create_overview_figure(df=df,
-                                    annot1=annot1,
-                                    annot2=annot2,
-                                    snp=ieqtl.get_snp(),
-                                    gene=ieqtl.get_gene(),
-                                    cov=ieqtl.get_cov(),
-                                    title="{}:{}".format(ieqtl.get_ieqtl_id(), label),
-                                    outdir=outdir)
+        self.create_overview_figure(
+            df=df,
+            annot1=annot1,
+            annot2=annot2,
+            snp=ieqtl.get_snp(),
+            gene=ieqtl.get_gene(),
+            cov=ieqtl.get_cov(),
+            title="{}:{}".format(ieqtl.get_ieqtl_id(), label),
+            outdir=outdir,
+        )
 
-    def create_overview_figure(self, df, annot1, annot2, snp, gene, cov,
-                               title, outdir):
+    def create_overview_figure(self, df, annot1, annot2, snp, gene, cov, title, outdir):
         sns.set_style("ticks")
-        fig, (ax1, ax2) = plt.subplots(nrows=1,
-                                       ncols=2,
-                                       figsize=(24, 9))
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(24, 9))
 
-        self.eqtl_plot(fig=fig,
-                       ax=ax1,
-                       df=df,
-                       x="group",
-                       y="expression",
-                       palette=self.palette,
-                       xlabel=snp,
-                       ylabel=gene,
-                       annot=annot1,
-                       title="eQTL"
-                       )
+        self.eqtl_plot(
+            fig=fig,
+            ax=ax1,
+            df=df,
+            x="group",
+            y="expression",
+            palette=self.palette,
+            xlabel=snp,
+            ylabel=gene,
+            annot=annot1,
+            title="eQTL",
+        )
 
-        self.inter_plot(fig=fig,
-                        ax=ax2,
-                        df=df,
-                        x="covariate",
-                        y="expression",
-                        group="group",
-                        palette=self.palette,
-                        xlabel=cov,
-                        ylabel="",
-                        annot=annot2,
-                        title="interaction")
+        self.inter_plot(
+            fig=fig,
+            ax=ax2,
+            df=df,
+            x="covariate",
+            y="expression",
+            group="group",
+            palette=self.palette,
+            xlabel=cov,
+            ylabel="",
+            annot=annot2,
+            title="interaction",
+        )
 
         plt.suptitle(title, fontsize=18)
 
-        fig.savefig(os.path.join(outdir,"{}_overview_plot.png".format(title.replace(":", "-"))))
+        fig.savefig(
+            os.path.join(outdir, "{}_overview_plot.png".format(title.replace(":", "-")))
+        )
         plt.close()
 
     def plot_interaction_optimization(self, ieqtl, out_path, label, ocf=None):
@@ -152,51 +177,62 @@ class Visualiser:
             r_squared_opt = pearsonr_opt * pearsonr_opt
 
         # Construct plot data frames.
-        df1 = pd.DataFrame(X_start, columns=["intercept", "genotype", "covariate", "interaction"])
-        df2 = pd.DataFrame(X_opt, columns=["intercept", "genotype", "covariate", "interaction"])
+        df1 = pd.DataFrame(
+            X_start, columns=["intercept", "genotype", "covariate", "interaction"]
+        )
+        df2 = pd.DataFrame(
+            X_opt, columns=["intercept", "genotype", "covariate", "interaction"]
+        )
         for df in [df1, df2]:
             df["expression"] = y
             df["group"] = df["genotype"].round(0)
 
-        annot1 = ["N = {:,}".format(ieqtl.n),
-                  "R^2 = {:.2f}".format(r_squared_start),
-                  "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas])),
-                  "SD = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.std])),
-                  "t-values = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas / ieqtl.std])),
-                  "p-value = {:.2e}".format(ieqtl.p_value)]
+        annot1 = [
+            "N = {:,}".format(ieqtl.n),
+            "R^2 = {:.2f}".format(r_squared_start),
+            "Betas = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.betas])),
+            "SD = {}".format(", ".join(["{:.2f}".format(x) for x in ieqtl.std])),
+            "t-values = {}".format(
+                ", ".join(["{:.2f}".format(x) for x in ieqtl.betas / ieqtl.std])
+            ),
+            "p-value = {:.2e}".format(ieqtl.p_value),
+        ]
         annot2 = ["N = {:,}".format(ieqtl.n)]
         if r_squared_opt is not None:
             annot2.append("R^2 = {:.2f}".format(r_squared_start))
 
         # Plot.
-        self.create_optimization_figure(df1=df1,
-                                        df2=df2,
-                                        annot1=annot1,
-                                        annot2=annot2,
-                                        gene=ieqtl.get_gene(),
-                                        cov=ieqtl.get_cov(),
-                                        title="{}:{}".format(ieqtl.get_ieqtl_id(), label),
-                                        outdir=outdir,
-                                        solo_optimized=solo_optimized)
+        self.create_optimization_figure(
+            df1=df1,
+            df2=df2,
+            annot1=annot1,
+            annot2=annot2,
+            gene=ieqtl.get_gene(),
+            cov=ieqtl.get_cov(),
+            title="{}:{}".format(ieqtl.get_ieqtl_id(), label),
+            outdir=outdir,
+            solo_optimized=solo_optimized,
+        )
 
-    def create_optimization_figure(self, df1, df2, annot1, annot2, gene, cov,
-                                   title, outdir, solo_optimized):
+    def create_optimization_figure(
+        self, df1, df2, annot1, annot2, gene, cov, title, outdir, solo_optimized
+    ):
         sns.set_style("ticks")
-        fig, (ax1, ax2) = plt.subplots(nrows=1,
-                                       ncols=2,
-                                       figsize=(24, 9))
+        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(24, 9))
 
-        self.inter_plot(fig=fig,
-                        ax=ax1,
-                        df=df1,
-                        x="covariate",
-                        y="expression",
-                        group="group",
-                        palette=self.palette,
-                        xlabel=cov,
-                        ylabel=gene,
-                        annot=annot1,
-                        title="start")
+        self.inter_plot(
+            fig=fig,
+            ax=ax1,
+            df=df1,
+            x="covariate",
+            y="expression",
+            group="group",
+            palette=self.palette,
+            xlabel=cov,
+            ylabel=gene,
+            annot=annot1,
+            title="start",
+        )
 
         p2_title = "optimized"
         file_appendix = ""
@@ -204,74 +240,90 @@ class Visualiser:
             p2_title = "optimized [solo]"
             file_appendix = "_soloOptimized"
 
-        self.inter_plot(fig=fig,
-                        ax=ax2,
-                        df=df2,
-                        x="covariate",
-                        y="expression",
-                        group="group",
-                        palette=self.palette,
-                        xlabel="{} [optimized]".format(cov),
-                        ylabel=gene,
-                        annot=annot2,
-                        title=p2_title)
+        self.inter_plot(
+            fig=fig,
+            ax=ax2,
+            df=df2,
+            x="covariate",
+            y="expression",
+            group="group",
+            palette=self.palette,
+            xlabel="{} [optimized]".format(cov),
+            ylabel=gene,
+            annot=annot2,
+            title=p2_title,
+        )
 
         plt.suptitle(title, fontsize=18)
 
-        fig.savefig(os.path.join(outdir, "{}{}_inter_optimization_plot.png".format(title.replace(":", "-"), file_appendix)))
+        fig.savefig(
+            os.path.join(
+                outdir,
+                "{}{}_inter_optimization_plot.png".format(
+                    title.replace(":", "-"), file_appendix
+                ),
+            )
+        )
         plt.close()
 
     @staticmethod
-    def eqtl_plot(fig, ax, df, x="x", y="y", palette=None, annot=None,
-                  xlabel="", ylabel="", title=""):
+    def eqtl_plot(
+        fig,
+        ax,
+        df,
+        x="x",
+        y="y",
+        palette=None,
+        annot=None,
+        xlabel="",
+        ylabel="",
+        title="",
+    ):
         sns.despine(fig=fig, ax=ax)
 
-        sns.regplot(x=x,
-                    y=y,
-                    data=df,
-                    scatter=False,
-                    ci=None,
-                    line_kws={"color": "#000000"},
-                    ax=ax)
-        sns.violinplot(x=x,
-                       y=y,
-                       data=df,
-                       palette=palette,
-                       cut=0,
-                       zorder=-1,
-                       ax=ax)
-        plt.setp(ax.collections, alpha=.75)
-        sns.boxplot(x=x,
-                    y=y,
-                    data=df,
-                    whis=np.inf,
-                    color="white",
-                    zorder=-1,
-                    ax=ax)
+        sns.regplot(
+            x=x,
+            y=y,
+            data=df,
+            scatter=False,
+            ci=None,
+            line_kws={"color": "#000000"},
+            ax=ax,
+        )
+        sns.violinplot(x=x, y=y, data=df, palette=palette, cut=0, zorder=-1, ax=ax)
+        plt.setp(ax.collections, alpha=0.75)
+        sns.boxplot(x=x, y=y, data=df, whis=np.inf, color="white", zorder=-1, ax=ax)
 
         if annot is not None:
             for i, annot_label in enumerate(annot):
-                ax.annotate(annot_label,
-                            xy=(0.03, 0.94 - (i * 0.04)),
-                            xycoords=ax.transAxes,
-                            color="#000000",
-                            alpha=0.75,
-                            fontsize=12,
-                            fontweight='bold')
+                ax.annotate(
+                    annot_label,
+                    xy=(0.03, 0.94 - (i * 0.04)),
+                    xycoords=ax.transAxes,
+                    color="#000000",
+                    alpha=0.75,
+                    fontsize=12,
+                    fontweight="bold",
+                )
 
-        ax.set_title(title,
-                     fontsize=16,
-                     fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=16, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
 
     @staticmethod
-    def inter_plot(fig, ax, df, x="x", y="y", group="group", palette=None,
-                   annot=None, xlabel="", ylabel="", title=""):
+    def inter_plot(
+        fig,
+        ax,
+        df,
+        x="x",
+        y="y",
+        group="group",
+        palette=None,
+        annot=None,
+        xlabel="",
+        ylabel="",
+        title="",
+    ):
         if len(set(df[group].unique()).symmetric_difference({0, 1, 2})) > 0:
             return
 
@@ -288,40 +340,43 @@ class Visualiser:
                 coef_str = "{:.2f}".format(coef)
 
                 # Plot.
-                sns.regplot(x=x, y=y, data=subset, ci=None,
-                            scatter_kws={'facecolors': palette[group_id],
-                                         'linewidth': 0,
-                                         'alpha': 0.3},
-                            line_kws={"color": palette[group_id], "alpha": 0.75},
-                            ax=ax
-                            )
+                sns.regplot(
+                    x=x,
+                    y=y,
+                    data=subset,
+                    ci=None,
+                    scatter_kws={
+                        "facecolors": palette[group_id],
+                        "linewidth": 0,
+                        "alpha": 0.3,
+                    },
+                    line_kws={"color": palette[group_id], "alpha": 0.75},
+                    ax=ax,
+                )
 
             # Add the text.
             ax.annotate(
-                '{}: r = {} [n={}]'.format(group_id, coef_str, n),
+                "{}: r = {} [n={}]".format(group_id, coef_str, n),
                 xy=(0.03, 0.94 - (i * 0.04)),
                 xycoords=ax.transAxes,
                 color=palette[group_id],
                 alpha=0.75,
                 fontsize=12,
-                fontweight='bold')
+                fontweight="bold",
+            )
 
         if annot is not None:
             for i, annot_label in enumerate(annot):
-                ax.annotate(annot_label,
-                            xy=(0.03, 0.82 - (i * 0.04)),
-                            xycoords=ax.transAxes,
-                            color="#000000",
-                            alpha=0.75,
-                            fontsize=12,
-                            fontweight='bold')
+                ax.annotate(
+                    annot_label,
+                    xy=(0.03, 0.82 - (i * 0.04)),
+                    xycoords=ax.transAxes,
+                    color="#000000",
+                    alpha=0.75,
+                    fontsize=12,
+                    fontweight="bold",
+                )
 
-        ax.set_title(title,
-                     fontsize=16,
-                     fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=16, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")

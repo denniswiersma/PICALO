@@ -29,12 +29,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 
 """
@@ -43,46 +43,50 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.gte_path = getattr(arguments, 'gene_to_exression')
-        self.output_prefix = getattr(arguments, 'output_prefix')
+        self.data_path = getattr(arguments, "data")
+        self.gte_path = getattr(arguments, "gene_to_exression")
+        self.output_prefix = getattr(arguments, "output_prefix")
 
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'preprocess_mds_file')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "preprocess_mds_file"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-gte",
-                            "--gene_to_exression",
-                            type=str,
-                            required=True,
-                            help="The path to the GtE file.")
-        parser.add_argument("-op",
-                            "--output_prefix",
-                            type=str,
-                            required=False,
-                            default="",
-                            help="The path to the GtE file.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-gte",
+            "--gene_to_exression",
+            type=str,
+            required=True,
+            help="The path to the GtE file.",
+        )
+        parser.add_argument(
+            "-op",
+            "--output_prefix",
+            type=str,
+            required=False,
+            default="",
+            help="The path to the GtE file.",
+        )
 
         return parser.parse_args()
 
@@ -118,11 +122,17 @@ class main():
         print(df)
 
         print("Saving file")
-        outpath = os.path.join(self.outdir, self.output_prefix + os.path.basename(self.data_path).split(".")[0] + ".txt.gz")
+        outpath = os.path.join(
+            self.outdir,
+            self.output_prefix
+            + os.path.basename(self.data_path).split(".")[0]
+            + ".txt.gz",
+        )
         df.to_csv(outpath, compression="gzip", sep="\t", header=True, index=True)
-        print("\tSaved dataframe: {} "
-                    "with shape: {}".format(os.path.basename(outpath),
-                                            df.shape))
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -132,6 +142,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

@@ -26,7 +26,7 @@ from scipy import stats
 import seaborn as sns
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
 
@@ -44,30 +44,34 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.picalo_indir = getattr(arguments, 'picalo_indir')
-        self.picalo_alleles = getattr(arguments, 'picalo_alleles')
-        self.discovery = getattr(arguments, 'discovery')
+        self.picalo_indir = getattr(arguments, "picalo_indir")
+        self.picalo_alleles = getattr(arguments, "picalo_alleles")
+        self.discovery = getattr(arguments, "discovery")
         self.replication = "Klein" if self.discovery == "PICALO" else "PICALO"
-        self.palette_path = getattr(arguments, 'palette')
-        self.out_filename = getattr(arguments, 'outfile')
-        self.extensions = getattr(arguments, 'extension')
+        self.palette_path = getattr(arguments, "palette")
+        self.out_filename = getattr(arguments, "outfile")
+        self.extensions = getattr(arguments, "extension")
 
         self.klein_path = "/groups/umcg-biogen/prm03/projects/2022-DeKleinEtAl/output/2020-10-12-deconvolution/deconvolution/decon-eqtl_scripts/decon_eqtl/2022-03-03-CortexEUR-cis-ForceNormalised-MAF5-4SD-CompleteConfigs-NegativeToZero-DatasetAndRAMCorrected/merged_decon_results.txt.gz"
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'klein_ct_eqtl_replication', '{}Discovery'.format(self.discovery))
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "klein_ct_eqtl_replication",
+            "{}Discovery".format(self.discovery),
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -78,7 +82,7 @@ class main():
             "Inhibitory": "#0072B2",
             "Microglia": "#E69F00",
             "Oligodendrocyte": "#009E73",
-            "OtherNeuron" : "#2690ce",
+            "OtherNeuron": "#2690ce",
         }
 
         self.cell_type_abbreviations = {
@@ -95,59 +99,64 @@ class main():
         self.shared_ylim = None
 
         # Set the right pdf font for exporting.
-        matplotlib.rcParams['pdf.fonttype'] = 42
-        matplotlib.rcParams['ps.fonttype'] = 42
+        matplotlib.rcParams["pdf.fonttype"] = 42
+        matplotlib.rcParams["ps.fonttype"] = 42
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit")
-        parser.add_argument("-pi",
-                            "--picalo_indir",
-                            type=str,
-                            required=True,
-                            help="The path to the PICALO input directory")
-        parser.add_argument("-pa",
-                            "--picalo_alleles",
-                            type=str,
-                            required=True,
-                            help="The path to the PICALO genotype"
-                                 " alleles matrix.")
-        parser.add_argument("-d",
-                            "--discovery",
-                            type=str,
-                            required=False,
-                            choices=["PICALO", "Klein"],
-                            default="PICALO",
-                            help="Which dataset to consider discovery.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
-        parser.add_argument("-e",
-                            "--extension",
-                            nargs="+",
-                            type=str,
-                            choices=["png", "pdf", "eps"],
-                            default=["png"],
-                            help="The figure file extension. "
-                                 "Default: 'png'.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit",
+        )
+        parser.add_argument(
+            "-pi",
+            "--picalo_indir",
+            type=str,
+            required=True,
+            help="The path to the PICALO input directory",
+        )
+        parser.add_argument(
+            "-pa",
+            "--picalo_alleles",
+            type=str,
+            required=True,
+            help="The path to the PICALO genotype" " alleles matrix.",
+        )
+        parser.add_argument(
+            "-d",
+            "--discovery",
+            type=str,
+            required=False,
+            choices=["PICALO", "Klein"],
+            default="PICALO",
+            help="Which dataset to consider discovery.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
+        parser.add_argument(
+            "-e",
+            "--extension",
+            nargs="+",
+            type=str,
+            choices=["png", "pdf", "eps"],
+            default=["png"],
+            help="The figure file extension. " "Default: 'png'.",
+        )
 
         return parser.parse_args()
 
@@ -155,14 +164,22 @@ class main():
         self.print_arguments()
 
         print("Loading discovery data")
-        picalo_geno_stats_df = self.load_file(os.path.join(self.picalo_indir, "genotype_stats.txt.gz"), header=0, index_col=None)
-        picalo_alleles_df = self.load_file(self.picalo_alleles, header=0, index_col=None)
+        picalo_geno_stats_df = self.load_file(
+            os.path.join(self.picalo_indir, "genotype_stats.txt.gz"),
+            header=0,
+            index_col=None,
+        )
+        picalo_alleles_df = self.load_file(
+            self.picalo_alleles, header=0, index_col=None
+        )
 
         if picalo_geno_stats_df["SNP"].tolist() != picalo_alleles_df["SNP"].tolist():
             print("Error, genotype stats and alleles df to not match")
             exit()
 
-        picalo_snp_info_df = pd.concat([picalo_geno_stats_df, picalo_alleles_df[["Alleles"]]], axis=1)
+        picalo_snp_info_df = pd.concat(
+            [picalo_geno_stats_df, picalo_alleles_df[["Alleles"]]], axis=1
+        )
         picalo_snp_info_df = picalo_snp_info_df.loc[picalo_snp_info_df["mask"] == 1, :]
         picalo_snp_info_df.drop(["mask"], axis=1, inplace=True)
         picalo_snp_info_df.reset_index(inplace=True, drop=True)
@@ -178,20 +195,30 @@ class main():
                 ma_list.append(np.nan)
         picalo_snp_info_df["MA"] = ma_list
 
-        picalo_snp_info_df["AlleleAssessed"] = picalo_snp_info_df["Alleles"].str.split("/", n=1, expand=True)[1]
-        picalo_snp_info_df.columns = ["PICALO {}".format(col) for col in picalo_snp_info_df.columns]
+        picalo_snp_info_df["AlleleAssessed"] = picalo_snp_info_df["Alleles"].str.split(
+            "/", n=1, expand=True
+        )[1]
+        picalo_snp_info_df.columns = [
+            "PICALO {}".format(col) for col in picalo_snp_info_df.columns
+        ]
         print(picalo_snp_info_df)
         print(picalo_snp_info_df.columns.tolist())
 
         print("Loading de Klein et al. 2021 data")
         klein_ieqtl_df = self.load_file(self.klein_path, header=0, index_col=None)
         klein_ieqtl_df.index = klein_ieqtl_df["Gene"] + "_" + klein_ieqtl_df["SNP"]
-        klein_cell_types = [col.replace(" pvalue", "") for col in klein_ieqtl_df.columns if " pvalue" in col]
+        klein_cell_types = [
+            col.replace(" pvalue", "")
+            for col in klein_ieqtl_df.columns
+            if " pvalue" in col
+        ]
         drop_columns = []
         for ct in klein_cell_types:
             drop_columns.extend(["{} Perm-FDR".format(ct), "{} beta".format(ct)])
         klein_ieqtl_df.drop(drop_columns, axis=1, inplace=True)
-        klein_ieqtl_df.columns = ["Klein {}".format(col) for col in klein_ieqtl_df.columns]
+        klein_ieqtl_df.columns = [
+            "Klein {}".format(col) for col in klein_ieqtl_df.columns
+        ]
 
         # cell types.
         klein_cell_types.sort()
@@ -210,14 +237,22 @@ class main():
             print("\t{}".format(pic))
 
             picalo_ieqtl_df = self.load_file(picalo_pic_path, header=0, index_col=None)
-            picalo_ieqtl_df = picalo_ieqtl_df.loc[:, ["gene", "beta-interaction", "std-interaction", "p-value", "FDR"]]
-            picalo_ieqtl_df.columns = ["PICALO {}".format(col) for col in picalo_ieqtl_df.columns]
+            picalo_ieqtl_df = picalo_ieqtl_df.loc[
+                :, ["gene", "beta-interaction", "std-interaction", "p-value", "FDR"]
+            ]
+            picalo_ieqtl_df.columns = [
+                "PICALO {}".format(col) for col in picalo_ieqtl_df.columns
+            ]
             picalo_ieqtl_df = pd.concat([picalo_snp_info_df, picalo_ieqtl_df], axis=1)
-            picalo_ieqtl_df.index = picalo_ieqtl_df["PICALO gene"] + "_" + picalo_ieqtl_df["PICALO SNP"]
+            picalo_ieqtl_df.index = (
+                picalo_ieqtl_df["PICALO gene"] + "_" + picalo_ieqtl_df["PICALO SNP"]
+            )
             print(picalo_ieqtl_df)
             print(picalo_ieqtl_df.columns.tolist())
 
-            ieqtl_df = picalo_ieqtl_df.merge(klein_ieqtl_df, left_index=True, right_index=True, how="inner")
+            ieqtl_df = picalo_ieqtl_df.merge(
+                klein_ieqtl_df, left_index=True, right_index=True, how="inner"
+            )
             print(ieqtl_df)
             print(ieqtl_df.columns.tolist())
             if ieqtl_df.shape[0] == 0:
@@ -233,44 +268,92 @@ class main():
 
             # Flip towards discovery.
             if self.discovery == "PICALO":
-                ieqtl_df["flip"] = (ieqtl_df["PICALO AlleleAssessed"] == ieqtl_df["Klein Allele assessed"]).map({True: 1, False: -1})
+                ieqtl_df["flip"] = (
+                    ieqtl_df["PICALO AlleleAssessed"]
+                    == ieqtl_df["Klein Allele assessed"]
+                ).map({True: 1, False: -1})
                 for klein_ct in klein_cell_types:
-                    ieqtl_df["Klein {} interaction beta".format(klein_ct)] = ieqtl_df["Klein {} interaction beta".format(klein_ct)] * ieqtl_df["flip"]
+                    ieqtl_df["Klein {} interaction beta".format(klein_ct)] = (
+                        ieqtl_df["Klein {} interaction beta".format(klein_ct)]
+                        * ieqtl_df["flip"]
+                    )
 
                 discovery_mask = (ieqtl_df["PICALO FDR"] <= 0.05).to_numpy()
                 print("\t  Discovery N-ieqtls: {:,}".format(np.sum(discovery_mask)))
                 for klein_ct in klein_cell_types:
                     ieqtl_df["Klein {} FDR".format(klein_ct)] = np.nan
-                    replication_mask = (~ieqtl_df["Klein {} pvalue".format(klein_ct)].isna()).to_numpy()
+                    replication_mask = (
+                        ~ieqtl_df["Klein {} pvalue".format(klein_ct)].isna()
+                    ).to_numpy()
                     mask = np.logical_and(discovery_mask, replication_mask)
                     n_overlap = np.sum(mask)
                     if n_overlap > 1:
-                        ieqtl_df.loc[mask, "Klein {} FDR".format(klein_ct)] = multitest.multipletests(ieqtl_df.loc[mask, "Klein {} pvalue".format(klein_ct)], method='fdr_bh')[1]
-                    n_replicating = ieqtl_df.loc[ieqtl_df["Klein {} FDR".format(klein_ct)] <= 0.05, :].shape[0]
-                    print("\t  {}{} replication N-ieqtls: {:,} / {:,} [{:.2f}%]".format(klein_ct, (max_klein_ct_length - len(str(klein_ct))) * " ", n_replicating, n_overlap, (100 / n_overlap) * n_replicating))
+                        ieqtl_df.loc[
+                            mask, "Klein {} FDR".format(klein_ct)
+                        ] = multitest.multipletests(
+                            ieqtl_df.loc[mask, "Klein {} pvalue".format(klein_ct)],
+                            method="fdr_bh",
+                        )[
+                            1
+                        ]
+                    n_replicating = ieqtl_df.loc[
+                        ieqtl_df["Klein {} FDR".format(klein_ct)] <= 0.05, :
+                    ].shape[0]
+                    print(
+                        "\t  {}{} replication N-ieqtls: {:,} / {:,} [{:.2f}%]".format(
+                            klein_ct,
+                            (max_klein_ct_length - len(str(klein_ct))) * " ",
+                            n_replicating,
+                            n_overlap,
+                            (100 / n_overlap) * n_replicating,
+                        )
+                    )
             elif self.discovery == "Klein":
-                ieqtl_df["flip"] = (ieqtl_df["Klein Allele assessed"] == ieqtl_df["PICALO AlleleAssessed"]).map({True: 1, False: -1})
-                ieqtl_df["PICALO beta-interaction"] = ieqtl_df["PICALO beta-interaction"] * ieqtl_df["flip"]
+                ieqtl_df["flip"] = (
+                    ieqtl_df["Klein Allele assessed"]
+                    == ieqtl_df["PICALO AlleleAssessed"]
+                ).map({True: 1, False: -1})
+                ieqtl_df["PICALO beta-interaction"] = (
+                    ieqtl_df["PICALO beta-interaction"] * ieqtl_df["flip"]
+                )
 
                 replication_mask = (~ieqtl_df["PICALO p-value"].isna()).to_numpy()
                 for klein_ct in klein_cell_types:
-                    discovery_mask = (ieqtl_df["Klein {} BH-FDR".format(klein_ct)] <= 0.05).to_numpy()
+                    discovery_mask = (
+                        ieqtl_df["Klein {} BH-FDR".format(klein_ct)] <= 0.05
+                    ).to_numpy()
                     print("\t  Discovery N-ieqtls: {:,}".format(np.sum(discovery_mask)))
                     ieqtl_df["PICALO {} FDR".format(klein_ct)] = np.nan
                     mask = np.logical_and(discovery_mask, replication_mask)
                     n_overlap = np.sum(mask)
                     if n_overlap > 1:
-                        ieqtl_df.loc[mask, "PICALO {} FDR".format(klein_ct)] = multitest.multipletests(ieqtl_df.loc[mask, "PICALO p-value"], method='fdr_bh')[1]
-                    n_replicating = ieqtl_df.loc[ieqtl_df["PICALO {} FDR".format(klein_ct)] <= 0.05, :].shape[0]
-                    print("\t  {}{} replication N-ieqtls: {:,} / {:,} [{:.2f}%]".format(klein_ct, (max_klein_ct_length - len(str(klein_ct))) * " ", n_replicating, n_overlap, (100 / n_overlap) * n_replicating))
+                        ieqtl_df.loc[
+                            mask, "PICALO {} FDR".format(klein_ct)
+                        ] = multitest.multipletests(
+                            ieqtl_df.loc[mask, "PICALO p-value"], method="fdr_bh"
+                        )[
+                            1
+                        ]
+                    n_replicating = ieqtl_df.loc[
+                        ieqtl_df["PICALO {} FDR".format(klein_ct)] <= 0.05, :
+                    ].shape[0]
+                    print(
+                        "\t  {}{} replication N-ieqtls: {:,} / {:,} [{:.2f}%]".format(
+                            klein_ct,
+                            (max_klein_ct_length - len(str(klein_ct))) * " ",
+                            n_replicating,
+                            n_overlap,
+                            (100 / n_overlap) * n_replicating,
+                        )
+                    )
             else:
                 print("Error")
                 exit()
 
             print("Visualizing.")
-            replication_stats_df = self.plot(df=ieqtl_df,
-                                             cell_types=klein_cell_types,
-                                             pic=pic)
+            replication_stats_df = self.plot(
+                df=ieqtl_df, cell_types=klein_cell_types, pic=pic
+            )
             print(replication_stats_df)
             replication_stats_df["PIC"] = pic
             replication_stats_df_list.append(replication_stats_df)
@@ -287,42 +370,57 @@ class main():
         #                                       columns='variable')
         # replication_stats_df = replication_stats_df[["N", "pearsonr", "concordance", "Rb", "pi1"]]
         # replication_stats_df.columns = ["N", "Pearson r", "Concordance", "Rb", "pi1"]
-        self.save_file(df=replication_stats_df, outpath=os.path.join(self.outdir, "replication_stats.txt.gz"))
+        self.save_file(
+            df=replication_stats_df,
+            outpath=os.path.join(self.outdir, "replication_stats.txt.gz"),
+        )
 
         print("Visualizing.")
-        self.combined_plot(dfs=ieqtl_dfs,
-                           pics=pics,
-                           cell_types=klein_cell_types)
+        self.combined_plot(dfs=ieqtl_dfs, pics=pics, cell_types=klein_cell_types)
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
-    def save_file(df, outpath, header=True, index=True, sep="\t", na_rep="NA",
-                  sheet_name="Sheet1"):
-        if outpath.endswith('xlsx'):
-            df.to_excel(outpath,
-                        sheet_name=sheet_name,
-                        na_rep=na_rep,
-                        header=header,
-                        index=index)
+    def save_file(
+        df, outpath, header=True, index=True, sep="\t", na_rep="NA", sheet_name="Sheet1"
+    ):
+        if outpath.endswith("xlsx"):
+            df.to_excel(
+                outpath,
+                sheet_name=sheet_name,
+                na_rep=na_rep,
+                header=header,
+                index=index,
+            )
         else:
-            compression = 'infer'
-            if outpath.endswith('.gz'):
-                compression = 'gzip'
+            compression = "infer"
+            if outpath.endswith(".gz"):
+                compression = "gzip"
 
-            df.to_csv(outpath, sep=sep, index=index, header=header,
-                      compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+            df.to_csv(
+                outpath, sep=sep, index=index, header=header, compression=compression
+            )
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def plot(self, df, cell_types, pic):
         nrows = 3
@@ -333,14 +431,17 @@ class main():
 
         replication_stats = []
 
-        sns.set(rc={'figure.figsize': (ncols * 8, nrows * 6)})
+        sns.set(rc={"figure.figsize": (ncols * 8, nrows * 6)})
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='col',
-                                 sharey='row')
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex="col", sharey="row")
 
-        suptitle = "{} ieQTL replication in cell type ieQTLs\nfrom de Klein et al. 2021".format(pic) if self.discovery == "PICALO" else "cell type ieQTL replication in {} ieQTLs\nfrom PICALO".format(pic)
+        suptitle = (
+            "{} ieQTL replication in cell type ieQTLs\nfrom de Klein et al. 2021".format(
+                pic
+            )
+            if self.discovery == "PICALO"
+            else "cell type ieQTL replication in {} ieQTLs\nfrom PICALO".format(pic)
+        )
 
         for col_index, ct in enumerate(cell_types):
             print("\tWorking on '{}'".format(ct))
@@ -370,45 +471,53 @@ class main():
                 exit()
 
             # Select the required columns.
-            plot_df = df.loc[:, ["Klein Gene symbol",
-                                 "PICALO N",
-                                 "PICALO MAF",
-                                 "PICALO beta-interaction",
-                                 "PICALO std-interaction",
-                                 "PICALO p-value",
-                                 picalo_fdr_col,
-                                 "Klein N",
-                                 "Klein MAF",
-                                 "Klein {} interaction beta".format(ct),
-                                 "Klein {} pvalue".format(ct),
-                                 klein_fdr_col,
-                                 ]].copy()
-            plot_df.columns = ["Gene symbol",
-                               "PICALO N",
-                               "PICALO MAF",
-                               "PICALO beta",
-                               "PICALO std",
-                               "PICALO pvalue",
-                               "PICALO FDR",
-                               "Klein N",
-                               "Klein MAF",
-                               "Klein beta",
-                               "Klein pvalue",
-                               "Klein FDR"
-                               ]
-            plot_df = plot_df.loc[~plot_df["{} pvalue".format(self.replication)].isna(), :]
+            plot_df = df.loc[
+                :,
+                [
+                    "Klein Gene symbol",
+                    "PICALO N",
+                    "PICALO MAF",
+                    "PICALO beta-interaction",
+                    "PICALO std-interaction",
+                    "PICALO p-value",
+                    picalo_fdr_col,
+                    "Klein N",
+                    "Klein MAF",
+                    "Klein {} interaction beta".format(ct),
+                    "Klein {} pvalue".format(ct),
+                    klein_fdr_col,
+                ],
+            ].copy()
+            plot_df.columns = [
+                "Gene symbol",
+                "PICALO N",
+                "PICALO MAF",
+                "PICALO beta",
+                "PICALO std",
+                "PICALO pvalue",
+                "PICALO FDR",
+                "Klein N",
+                "Klein MAF",
+                "Klein beta",
+                "Klein pvalue",
+                "Klein FDR",
+            ]
+            plot_df = plot_df.loc[
+                ~plot_df["{} pvalue".format(self.replication)].isna(), :
+            ]
             plot_df.sort_values(by="{} pvalue".format(self.discovery), inplace=True)
 
             # Calculate the discovery standard error.
-            self.pvalue_to_zscore(df=plot_df,
-                                  beta_col="Klein beta",
-                                  p_col="Klein pvalue",
-                                  prefix="Klein ")
-            self.zscore_to_beta(df=plot_df,
-                                z_col="Klein z-score",
-                                maf_col="Klein MAF",
-                                n_col="Klein N",
-                                prefix="Klein zscore-to-")
+            self.pvalue_to_zscore(
+                df=plot_df, beta_col="Klein beta", p_col="Klein pvalue", prefix="Klein "
+            )
+            self.zscore_to_beta(
+                df=plot_df,
+                z_col="Klein z-score",
+                maf_col="Klein MAF",
+                n_col="Klein N",
+                prefix="Klein zscore-to-",
+            )
 
             # Convert the interaction beta to log scale.
             plot_df["PICALO beta"] = self.log_modulus_beta(plot_df["PICALO beta"])
@@ -426,7 +535,7 @@ class main():
                         xy=(-0.3, 0.9),
                         xycoords=axes[row_index, col_index].transAxes,
                         color="#000000",
-                        fontsize=40
+                        fontsize=40,
                     )
 
             print("\tPlotting row 1.")
@@ -441,7 +550,7 @@ class main():
                 title=ct,
                 title_color=self.palette[ct],
                 accent_color=self.palette[ct],
-                include_ylabel=include_ylabel
+                include_ylabel=include_ylabel,
             )
             self.update_limits(xlim, ylim, 0, col_index)
 
@@ -461,7 +570,8 @@ class main():
                 pi1_column="{} pvalue".format(self.replication),
                 rb_columns=[
                     (discovery_beta_col, discovery_std_col),
-                    (replication_beta_col, replication_std_col)]
+                    (replication_beta_col, replication_std_col),
+                ],
             )
             self.update_limits(xlim, ylim, 1, col_index)
 
@@ -478,14 +588,15 @@ class main():
                 title="",
                 title_color=self.palette[ct],
                 accent_color=self.palette[ct],
-                include_ylabel=include_ylabel
+                include_ylabel=include_ylabel,
             )
             self.update_limits(xlim, ylim, 2, col_index)
             print("")
 
-            for stats, label in zip([stats1, stats2, stats3],
-                                    ["all", "discovery significant",
-                                     "both significant"]):
+            for stats, label in zip(
+                [stats1, stats2, stats3],
+                ["all", "discovery significant", "both significant"],
+            ):
                 stats_m = stats.melt()
                 stats_m["label"] = label
                 stats_m["cell type"] = ct
@@ -502,13 +613,17 @@ class main():
             ax.set_ylim(ymin - ymargin, ymax + ymargin)
 
         # Add the main title.
-        fig.suptitle(suptitle,
-            fontsize=40,
-            color="#000000",
-            weight='bold')
+        fig.suptitle(suptitle, fontsize=40, color="#000000", weight="bold")
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "klein_ct_eqtl_replication_plot_{}_{}Discovery.{}".format(pic, self.discovery, extension)))
+            fig.savefig(
+                os.path.join(
+                    self.outdir,
+                    "klein_ct_eqtl_replication_plot_{}_{}Discovery.{}".format(
+                        pic, self.discovery, extension
+                    ),
+                )
+            )
         plt.close()
 
         # Construct the replication stats data frame.
@@ -524,14 +639,15 @@ class main():
         self.shared_ylim = {i: (0, 1) for i in range(nrows)}
         self.shared_xlim = {i: (0, 1) for i in range(ncols)}
 
-        sns.set(rc={'figure.figsize': (ncols * 8, nrows * 6)})
+        sns.set(rc={"figure.figsize": (ncols * 8, nrows * 6)})
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='col',
-                                 sharey='row')
+        fig, axes = plt.subplots(nrows=nrows, ncols=ncols, sharex="col", sharey="row")
 
-        suptitle = "PIC ieQTL replication in cell type ieQTLs\nfrom de Klein et al. 2021" if self.discovery == "PICALO" else "cell type ieQTL replication in PIC ieQTLs\nfrom PICALO"
+        suptitle = (
+            "PIC ieQTL replication in cell type ieQTLs\nfrom de Klein et al. 2021"
+            if self.discovery == "PICALO"
+            else "cell type ieQTL replication in PIC ieQTLs\nfrom PICALO"
+        )
 
         for col_index, pic in enumerate(pics):
             for row_index, ct in enumerate(cell_types):
@@ -562,52 +678,66 @@ class main():
                     exit()
 
                 # Select the required columns.
-                plot_df = df.loc[:, ["Klein Gene symbol",
-                                     "PICALO N",
-                                     "PICALO MAF",
-                                     "PICALO beta-interaction",
-                                     "PICALO std-interaction",
-                                     "PICALO p-value",
-                                     picalo_fdr_col,
-                                     "Klein N",
-                                     "Klein MAF",
-                                     "Klein {} interaction beta".format(ct),
-                                     "Klein {} pvalue".format(ct),
-                                     klein_fdr_col,
-                                     ]].copy()
-                plot_df.columns = ["Gene symbol",
-                                   "PICALO N",
-                                   "PICALO MAF",
-                                   "PICALO beta",
-                                   "PICALO std",
-                                   "PICALO pvalue",
-                                   "PICALO FDR",
-                                   "Klein N",
-                                   "Klein MAF",
-                                   "Klein beta",
-                                   "Klein pvalue",
-                                   "Klein FDR"
-                                   ]
-                plot_df = plot_df.loc[~plot_df["{} pvalue".format(self.replication)].isna(),:]
+                plot_df = df.loc[
+                    :,
+                    [
+                        "Klein Gene symbol",
+                        "PICALO N",
+                        "PICALO MAF",
+                        "PICALO beta-interaction",
+                        "PICALO std-interaction",
+                        "PICALO p-value",
+                        picalo_fdr_col,
+                        "Klein N",
+                        "Klein MAF",
+                        "Klein {} interaction beta".format(ct),
+                        "Klein {} pvalue".format(ct),
+                        klein_fdr_col,
+                    ],
+                ].copy()
+                plot_df.columns = [
+                    "Gene symbol",
+                    "PICALO N",
+                    "PICALO MAF",
+                    "PICALO beta",
+                    "PICALO std",
+                    "PICALO pvalue",
+                    "PICALO FDR",
+                    "Klein N",
+                    "Klein MAF",
+                    "Klein beta",
+                    "Klein pvalue",
+                    "Klein FDR",
+                ]
+                plot_df = plot_df.loc[
+                    ~plot_df["{} pvalue".format(self.replication)].isna(), :
+                ]
                 plot_df.sort_values(by="{} pvalue".format(self.discovery), inplace=True)
 
                 # Calculate the discovery standard error.
-                self.pvalue_to_zscore(df=plot_df,
-                                      beta_col="Klein beta",
-                                      p_col="Klein pvalue",
-                                      prefix="Klein ")
-                self.zscore_to_beta(df=plot_df,
-                                    z_col="Klein z-score",
-                                    maf_col="Klein MAF",
-                                    n_col="Klein N",
-                                    prefix="Klein zscore-to-")
+                self.pvalue_to_zscore(
+                    df=plot_df,
+                    beta_col="Klein beta",
+                    p_col="Klein pvalue",
+                    prefix="Klein ",
+                )
+                self.zscore_to_beta(
+                    df=plot_df,
+                    z_col="Klein z-score",
+                    maf_col="Klein MAF",
+                    n_col="Klein N",
+                    prefix="Klein zscore-to-",
+                )
 
                 # Convert the interaction beta to log scale.
                 plot_df["PICALO beta"] = self.log_modulus_beta(plot_df["PICALO beta"])
                 plot_df["Klein beta"] = self.log_modulus_beta(plot_df["Klein beta"])
                 print(plot_df)
 
-                plot_df["facecolors"] = [self.palette[ct] if fdr_value <= 0.05 else "#808080" for fdr_value in plot_df["{} FDR".format(self.replication)]]
+                plot_df["facecolors"] = [
+                    self.palette[ct] if fdr_value <= 0.05 else "#808080"
+                    for fdr_value in plot_df["{} FDR".format(self.replication)]
+                ]
 
                 include_ylabel = False
                 if col_index == 0:
@@ -627,7 +757,7 @@ class main():
                         xy=(-0.5, 0.9),
                         xycoords=axes[row_index, col_index].transAxes,
                         color=self.palette[ct],
-                        fontsize=40
+                        fontsize=40,
                     )
                 xlim, ylim, _ = self.scatterplot(
                     df=plot_df.loc[plot_df["{} FDR".format(self.discovery)] <= 0.05, :],
@@ -647,7 +777,8 @@ class main():
                     pi1_column="{} pvalue".format(self.replication),
                     rb_columns=[
                         (discovery_beta_col, discovery_std_col),
-                        (replication_beta_col, replication_std_col)]
+                        (replication_beta_col, replication_std_col),
+                    ],
                 )
                 self.update_limits(xlim, ylim, 1, col_index)
                 self.update_limits(xlim, ylim, row_index, col_index)
@@ -664,13 +795,17 @@ class main():
             ax.set_ylim(ymin - ymargin, ymax + ymargin)
 
         # Add the main title.
-        fig.suptitle(suptitle,
-                     fontsize=40,
-                     color="#000000",
-                     weight='bold')
+        fig.suptitle(suptitle, fontsize=40, color="#000000", weight="bold")
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "klein_ct_eqtl_replication_plot_{}Discovery.{}".format(self.discovery, extension)))
+            fig.savefig(
+                os.path.join(
+                    self.outdir,
+                    "klein_ct_eqtl_replication_plot_{}Discovery.{}".format(
+                        self.discovery, extension
+                    ),
+                )
+            )
         plt.close()
 
     @staticmethod
@@ -681,7 +816,7 @@ class main():
         mask[df[beta_col] > 0] = -1
         df["{}z-score".format(prefix)] = zscores * mask
         df.loc[df[p_col] == 1, "{}z-score".format(prefix)] = 0
-        df.loc[df[p_col] == 0, "{}z-score".format(prefix)] = -40.
+        df.loc[df[p_col] == 0, "{}z-score".format(prefix)] = -40.0
 
     @staticmethod
     def zscore_to_beta(df, z_col, maf_col, n_col, prefix=""):
@@ -700,10 +835,26 @@ class main():
 
         return new_df
 
-    def scatterplot(self, df, fig, ax, x="x", y="y", facecolors=None,
-                    label=None, max_labels=15, xlabel="", ylabel="", title="",
-                    title_color="#000000", accent_color="#000000", ci=95,
-                    include_ylabel=True, pi1_column=None, rb_columns=None):
+    def scatterplot(
+        self,
+        df,
+        fig,
+        ax,
+        x="x",
+        y="y",
+        facecolors=None,
+        label=None,
+        max_labels=15,
+        xlabel="",
+        ylabel="",
+        title="",
+        title_color="#000000",
+        accent_color="#000000",
+        ci=95,
+        include_ylabel=True,
+        pi1_column=None,
+        rb_columns=None,
+    ):
         sns.despine(fig=fig, ax=ax)
 
         if not include_ylabel:
@@ -742,107 +893,104 @@ class main():
                     )
                     rb = min(rb_est[0], 1)
 
-
-            sns.regplot(x=x, y=y, data=df, ci=ci,
-                        scatter_kws={'facecolors': facecolors,
-                                     'edgecolors': "#808080"},
-                        line_kws={"color": accent_color},
-                        ax=ax
-                        )
+            sns.regplot(
+                x=x,
+                y=y,
+                data=df,
+                ci=ci,
+                scatter_kws={"facecolors": facecolors, "edgecolors": "#808080"},
+                line_kws={"color": accent_color},
+                ax=ax,
+            )
 
             if label is not None:
                 texts = []
                 for i, (_, point) in enumerate(df.iterrows()):
                     if i > max_labels:
                         continue
-                    texts.append(ax.text(point[x],
-                                         point[y],
-                                         str(point[label]),
-                                         color=accent_color))
+                    texts.append(
+                        ax.text(
+                            point[x], point[y], str(point[label]), color=accent_color
+                        )
+                    )
 
-                adjust_text(texts,
-                            ax=ax,
-                            only_move={'points': 'x',
-                                       'text': 'xy',
-                                       'objects': 'x'},
-                            autoalign='x',
-                            expand_text=(1., 1.),
-                            expand_points=(1., 1.),
-                            arrowprops=dict(arrowstyle='-', color='#808080'))
+                adjust_text(
+                    texts,
+                    ax=ax,
+                    only_move={"points": "x", "text": "xy", "objects": "x"},
+                    autoalign="x",
+                    expand_text=(1.0, 1.0),
+                    expand_points=(1.0, 1.0),
+                    arrowprops=dict(arrowstyle="-", color="#808080"),
+                )
 
-        ax.axhline(0, ls='--', color="#D7191C", alpha=0.3, zorder=-1)
-        ax.axvline(0, ls='--', color="#D7191C", alpha=0.3, zorder=-1)
+        ax.axhline(0, ls="--", color="#D7191C", alpha=0.3, zorder=-1)
+        ax.axvline(0, ls="--", color="#D7191C", alpha=0.3, zorder=-1)
 
         y_pos = 0.9
         if n > 0:
             ax.annotate(
-                'N = {:,}'.format(n),
+                "N = {:,}".format(n),
                 xy=(0.03, 0.9),
                 xycoords=ax.transAxes,
                 color=accent_color,
                 fontsize=14,
-                fontweight='bold'
+                fontweight="bold",
             )
             y_pos -= 0.05
 
         if not np.isnan(coef):
             ax.annotate(
-                'r = {:.2f}'.format(coef),
+                "r = {:.2f}".format(coef),
                 xy=(0.03, y_pos),
                 xycoords=ax.transAxes,
                 color=accent_color,
                 fontsize=14,
-                fontweight='bold'
+                fontweight="bold",
             )
             y_pos -= 0.05
 
         if not np.isnan(concordance):
             ax.annotate(
-                'concordance = {:.0f}%'.format(concordance),
+                "concordance = {:.0f}%".format(concordance),
                 xy=(0.03, y_pos),
                 xycoords=ax.transAxes,
                 color=accent_color,
                 fontsize=14,
-                fontweight='bold'
+                fontweight="bold",
             )
             y_pos -= 0.05
 
         if not np.isnan(pi1):
             ax.annotate(
-                '\u03C01 = {:.2f}'.format(pi1),
+                "\u03C01 = {:.2f}".format(pi1),
                 xy=(0.03, y_pos),
                 xycoords=ax.transAxes,
                 color=accent_color,
                 fontsize=14,
-                fontweight='bold'
+                fontweight="bold",
             )
             y_pos -= 0.05
 
         if not np.isnan(rb):
             ax.annotate(
-                'Rb = {:.2f}'.format(rb),
+                "Rb = {:.2f}".format(rb),
                 xy=(0.03, y_pos),
                 xycoords=ax.transAxes,
                 color=accent_color,
                 fontsize=14,
-                fontweight='bold'
+                fontweight="bold",
             )
 
-        ax.set_title(title,
-                     fontsize=22,
-                     color=title_color,
-                     weight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=22, color=title_color, weight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
 
-        stats_df = pd.DataFrame([[n, n_concordant, concordance, coef, pi1, rb]],
-                                columns=["N", "N concordant", "concordance",
-                                         "pearsonr", "pi1", "Rb"],
-                                index=[0])
+        stats_df = pd.DataFrame(
+            [[n, n_concordant, concordance, coef, pi1, rb]],
+            columns=["N", "N concordant", "concordance", "pearsonr", "pi1", "Rb"],
+            index=[0],
+        )
 
         return (df[x].min(), df[x].max()), (df[y].min(), df[y].max()), stats_df
 
@@ -865,7 +1013,7 @@ class main():
     def calculate_p1(p):
         robjects.r("source('qvalue_truncp.R')")
         p = robjects.FloatVector(p)
-        qvalue_truncp = robjects.globalenv['qvalue_truncp']
+        qvalue_truncp = robjects.globalenv["qvalue_truncp"]
         pi0 = qvalue_truncp(p)[0]
         return 1 - np.array(pi0)
 
@@ -876,7 +1024,7 @@ class main():
         se1 = robjects.FloatVector(se1)
         b2 = robjects.FloatVector(b2)
         se2 = robjects.FloatVector(se2)
-        calcu_cor_true = robjects.globalenv['calcu_cor_true']
+        calcu_cor_true = robjects.globalenv["calcu_cor_true"]
         rb = calcu_cor_true(b1, se1, b2, se2, theta)
         return np.array(rb)[0]
 
@@ -892,6 +1040,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

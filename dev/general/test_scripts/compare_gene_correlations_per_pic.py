@@ -23,7 +23,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import stats
 import matplotlib.patches as mpatches
@@ -37,12 +38,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -50,29 +51,29 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.gene_correlations_path = getattr(arguments, 'gene_correlations')
-        self.cis_eqtl_path = getattr(arguments, 'cis_eqtl')
-        self.trans_eqtl_path = getattr(arguments, 'trans_eqtl')
-        self.cis_inter_indir = getattr(arguments, 'cis_inter_indir')
-        self.min_expr = getattr(arguments, 'min_expr')
-        self.out_filename = getattr(arguments, 'outfile')
-        self.extensions = getattr(arguments, 'extension')
+        self.gene_correlations_path = getattr(arguments, "gene_correlations")
+        self.cis_eqtl_path = getattr(arguments, "cis_eqtl")
+        self.trans_eqtl_path = getattr(arguments, "trans_eqtl")
+        self.cis_inter_indir = getattr(arguments, "cis_inter_indir")
+        self.min_expr = getattr(arguments, "min_expr")
+        self.out_filename = getattr(arguments, "outfile")
+        self.extensions = getattr(arguments, "extension")
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.outdir = os.path.join(base_dir, 'compare_gene_correlations_per_pic')
+        self.outdir = os.path.join(base_dir, "compare_gene_correlations_per_pic")
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         if self.cis_eqtl_path is None and self.cis_inter_indir is None:
-            print('Error, eqtl or inter indir should be not none.')
+            print("Error, eqtl or inter indir should be not none.")
             exit()
         if self.cis_eqtl_path is not None and self.cis_inter_indir is not None:
-            print('Error, eqtl or inter indir should be not none.')
+            print("Error, eqtl or inter indir should be not none.")
             exit()
 
         self.palette = {
@@ -83,62 +84,70 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-gc",
-                            "--gene_correlations",
-                            type=str,
-                            required=True,
-                            help="The path to the covariate-gene correlations "
-                                 "matrix.")
-        parser.add_argument("-ce",
-                            "--cis_eqtl",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the cis-eqtl matrix. "
-                                 "Default: None.")
-        parser.add_argument("-te",
-                            "--trans_eqtl",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the trans-eqtl matrix. "
-                                 "Default: None.")
-        parser.add_argument("-ci",
-                            "--cis_inter_indir",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the interaction directory. "
-                                 "Defaul: None.")
-        parser.add_argument("-me",
-                            "--min_expr",
-                            type=float,
-                            default=1,
-                            help="The minimal expression of a gene "
-                                 "for inclusion. Default 1.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            default="output",
-                            help="The name of the outfile. Default: output.")
-        parser.add_argument("-e",
-                            "--extension",
-                            nargs="+",
-                            type=str,
-                            choices=["png", "pdf", "eps"],
-                            default=["png"],
-                            help="The figure file extension. "
-                                 "Default: 'png'.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-gc",
+            "--gene_correlations",
+            type=str,
+            required=True,
+            help="The path to the covariate-gene correlations " "matrix.",
+        )
+        parser.add_argument(
+            "-ce",
+            "--cis_eqtl",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the cis-eqtl matrix. " "Default: None.",
+        )
+        parser.add_argument(
+            "-te",
+            "--trans_eqtl",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the trans-eqtl matrix. " "Default: None.",
+        )
+        parser.add_argument(
+            "-ci",
+            "--cis_inter_indir",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the interaction directory. " "Defaul: None.",
+        )
+        parser.add_argument(
+            "-me",
+            "--min_expr",
+            type=float,
+            default=1,
+            help="The minimal expression of a gene " "for inclusion. Default 1.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            default="output",
+            help="The name of the outfile. Default: output.",
+        )
+        parser.add_argument(
+            "-e",
+            "--extension",
+            nargs="+",
+            type=str,
+            choices=["png", "pdf", "eps"],
+            default=["png"],
+            help="The figure file extension. " "Default: 'png'.",
+        )
 
         return parser.parse_args()
 
@@ -146,7 +155,9 @@ class main():
         self.print_arguments()
 
         print("Loading data")
-        pic_gene_corr_df = self.load_file(self.gene_correlations_path, header=0, index_col=None)
+        pic_gene_corr_df = self.load_file(
+            self.gene_correlations_path, header=0, index_col=None
+        )
         print(pic_gene_corr_df)
 
         cis_eqtl_df = None
@@ -156,7 +167,9 @@ class main():
 
         trans_eqtl_df = None
         if self.trans_eqtl_path is not None:
-            trans_eqtl_df = self.load_file(self.trans_eqtl_path, header=0, index_col=None)
+            trans_eqtl_df = self.load_file(
+                self.trans_eqtl_path, header=0, index_col=None
+            )
             print(trans_eqtl_df)
 
         print("Pre-processing data")
@@ -167,8 +180,15 @@ class main():
             if not pic_r_column in pic_gene_corr_df.columns:
                 break
 
-            subset_df = pic_gene_corr_df[["ProbeName", "avgExpression", "HGNCName", pic_r_column]].copy()
-            subset_df.columns = ["ProbeName", "avgExpression", "HGNCName", "correlation"]
+            subset_df = pic_gene_corr_df[
+                ["ProbeName", "avgExpression", "HGNCName", pic_r_column]
+            ].copy()
+            subset_df.columns = [
+                "ProbeName",
+                "avgExpression",
+                "HGNCName",
+                "correlation",
+            ]
             subset_df = subset_df.loc[subset_df["avgExpression"] > self.min_expr, :]
             subset_df["subset"] = "all genes"
             n_genes = subset_df.shape[0]
@@ -179,32 +199,56 @@ class main():
             cis_df = None
             if self.cis_inter_indir is not None or cis_eqtl_df is not None:
                 if self.cis_inter_indir is not None:
-                    inter_path = os.path.join(self.cis_inter_indir, "PIC{}_conditional.txt.gz".format(i))
+                    inter_path = os.path.join(
+                        self.cis_inter_indir, "PIC{}_conditional.txt.gz".format(i)
+                    )
                     if not os.path.exists(inter_path):
-                        print("Could not find interaction file '{}'".format(
-                            os.path.basename(inter_path)))
+                        print(
+                            "Could not find interaction file '{}'".format(
+                                os.path.basename(inter_path)
+                            )
+                        )
                         exit()
 
                     inter_df = self.load_file(inter_path, header=0, index_col=None)
-                    cis_df = subset_df.loc[subset_df["ProbeName"].isin(inter_df.loc[inter_df["FDR"] < 0.05, "gene"]), :].copy()
+                    cis_df = subset_df.loc[
+                        subset_df["ProbeName"].isin(
+                            inter_df.loc[inter_df["FDR"] < 0.05, "gene"]
+                        ),
+                        :,
+                    ].copy()
                 else:
-                    cis_df = subset_df.loc[subset_df["ProbeName"].isin(cis_eqtl_df["ProbeName"]), :].copy()
+                    cis_df = subset_df.loc[
+                        subset_df["ProbeName"].isin(cis_eqtl_df["ProbeName"]), :
+                    ].copy()
 
                 cis_df["subset"] = "cis genes"
                 n_cis_genes = cis_df.shape[0]
-                cis_p2 = max(2.2250738585072014e-308, stats.ttest_ind(subset_df["correlation"], cis_df["correlation"])[1])
+                cis_p2 = max(
+                    2.2250738585072014e-308,
+                    stats.ttest_ind(subset_df["correlation"], cis_df["correlation"])[1],
+                )
 
             # Add the trans-eQTL info.
             n_trans_genes = 0
             trans_p2 = np.nan
             trans_df = None
             if trans_eqtl_df is not None:
-                trans_df = subset_df.loc[subset_df["ProbeName"].isin(trans_eqtl_df["Gene"]), :].copy()
+                trans_df = subset_df.loc[
+                    subset_df["ProbeName"].isin(trans_eqtl_df["Gene"]), :
+                ].copy()
                 trans_df["subset"] = "trans genes"
                 n_trans_genes = trans_df.shape[0]
-                trans_p2 = max(2.2250738585072014e-308, stats.ttest_ind(subset_df["correlation"], trans_df["correlation"])[1])
+                trans_p2 = max(
+                    2.2250738585072014e-308,
+                    stats.ttest_ind(subset_df["correlation"], trans_df["correlation"])[
+                        1
+                    ],
+                )
 
-            label = "PIC{}\nT-test: {:.2e} / {:.2e}\n{:,} / {:,} / {:,}".format(i, cis_p2, trans_p2, n_genes, n_cis_genes, n_trans_genes)
+            label = "PIC{}\nT-test: {:.2e} / {:.2e}\n{:,} / {:,} / {:,}".format(
+                i, cis_p2, trans_p2, n_genes, n_cis_genes, n_trans_genes
+            )
 
             subset_df["covariate"] = label
             df_list.append(subset_df)
@@ -223,40 +267,68 @@ class main():
         print(df)
 
         print("Plotting data")
-        self.boxplot(df=df,
-                     panels=panels,
-                     x="covariate",
-                     y="correlation",
-                     hue="subset",
-                     palette=self.palette,
-                     xlabel="",
-                     ylabel="correlation",
-                     )
+        self.boxplot(
+            df=df,
+            panels=panels,
+            x="covariate",
+            y="correlation",
+            hue="subset",
+            palette=self.palette,
+            xlabel="",
+            ylabel="correlation",
+        )
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
         if inpath.endswith("pkl"):
             df = pd.read_pickle(inpath)
         else:
-            df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                             low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+            df = pd.read_csv(
+                inpath,
+                sep=sep,
+                header=header,
+                index_col=index_col,
+                low_memory=low_memory,
+                nrows=nrows,
+                skiprows=skiprows,
+            )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
-    def boxplot(self, df, panels, x="variable", y="value", hue=None, hue_order=None,
-                palette=None, xlabel="", ylabel=""):
+    def boxplot(
+        self,
+        df,
+        panels,
+        x="variable",
+        y="value",
+        hue=None,
+        hue_order=None,
+        palette=None,
+        xlabel="",
+        ylabel="",
+    ):
         nplots = len(panels) + 1
         ncols = math.ceil(np.sqrt(nplots))
         nrows = math.ceil(nplots / ncols)
 
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='all',
-                                 sharey='row',
-                                 figsize=(12 * ncols, 12 * nrows))
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            sharex="all",
+            sharey="row",
+            figsize=(12 * ncols, 12 * nrows),
+        )
         sns.set(color_codes=True)
 
         row_index = 0
@@ -275,60 +347,59 @@ class main():
 
                 subset = df.loc[df[x] == panels[i], :]
 
-                sns.violinplot(x=x,
-                               y=y,
-                               hue=hue,
-                               hue_order=hue_order,
-                               data=subset,
-                               palette=palette,
-                               dodge=True,
-                               ax=ax)
+                sns.violinplot(
+                    x=x,
+                    y=y,
+                    hue=hue,
+                    hue_order=hue_order,
+                    data=subset,
+                    palette=palette,
+                    dodge=True,
+                    ax=ax,
+                )
 
-                plt.setp(ax.collections, alpha=.75)
+                plt.setp(ax.collections, alpha=0.75)
 
-                sns.boxplot(x=x,
-                            y=y,
-                            hue=hue,
-                            hue_order=hue_order,
-                            data=subset,
-                            color="white",
-                            dodge=True,
-                            ax=ax)
+                sns.boxplot(
+                    x=x,
+                    y=y,
+                    hue=hue,
+                    hue_order=hue_order,
+                    data=subset,
+                    color="white",
+                    dodge=True,
+                    ax=ax,
+                )
 
-                ax.axhline(0, ls='--', color="#000000", alpha=0.5, zorder=-1,
-                           linewidth=3)
+                ax.axhline(
+                    0, ls="--", color="#000000", alpha=0.5, zorder=-1, linewidth=3
+                )
 
                 if ax.get_legend() is not None:
                     ax.get_legend().remove()
 
-                plt.setp(ax.artists, edgecolor='k', facecolor='w')
-                plt.setp(ax.lines, color='k')
+                plt.setp(ax.artists, edgecolor="k", facecolor="w")
+                plt.setp(ax.lines, color="k")
 
                 tmp_xlabel = ""
                 if row_index == (nrows - 1):
                     tmp_xlabel = xlabel
-                ax.set_xlabel(tmp_xlabel,
-                              color="#000000",
-                              fontsize=20,
-                              fontweight='bold')
+                ax.set_xlabel(
+                    tmp_xlabel, color="#000000", fontsize=20, fontweight="bold"
+                )
                 tmp_ylabel = ""
                 if col_index == 0:
                     tmp_ylabel = ylabel
-                ax.set_ylabel(tmp_ylabel,
-                              color="#000000",
-                              fontsize=20,
-                              fontweight='bold')
+                ax.set_ylabel(
+                    tmp_ylabel, color="#000000", fontsize=20, fontweight="bold"
+                )
 
-                ax.set_title(panels[i],
-                             color="#000000",
-                             fontsize=25,
-                             fontweight='bold')
+                ax.set_title(panels[i], color="#000000", fontsize=25, fontweight="bold")
 
             else:
                 ax.set_axis_off()
 
                 if palette is not None and i == (nplots - 1):
-
                     handles = []
                     for key, value in palette.items():
                         handles.append(mpatches.Patch(color=value, label=key))
@@ -341,7 +412,9 @@ class main():
 
         plt.tight_layout()
         for extension in self.extensions:
-            outpath = os.path.join(self.outdir, "{}.{}".format(self.out_filename, extension))
+            outpath = os.path.join(
+                self.outdir, "{}.{}".format(self.out_filename, extension)
+            )
             fig.savefig(outpath)
         plt.close()
 
@@ -358,6 +431,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

@@ -22,7 +22,8 @@ import numpy as np
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # Local application imports.
@@ -34,12 +35,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -47,7 +48,7 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         self.bios_pic_expr_corr_path = "/groups/umcg-bios/tmp01/projects/PICALO/postprocess_scripts/correlate_components_with_genes/2021-12-09-BIOS-BIOS-cis-NoRNAPhenoNA-NoSexNA-NoMixups-NoMDSOutlier-NoRNAseqAlignmentMetrics-GT1AvgExprFilter-PrimaryeQTLs-GeneExpressionFNPD_gene_correlations_cleaned.txt.gz"
         self.bios_expr_path = "/groups/umcg-bios/tmp01/projects/PICALO/data/gene_read_counts_BIOS_and_LLD_passQC.tsv.SampleSelection.ProbesWithZeroVarianceRemoved.TMM.txt.gz"
@@ -62,14 +63,20 @@ class main():
         self.min_avg_expr = 1
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     def start(self):
         print("Loading PIC-expression correlation data.")
-        bios_pic_expr_corr_df = self.load_file(self.bios_pic_expr_corr_path, header=0, index_col=0)
-        metabrain_pic_expr_corr_df = self.load_file(self.metabrain_pic_expr_corr_path, header=0, index_col=0)
+        bios_pic_expr_corr_df = self.load_file(
+            self.bios_pic_expr_corr_path, header=0, index_col=0
+        )
+        metabrain_pic_expr_corr_df = self.load_file(
+            self.metabrain_pic_expr_corr_path, header=0, index_col=0
+        )
         print(bios_pic_expr_corr_df)
         print(metabrain_pic_expr_corr_df)
 
@@ -107,23 +114,33 @@ class main():
 
         print("Loading eQTL data.")
         bios_eqtl_df = self.load_file(self.bios_eqtl_path, header=0, index_col=None)
-        bios_genes = set([ensembl_id.split(".")[0] for ensembl_id in bios_eqtl_df["ProbeName"]])
-        metabrain_eqtl_df = self.load_file(self.metabrain_eqtl_path, header=0, index_col=None)
-        metabrain_genes = set([ensembl_id.split(".")[0] for ensembl_id in metabrain_eqtl_df["ProbeName"]])
+        bios_genes = set(
+            [ensembl_id.split(".")[0] for ensembl_id in bios_eqtl_df["ProbeName"]]
+        )
+        metabrain_eqtl_df = self.load_file(
+            self.metabrain_eqtl_path, header=0, index_col=None
+        )
+        metabrain_genes = set(
+            [ensembl_id.split(".")[0] for ensembl_id in metabrain_eqtl_df["ProbeName"]]
+        )
 
         print("Getting genes of interest")
         expressed_genes = bios_genes.intersection(metabrain_genes)
 
         print("Subset PIC-gene correlations.")
-        plot_df = bios_pic_expr_corr_df[["PIC1"]].merge(metabrain_pic_expr_corr_df[["PIC1"]], left_index=True, right_index=True)
+        plot_df = bios_pic_expr_corr_df[["PIC1"]].merge(
+            metabrain_pic_expr_corr_df[["PIC1"]], left_index=True, right_index=True
+        )
         plot_df.columns = ["x", "y"]
         plot_df = plot_df.loc[expressed_genes, :]
 
         print("Plotting")
-        self.replication_plot(df=plot_df,
-                              xlabel="BIOS PIC1-expression Pearson r",
-                              ylabel="MetaBrain PIC1-expression Pearson r",
-                              filename="BIOS_vs_MetaBrain_PrimaryeQTLs_PIC1_geneCorrelations_replication_eQTLGenes")
+        self.replication_plot(
+            df=plot_df,
+            xlabel="BIOS PIC1-expression Pearson r",
+            ylabel="MetaBrain PIC1-expression Pearson r",
+            filename="BIOS_vs_MetaBrain_PrimaryeQTLs_PIC1_geneCorrelations_replication_eQTLGenes",
+        )
 
     @staticmethod
     def calc_avg_expr(df, samples, genes):
@@ -138,76 +155,88 @@ class main():
         return expr_df.mean(axis=1)
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
-    def replication_plot(self, df, x="x", y="y", xlabel=None, ylabel=None,
-                         title="", filename="plot"):
+    def replication_plot(
+        self, df, x="x", y="y", xlabel=None, ylabel=None, title="", filename="plot"
+    ):
         if xlabel is None:
             xlabel = x
         if ylabel is None:
             ylabel = y
 
-        sns.set(rc={'figure.figsize': (12, 9)})
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
         fig, ax = plt.subplots()
         sns.despine(fig=fig, ax=ax)
 
         # plot.
-        sns.regplot(x=x, y=y, data=df, ci=None,
-                    scatter_kws={'facecolors': "#808080",
-                                 'linewidth': 0},
-                    line_kws={"color": "#b22222"},
-                    ax=ax)
+        sns.regplot(
+            x=x,
+            y=y,
+            data=df,
+            ci=None,
+            scatter_kws={"facecolors": "#808080", "linewidth": 0},
+            line_kws={"color": "#b22222"},
+            ax=ax,
+        )
 
-        ax.axhline(0, ls='--', color="#000000", zorder=-1)
-        ax.axvline(0, ls='--', color="#000000", zorder=-1)
+        ax.axhline(0, ls="--", color="#000000", zorder=-1)
+        ax.axvline(0, ls="--", color="#000000", zorder=-1)
 
         # calculate concordance.
         lower_quadrant = df.loc[(df[x] < 0) & (df[y] < 0), :]
         upper_quadrant = df.loc[(df[x] > 0) & (df[y] > 0), :]
         concordance = (100 / df.shape[0]) * (
-                    lower_quadrant.shape[0] + upper_quadrant.shape[0])
+            lower_quadrant.shape[0] + upper_quadrant.shape[0]
+        )
 
         # Set annotation.
         pearson_coef, _ = stats.pearsonr(df[y], df[x])
         ax.annotate(
-            'total N = {:,}'.format(df.shape[0]),
+            "total N = {:,}".format(df.shape[0]),
             xy=(0.03, 0.94),
             xycoords=ax.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
         ax.annotate(
-            'total r = {:.2f}'.format(pearson_coef),
+            "total r = {:.2f}".format(pearson_coef),
             xy=(0.03, 0.90),
             xycoords=ax.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
         ax.annotate(
-            'concordance = {:.0f}%'.format(concordance),
+            "concordance = {:.0f}%".format(concordance),
             xy=(0.03, 0.86),
             xycoords=ax.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
 
-        ax.set_xlabel(xlabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=14,
-                      fontweight='bold')
-        ax.set_title(title,
-                     fontsize=18,
-                     fontweight='bold')
+        ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax.set_title(title, fontsize=18, fontweight="bold")
 
         # Change margins.
         xlim = ax.get_xlim()
@@ -228,6 +257,6 @@ class main():
         print("\tSaved figure: {} ".format(os.path.basename(outpath)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

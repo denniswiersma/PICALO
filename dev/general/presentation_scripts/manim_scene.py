@@ -33,12 +33,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 
 class GraphicalAbstractPart1(Scene):
@@ -50,24 +50,34 @@ class GraphicalAbstractPart1(Scene):
         n_points = 500
         context_sd = 1
 
-        base_model = generate_base_model(example_index=example_index,
-                                         example_name=example_name,
-                                         n_points=n_points,
-                                         context_sd=context_sd
-                                         )
+        base_model = generate_base_model(
+            example_index=example_index,
+            example_name=example_name,
+            n_points=n_points,
+            context_sd=context_sd,
+        )
 
         # Generate ieQTL model.
-        ieqtl1, betas1 = generate_ieqtl_model(maf=0.41,
-                                              base_matrix=base_model,
-                                              error_sd=0.4,
-                                              betas=np.array([-2.5, 2.1, 0.5, 0.6]),
-                                              base_seed=1,
-                                              )
+        ieqtl1, betas1 = generate_ieqtl_model(
+            maf=0.41,
+            base_matrix=base_model,
+            error_sd=0.4,
+            betas=np.array([-2.5, 2.1, 0.5, 0.6]),
+            base_seed=1,
+        )
         regression_lines1 = calc_regression_lines(ieqtl=ieqtl1)
 
         # Determine the range of the plot axes.
-        context_range1 = (math.floor(ieqtl1["context"].min()) - 1, math.ceil(ieqtl1["context"].max()) + 1, 1)
-        scatter_y_range1 = (math.floor(ieqtl1["expression"].min()), math.ceil(ieqtl1["expression"].max()), 2)
+        context_range1 = (
+            math.floor(ieqtl1["context"].min()) - 1,
+            math.ceil(ieqtl1["context"].max()) + 1,
+            1,
+        )
+        scatter_y_range1 = (
+            math.floor(ieqtl1["expression"].min()),
+            math.ceil(ieqtl1["expression"].max()),
+            2,
+        )
 
         # Construct the axis for the scatterplot.
         scatter_axes1 = Axes(
@@ -77,22 +87,18 @@ class GraphicalAbstractPart1(Scene):
                 "include_tip": False,
                 "numbers_to_exclude": [0],
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         scatter_axes1.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         scatter_axis_labels1 = scatter_axes1.get_axis_labels(
-            x_label_tex='context',
-            y_label_tex='expression'
+            x_label_tex="context", y_label_tex="expression"
         ).set_color(GREY)
 
         # Draw the axes.
-        self.play(
-            DrawBorderThenFill(scatter_axes1),
-            Write(scatter_axis_labels1)
-        )
+        self.play(DrawBorderThenFill(scatter_axes1), Write(scatter_axis_labels1))
 
         # Create a dot for each sample on x-axis = context and y-axis =
         # expression.
@@ -118,16 +124,24 @@ class GraphicalAbstractPart1(Scene):
             if i == example_name:
                 example_color1 = color
                 example_dot_scatter1 = always_redraw(
-                    lambda: Dot(radius=example_dot_scatter_radius1,
-                                color=example_color1,
-                                fill_opacity=example_dot_scatter_fill1).move_to(
-                        scatter_axes1.c2p(context_value.get_value(), example_dot_scatter_y1)
+                    lambda: Dot(
+                        radius=example_dot_scatter_radius1,
+                        color=example_color1,
+                        fill_opacity=example_dot_scatter_fill1,
+                    ).move_to(
+                        scatter_axes1.c2p(
+                            context_value.get_value(), example_dot_scatter_y1
+                        )
                     )
                 )
 
                 example_text_scatter1 = always_redraw(
-                    lambda: Text(example_name).scale(example_text_scatter_scale1).move_to(
-                        scatter_axes1.c2p(context_value.get_value(), example_dot_scatter_y1 + 0.75)
+                    lambda: Text(example_name)
+                    .scale(example_text_scatter_scale1)
+                    .move_to(
+                        scatter_axes1.c2p(
+                            context_value.get_value(), example_dot_scatter_y1 + 0.75
+                        )
                     )
                 )
             else:
@@ -155,35 +169,42 @@ class GraphicalAbstractPart1(Scene):
         self.play(
             FadeIn(VGroup(*scatter_dots1)),
             FadeIn(VGroup(*scatter_lines1)),
-            FadeIn(example_dot_scatter1)
+            FadeIn(example_dot_scatter1),
         )
         self.wait(3 * scale_wait)
 
         # Remove the individual dots except the example dot.
-        self.play(
-            FadeOut(VGroup(*scatter_dots1)),
-            FadeIn(example_text_scatter1)
-        )
+        self.play(FadeOut(VGroup(*scatter_dots1)), FadeIn(example_text_scatter1))
         self.wait(2 * scale_wait)
         example_dot_scatter_fill1 = 1
 
         # Zoom out and add a second graph for the log likelihood.
         self.play(
-            VGroup(scatter_axes1,
-                   scatter_axis_labels1,
-                   *scatter_lines1,
-                   example_dot_scatter1,
-                   example_text_scatter1).animate.scale(0.5).shift(LEFT * 3.5),
-            run_time=2*scale_wait
+            VGroup(
+                scatter_axes1,
+                scatter_axis_labels1,
+                *scatter_lines1,
+                example_dot_scatter1,
+                example_text_scatter1
+            )
+            .animate.scale(0.5)
+            .shift(LEFT * 3.5),
+            run_time=2 * scale_wait,
         )
         example_dot_scatter_radius1 = example_dot_scatter_radius1 * 0.5
         example_text_scatter_scale1 = example_text_scatter_scale1 * 0.5
         self.wait(2 * scale_wait)
 
         # Add the x-axis movement line.
-        start_dot = Dot().move_to(scatter_axes1.c2p(context_range1[0], example_dot_scatter_y1))
-        end_dot = Dot().move_to(scatter_axes1.c2p(context_range1[1], example_dot_scatter_y1))
-        example_dot_scatter_hline1 = DashedLine(start_dot, end_dot, stroke_width=3, color=WHITE)
+        start_dot = Dot().move_to(
+            scatter_axes1.c2p(context_range1[0], example_dot_scatter_y1)
+        )
+        end_dot = Dot().move_to(
+            scatter_axes1.c2p(context_range1[1], example_dot_scatter_y1)
+        )
+        example_dot_scatter_hline1 = DashedLine(
+            start_dot, end_dot, stroke_width=3, color=WHITE
+        )
 
         ########################################################################
 
@@ -194,13 +215,22 @@ class GraphicalAbstractPart1(Scene):
         ieqtl_opt1 = ieqtl1.copy()
         ieqtl_opt1["context"] = opt_context1
         ieqtl_opt1["interaction"] = ieqtl_opt1["context"] * ieqtl_opt1["genotype"]
-        ieqtl_opt1["y_hat"] = predict(X=ieqtl_opt1[["intercept", "genotype", "context", "interaction"]], betas=betas1)
+        ieqtl_opt1["y_hat"] = predict(
+            X=ieqtl_opt1[["intercept", "genotype", "context", "interaction"]],
+            betas=betas1,
+        )
 
-        print("{}x^2 + {}x + {}".format(coef_a1[example_name],
-                                        coef_b1[example_name],
-                                        coef_c1[example_name]))
+        print(
+            "{}x^2 + {}x + {}".format(
+                coef_a1[example_name], coef_b1[example_name], coef_c1[example_name]
+            )
+        )
 
-        example_ll_function = lambda x: coef_a1[example_name] * x ** 2 + coef_b1[example_name] * x + coef_c1[example_name]
+        example_ll_function = (
+            lambda x: coef_a1[example_name] * x**2
+            + coef_b1[example_name] * x
+            + coef_c1[example_name]
+        )
 
         ########################################################################
 
@@ -214,7 +244,11 @@ class GraphicalAbstractPart1(Scene):
         example_ll_values_min = math.floor(np.min(example_ll_values))
 
         # Determine the range of the plot axes.
-        graph_y_range1 = (0, math.ceil(np.max(example_ll_values)) + (example_ll_values_min * -1), 5)
+        graph_y_range1 = (
+            0,
+            math.ceil(np.max(example_ll_values)) + (example_ll_values_min * -1),
+            5,
+        )
 
         graph_axes1 = Axes(
             x_range=context_range1,
@@ -222,97 +256,128 @@ class GraphicalAbstractPart1(Scene):
             axis_config={
                 "include_tip": False,
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         graph_axes1.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         graph_axes_labels1 = graph_axes1.get_axis_labels(
-            x_label_tex='context',
-            y_label_tex='log(likelihood)'
+            x_label_tex="context", y_label_tex="log(likelihood)"
         ).set_color(GREY)
 
         example_x_start1 = ieqtl1.loc[example_name, "context"]
         example_x_optimal1 = ieqtl_opt1.loc[example_name, "context"]
 
         # Construct the log likelihood parabola.
-        example_parabola1_left = graph_axes1.get_graph(lambda x: example_ll_function(x) + (example_ll_values_min * -1), x_range=(example_x_start1, -4))
+        example_parabola1_left = graph_axes1.get_graph(
+            lambda x: example_ll_function(x) + (example_ll_values_min * -1),
+            x_range=(example_x_start1, -4),
+        )
         example_parabola1_left.reverse_points()
         example_parabola1_left.set_stroke(example_color1)
-        example_parabola1 = graph_axes1.get_graph(lambda x: example_ll_function(x) + (example_ll_values_min * -1))
+        example_parabola1 = graph_axes1.get_graph(
+            lambda x: example_ll_function(x) + (example_ll_values_min * -1)
+        )
         example_parabola1.set_stroke(example_color1)
 
         example_dot_graph_radius1 = 0.08
         example_dot_graph1 = always_redraw(
             lambda: Dot(radius=example_dot_graph_radius1, color=example_color1).move_to(
-                graph_axes1.i2gp(context_value.get_value(),
-                                 example_parabola1)
+                graph_axes1.i2gp(context_value.get_value(), example_parabola1)
             )
         )
         value_text = always_redraw(
-            lambda: Text("[{:.2f}, {:.2f}]".format(context_value.get_value(),
-                                                   coef_a1[example_name] * context_value.get_value() ** 2 + coef_b1[example_name] * context_value.get_value() + coef_c1[example_name] + (example_ll_values_min * -1))).scale(0.3).set_color(GREY).move_to(graph_axes1.c2p(context_range1[0] + 0.5,
-                                                                                                                                                                                                                                                            coef_a1[example_name] * example_x_optimal1 ** 2 + coef_b1[example_name] * example_x_optimal1 + coef_c1[example_name] + (example_ll_values_min * -1))
-                             )
+            lambda: Text(
+                "[{:.2f}, {:.2f}]".format(
+                    context_value.get_value(),
+                    coef_a1[example_name] * context_value.get_value() ** 2
+                    + coef_b1[example_name] * context_value.get_value()
+                    + coef_c1[example_name]
+                    + (example_ll_values_min * -1),
+                )
+            )
+            .scale(0.3)
+            .set_color(GREY)
+            .move_to(
+                graph_axes1.c2p(
+                    context_range1[0] + 0.5,
+                    coef_a1[example_name] * example_x_optimal1**2
+                    + coef_b1[example_name] * example_x_optimal1
+                    + coef_c1[example_name]
+                    + (example_ll_values_min * -1),
+                )
+            )
         )
 
         example_vline_graph1 = always_redraw(
             lambda: graph_axes1.get_v_line(example_dot_graph1.get_bottom())
         )
 
-        VGroup(graph_axes1,
-               graph_axes_labels1,
-               example_dot_graph1,
-               example_vline_graph1,
-               example_parabola1_left,
-               example_parabola1).scale(0.5).shift(RIGHT * 3.5)
+        VGroup(
+            graph_axes1,
+            graph_axes_labels1,
+            example_dot_graph1,
+            example_vline_graph1,
+            example_parabola1_left,
+            example_parabola1,
+        ).scale(0.5).shift(RIGHT * 3.5)
         example_dot_graph_radius1 = example_dot_graph_radius1 * 0.5
 
         # Draw the axes.
-        self.play(
-            DrawBorderThenFill(graph_axes1),
-            Write(graph_axes_labels1)
+        self.play(DrawBorderThenFill(graph_axes1), Write(graph_axes_labels1))
+        self.add(
+            example_dot_scatter_hline1,
+            example_dot_graph1,
+            example_vline_graph1,
+            value_text,
         )
-        self.add(example_dot_scatter_hline1,
-                 example_dot_graph1,
-                 example_vline_graph1,
-                 value_text)
         self.wait(1 * scale_wait)
 
         # Move the example dot along the x-axis.
         dps = 1
-        self.play(context_value.animate.set_value(context_range1[0]),
-                  ShowCreation(example_parabola1_left),
-                  run_time=(abs(example_dot_scatter_x1 - context_range1[0]) / dps) * scale_wait)
-        self.play(context_value.animate.set_value(context_range1[1]),
-                  ShowCreation(example_parabola1),
-                  run_time=(abs(context_range1[0] - context_range1[1]) / dps) * scale_wait)
-        self.play(context_value.animate.set_value(example_x_optimal1),
-                  FadeOut(example_parabola1_left),
-                  run_time=3 * scale_wait)
+        self.play(
+            context_value.animate.set_value(context_range1[0]),
+            ShowCreation(example_parabola1_left),
+            run_time=(abs(example_dot_scatter_x1 - context_range1[0]) / dps)
+            * scale_wait,
+        )
+        self.play(
+            context_value.animate.set_value(context_range1[1]),
+            ShowCreation(example_parabola1),
+            run_time=(abs(context_range1[0] - context_range1[1]) / dps) * scale_wait,
+        )
+        self.play(
+            context_value.animate.set_value(example_x_optimal1),
+            FadeOut(example_parabola1_left),
+            run_time=3 * scale_wait,
+        )
         self.wait(2 * scale_wait)
 
         self.play(
-            FadeOut(VGroup(graph_axes1,
-                           graph_axes_labels1,
-                           example_dot_scatter1,
-                           example_text_scatter1,
-                           example_dot_scatter_hline1,
-                           example_dot_graph1,
-                           example_vline_graph1,
-                           example_parabola1_left,
-                           example_parabola1,
-                           value_text)),
-            run_time=2 * scale_wait
+            FadeOut(
+                VGroup(
+                    graph_axes1,
+                    graph_axes_labels1,
+                    example_dot_scatter1,
+                    example_text_scatter1,
+                    example_dot_scatter_hline1,
+                    example_dot_graph1,
+                    example_vline_graph1,
+                    example_parabola1_left,
+                    example_parabola1,
+                    value_text,
+                )
+            ),
+            run_time=2 * scale_wait,
         )
         self.wait(1 * scale_wait)
 
         self.play(
-            VGroup(scatter_axes1,
-                   scatter_axis_labels1,
-                   *scatter_lines1).animate.scale(2).shift(RIGHT * 3.5),
-            run_time=2 * scale_wait
+            VGroup(scatter_axes1, scatter_axis_labels1, *scatter_lines1)
+            .animate.scale(2)
+            .shift(RIGHT * 3.5),
+            run_time=2 * scale_wait,
         )
         self.wait(2 * scale_wait)
 
@@ -331,15 +396,20 @@ class GraphicalAbstractPart1(Scene):
                 color = RED
 
             dot = Dot(color=color, fill_opacity=0.5)
-            dot.move_to(scatter_axes1.c2p(ieqltl_row["context"], ieqltl_row["expression"]))
+            dot.move_to(
+                scatter_axes1.c2p(ieqltl_row["context"], ieqltl_row["expression"])
+            )
             scatter_dots1.append(dot)
 
-            animation = ApplyMethod(dot.move_to, scatter_axes1.c2p(ieqtl_opt_row["context"], ieqtl_opt_row["expression"]))
+            animation = ApplyMethod(
+                dot.move_to,
+                scatter_axes1.c2p(
+                    ieqtl_opt_row["context"], ieqtl_opt_row["expression"]
+                ),
+            )
             animations.append(animation)
 
-        self.play(
-            FadeIn(VGroup(*scatter_dots1))
-        )
+        self.play(FadeIn(VGroup(*scatter_dots1)))
         self.wait(1 * scale_wait)
         self.play(*animations, run_time=6 * scale_wait)
         self.wait(2 * scale_wait)
@@ -354,32 +424,43 @@ class GraphicalAbstractPart2(Scene):
         n_points = 500
         context_sd = 1
 
-        base_model = generate_base_model(example_index=example_index,
-                                         example_name=example_name,
-                                         n_points=n_points,
-                                         context_sd=context_sd
-                                         )
+        base_model = generate_base_model(
+            example_index=example_index,
+            example_name=example_name,
+            n_points=n_points,
+            context_sd=context_sd,
+        )
 
         # Generate ieQTL models.
-        ieqtl1, betas1 = generate_ieqtl_model(maf=0.42,
-                                              base_matrix=base_model,
-                                              error_sd=0.4,
-                                              betas=np.array([-2.5, 2.1, 0.5, 0.6]),
-                                              base_seed=1
-                                              )
+        ieqtl1, betas1 = generate_ieqtl_model(
+            maf=0.42,
+            base_matrix=base_model,
+            error_sd=0.4,
+            betas=np.array([-2.5, 2.1, 0.5, 0.6]),
+            base_seed=1,
+        )
         regression_lines1 = calc_regression_lines(ieqtl=ieqtl1)
 
-        ieqtl2, betas2 = generate_ieqtl_model(maf=0.34,
-                                              base_matrix=base_model,
-                                              error_sd=0.6,
-                                              betas=np.array([-2.5, 3, 0.6, 1]),
-                                              base_seed=3
-                                              )
+        ieqtl2, betas2 = generate_ieqtl_model(
+            maf=0.34,
+            base_matrix=base_model,
+            error_sd=0.6,
+            betas=np.array([-2.5, 3, 0.6, 1]),
+            base_seed=3,
+        )
         regression_lines2 = calc_regression_lines(ieqtl=ieqtl2)
 
         # Determine the range of the plot axes.
-        context_range1 = (math.floor(min(ieqtl1["context"].min(), ieqtl2["context"].min())) - 1, math.ceil(max(ieqtl1["context"].max(), ieqtl1["context"].max())) + 1, 1)
-        scatter_y_range1 = (math.floor(min(ieqtl1["expression"].min(), ieqtl2["expression"].min())), math.ceil(max(ieqtl1["expression"].max(), ieqtl2["expression"].max())), 2)
+        context_range1 = (
+            math.floor(min(ieqtl1["context"].min(), ieqtl2["context"].min())) - 1,
+            math.ceil(max(ieqtl1["context"].max(), ieqtl1["context"].max())) + 1,
+            1,
+        )
+        scatter_y_range1 = (
+            math.floor(min(ieqtl1["expression"].min(), ieqtl2["expression"].min())),
+            math.ceil(max(ieqtl1["expression"].max(), ieqtl2["expression"].max())),
+            2,
+        )
 
         example_dot_x = base_model.loc[example_name, "context"]
         context_value1 = ValueTracker(example_dot_x)
@@ -395,15 +476,14 @@ class GraphicalAbstractPart2(Scene):
                 "include_tip": False,
                 "numbers_to_exclude": [0],
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         scatter_axes1.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         scatter_axis_labels1 = scatter_axes1.get_axis_labels(
-            x_label_tex='context',
-            y_label_tex='expression'
+            x_label_tex="context", y_label_tex="expression"
         ).set_color(GREY)
 
         # Create a dot for each sample on x-axis = context and y-axis =
@@ -428,16 +508,24 @@ class GraphicalAbstractPart2(Scene):
             if i == example_name:
                 example_color1 = color
                 example_dot_scatter1 = always_redraw(
-                    lambda: Dot(radius=example_dot_scatter_radius1,
-                                color=example_color1,
-                                fill_opacity=example_dot_scatter_fill1).move_to(
-                        scatter_axes1.c2p(context_value1.get_value(), example_dot_scatter_y1)
+                    lambda: Dot(
+                        radius=example_dot_scatter_radius1,
+                        color=example_color1,
+                        fill_opacity=example_dot_scatter_fill1,
+                    ).move_to(
+                        scatter_axes1.c2p(
+                            context_value1.get_value(), example_dot_scatter_y1
+                        )
                     )
                 )
 
                 example_text_scatter1 = always_redraw(
-                    lambda: Text(example_name).scale(example_text_scatter_scale1).move_to(
-                        scatter_axes1.c2p(context_value1.get_value(), example_dot_scatter_y1 + 0.75)
+                    lambda: Text(example_name)
+                    .scale(example_text_scatter_scale1)
+                    .move_to(
+                        scatter_axes1.c2p(
+                            context_value1.get_value(), example_dot_scatter_y1 + 0.75
+                        )
                     )
                 )
             else:
@@ -460,11 +548,13 @@ class GraphicalAbstractPart2(Scene):
             end_dot = Dot().move_to(scatter_axes1.c2p(end[0], end[1]))
             scatter_lines1.append(Line(start_dot, end_dot, color=color))
 
-        VGroup(scatter_axes1,
-               scatter_axis_labels1,
-               *scatter_dots1,
-               *scatter_lines1,
-               example_dot_scatter1).scale(0.5).shift(LEFT * 3.5 + UP * 2)
+        VGroup(
+            scatter_axes1,
+            scatter_axis_labels1,
+            *scatter_dots1,
+            *scatter_lines1,
+            example_dot_scatter1
+        ).scale(0.5).shift(LEFT * 3.5 + UP * 2)
         example_dot_scatter_radius1 = example_dot_scatter_radius1 * 0.5
         example_text_scatter_scale1 = example_text_scatter_scale1 * 0.5
 
@@ -478,15 +568,14 @@ class GraphicalAbstractPart2(Scene):
                 "include_tip": False,
                 "numbers_to_exclude": [0],
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         scatter_axes2.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         scatter_axis_labels2 = scatter_axes2.get_axis_labels(
-            x_label_tex='context',
-            y_label_tex='expression'
+            x_label_tex="context", y_label_tex="expression"
         ).set_color(GREY)
 
         # Create a dot for each sample on x-axis = context and y-axis =
@@ -511,16 +600,24 @@ class GraphicalAbstractPart2(Scene):
             if i == example_name:
                 example_color2 = color
                 example_dot_scatter2 = always_redraw(
-                    lambda: Dot(radius=example_dot_scatter_radius2,
-                                color=example_color2,
-                                fill_opacity=example_dot_scatter_fill2).move_to(
-                        scatter_axes2.c2p(context_value2.get_value(), example_dot_scatter_y2)
+                    lambda: Dot(
+                        radius=example_dot_scatter_radius2,
+                        color=example_color2,
+                        fill_opacity=example_dot_scatter_fill2,
+                    ).move_to(
+                        scatter_axes2.c2p(
+                            context_value2.get_value(), example_dot_scatter_y2
+                        )
                     )
                 )
 
                 example_text_scatter2 = always_redraw(
-                    lambda: Text(example_name).scale(example_text_scatter_scale2).move_to(
-                        scatter_axes2.c2p(context_value2.get_value(), example_dot_scatter_y2 + 0.75)
+                    lambda: Text(example_name)
+                    .scale(example_text_scatter_scale2)
+                    .move_to(
+                        scatter_axes2.c2p(
+                            context_value2.get_value(), example_dot_scatter_y2 + 0.75
+                        )
                     )
                 )
             else:
@@ -543,11 +640,13 @@ class GraphicalAbstractPart2(Scene):
             end_dot = Dot().move_to(scatter_axes2.c2p(end[0], end[1]))
             scatter_lines2.append(Line(start_dot, end_dot, color=color))
 
-        VGroup(scatter_axes2,
-               scatter_axis_labels2,
-               *scatter_dots2,
-               *scatter_lines2,
-               example_dot_scatter2).scale(0.5).shift(LEFT * 3.5 + DOWN * 2)
+        VGroup(
+            scatter_axes2,
+            scatter_axis_labels2,
+            *scatter_dots2,
+            *scatter_lines2,
+            example_dot_scatter2
+        ).scale(0.5).shift(LEFT * 3.5 + DOWN * 2)
         example_dot_scatter_radius2 = example_dot_scatter_radius2 * 0.5
         example_text_scatter_scale2 = example_text_scatter_scale2 * 0.5
 
@@ -564,22 +663,32 @@ class GraphicalAbstractPart2(Scene):
         ieqtl_opt1["context_solo"] = opt_context1
         ieqtl_opt1["context"] = opt_context
         ieqtl_opt1["interaction"] = ieqtl_opt1["context"] * ieqtl_opt1["genotype"]
-        ieqtl_opt1["y_hat"] = predict(X=ieqtl_opt1[["intercept", "genotype", "context", "interaction"]], betas=betas1)
+        ieqtl_opt1["y_hat"] = predict(
+            X=ieqtl_opt1[["intercept", "genotype", "context", "interaction"]],
+            betas=betas1,
+        )
 
         ieqtl_opt2 = ieqtl2.copy()
         ieqtl_opt2["context_solo"] = opt_context2
         ieqtl_opt2["context"] = opt_context
         ieqtl_opt2["interaction"] = ieqtl_opt2["context"] * ieqtl_opt2["genotype"]
-        ieqtl_opt2["y_hat"] = predict(X=ieqtl_opt2[["intercept", "genotype", "context", "interaction"]], betas=betas2)
+        ieqtl_opt2["y_hat"] = predict(
+            X=ieqtl_opt2[["intercept", "genotype", "context", "interaction"]],
+            betas=betas2,
+        )
 
-        example_ll_function1 = lambda x: coef_a1[example_name] * x ** 2 + \
-                                         coef_b1[example_name] * x
+        example_ll_function1 = (
+            lambda x: coef_a1[example_name] * x**2 + coef_b1[example_name] * x
+        )
 
-        example_ll_function2 = lambda x: coef_a2[example_name] * x ** 2 + \
-                                         coef_b2[example_name] * x
+        example_ll_function2 = (
+            lambda x: coef_a2[example_name] * x**2 + coef_b2[example_name] * x
+        )
 
-        example_ll_function3 = lambda x: (coef_a1[example_name] + coef_a2[example_name]) * x ** 2 + \
-                                         (coef_b1[example_name] + coef_b2[example_name]) * x
+        example_ll_function3 = (
+            lambda x: (coef_a1[example_name] + coef_a2[example_name]) * x**2
+            + (coef_b1[example_name] + coef_b2[example_name]) * x
+        )
 
         ########################################################################
 
@@ -595,7 +704,11 @@ class GraphicalAbstractPart2(Scene):
         example_ll_values_min = math.floor(np.min(example_ll_values))
 
         # Determine the range of the plot axes.
-        graph_y_range1 = (0, math.ceil(np.max(example_ll_values)) + (example_ll_values_min * -1), 5)
+        graph_y_range1 = (
+            0,
+            math.ceil(np.max(example_ll_values)) + (example_ll_values_min * -1),
+            5,
+        )
 
         graph_axes = Axes(
             x_range=context_range1,
@@ -603,19 +716,17 @@ class GraphicalAbstractPart2(Scene):
             axis_config={
                 "include_tip": False,
                 "stroke_width": 1,
-            }
+            },
         ).set_color(GREY)
         graph_axes.add_coordinate_labels(
             font_size=20,
             num_decimal_places=0,
         ).set_color(GREY)
         graph_axes_labels = graph_axes.get_axis_labels(
-            x_label_tex='context',
-            y_label_tex='log(likelihood)'
+            x_label_tex="context", y_label_tex="log(likelihood)"
         ).set_color(GREY)
 
-        VGroup(graph_axes,
-               graph_axes_labels).scale(0.5).shift(RIGHT * 3.5)
+        VGroup(graph_axes, graph_axes_labels).scale(0.5).shift(RIGHT * 3.5)
 
         ########################################################################
 
@@ -626,7 +737,7 @@ class GraphicalAbstractPart2(Scene):
             DrawBorderThenFill(graph_axes),
             Write(scatter_axis_labels1),
             Write(scatter_axis_labels2),
-            Write(graph_axes_labels)
+            Write(graph_axes_labels),
         )
 
         # Show the interaction eQTL regression plot.
@@ -637,7 +748,7 @@ class GraphicalAbstractPart2(Scene):
             FadeIn(VGroup(*scatter_dots2)),
             FadeIn(VGroup(*scatter_lines2)),
             FadeIn(example_dot_scatter2),
-            run_time=2 * scale_wait
+            run_time=2 * scale_wait,
         )
         self.wait(3 * scale_wait)
 
@@ -652,38 +763,58 @@ class GraphicalAbstractPart2(Scene):
         example_x_optimal3 = ieqtl_opt1.loc[example_name, "context"]
 
         # Construct the log likelihood parabola.
-        example_parabola1_left = graph_axes.get_graph(lambda x: example_ll_function1(x) + (example_ll_values_min * -1), x_range=(example_x_start1, -4))
+        example_parabola1_left = graph_axes.get_graph(
+            lambda x: example_ll_function1(x) + (example_ll_values_min * -1),
+            x_range=(example_x_start1, -4),
+        )
         example_parabola1_left.reverse_points()
         example_parabola1_left.set_stroke(example_color1)
 
-        example_parabola1 = graph_axes.get_graph(lambda x: example_ll_function1(x) + (example_ll_values_min * -1))
+        example_parabola1 = graph_axes.get_graph(
+            lambda x: example_ll_function1(x) + (example_ll_values_min * -1)
+        )
         example_parabola1.set_stroke(example_color1)
 
-        example_parabola2_left = graph_axes.get_graph(lambda x: example_ll_function2(x) + (example_ll_values_min * -1), x_range=(example_x_start2, -4))
+        example_parabola2_left = graph_axes.get_graph(
+            lambda x: example_ll_function2(x) + (example_ll_values_min * -1),
+            x_range=(example_x_start2, -4),
+        )
         example_parabola2_left.reverse_points()
         example_parabola2_left.set_stroke(example_color2)
 
-        example_parabola2 = graph_axes.get_graph(lambda x: example_ll_function2(x) + (example_ll_values_min * -1))
+        example_parabola2 = graph_axes.get_graph(
+            lambda x: example_ll_function2(x) + (example_ll_values_min * -1)
+        )
         example_parabola2.set_stroke(example_color2)
 
-        example_parabola3 = graph_axes.get_graph(lambda x: example_ll_function3(x) + (example_ll_values_min * -1))
+        example_parabola3 = graph_axes.get_graph(
+            lambda x: example_ll_function3(x) + (example_ll_values_min * -1)
+        )
         example_parabola3.set_stroke(WHITE)
 
         example_dot_graph_radius1 = 0.04
         example_dot_graph1 = always_redraw(
-            lambda: Dot(radius=example_dot_graph_radius1,
-                        color=example_color1).move_to(
-                graph_axes.i2gp(context_value1.get_value(),
-                                example_parabola1)
+            lambda: Dot(radius=example_dot_graph_radius1, color=example_color1).move_to(
+                graph_axes.i2gp(context_value1.get_value(), example_parabola1)
             )
         )
         value_text1 = always_redraw(
-            lambda: Text("[{:.2f}, {:.2f}]".format(context_value1.get_value(),
-                                                   example_ll_function1(context_value1.get_value()) + (example_ll_values_min * -1))).scale(
-                0.3).set_color(example_color1).move_to(
-                graph_axes.c2p(context_range1[0] + 0.5,
-                               example_ll_function1(example_x_optimal1) + (example_ll_values_min * -1))
+            lambda: Text(
+                "[{:.2f}, {:.2f}]".format(
+                    context_value1.get_value(),
+                    example_ll_function1(context_value1.get_value())
+                    + (example_ll_values_min * -1),
                 )
+            )
+            .scale(0.3)
+            .set_color(example_color1)
+            .move_to(
+                graph_axes.c2p(
+                    context_range1[0] + 0.5,
+                    example_ll_function1(example_x_optimal1)
+                    + (example_ll_values_min * -1),
+                )
+            )
         )
         example_vline_graph1 = always_redraw(
             lambda: graph_axes.get_v_line(example_dot_graph1.get_bottom())
@@ -691,64 +822,98 @@ class GraphicalAbstractPart2(Scene):
 
         example_dot_graph_radius2 = 0.04
         example_dot_graph2 = always_redraw(
-            lambda: Dot(radius=example_dot_graph_radius2,
-                        color=example_color2).move_to(
-                graph_axes.i2gp(context_value2.get_value(),
-                                example_parabola2)
+            lambda: Dot(radius=example_dot_graph_radius2, color=example_color2).move_to(
+                graph_axes.i2gp(context_value2.get_value(), example_parabola2)
             )
         )
         value_text2 = always_redraw(
-            lambda: Text("[{:.2f}, {:.2f}]".format(context_value2.get_value(),
-                                                   example_ll_function2(context_value2.get_value()) + (example_ll_values_min * -1))).scale(
-                0.3).set_color(example_color2).move_to(
-                graph_axes.c2p(context_range1[0] + 0.5,
-                               example_ll_function1(example_x_optimal1) + (example_ll_values_min * -1) - 2)
+            lambda: Text(
+                "[{:.2f}, {:.2f}]".format(
+                    context_value2.get_value(),
+                    example_ll_function2(context_value2.get_value())
+                    + (example_ll_values_min * -1),
                 )
+            )
+            .scale(0.3)
+            .set_color(example_color2)
+            .move_to(
+                graph_axes.c2p(
+                    context_range1[0] + 0.5,
+                    example_ll_function1(example_x_optimal1)
+                    + (example_ll_values_min * -1)
+                    - 2,
+                )
+            )
         )
         example_vline_graph2 = always_redraw(
             lambda: graph_axes.get_v_line(example_dot_graph2.get_bottom())
         )
 
         example_dot_graph_radius3 = 0.04
-        example_dot_graph3 = Dot(radius=example_dot_graph_radius3, color=WHITE).move_to(graph_axes.i2gp(example_x_optimal3, example_parabola3))
+        example_dot_graph3 = Dot(radius=example_dot_graph_radius3, color=WHITE).move_to(
+            graph_axes.i2gp(example_x_optimal3, example_parabola3)
+        )
 
-        value_text3 = Text("[{:.2f}, {:.2f}]".format(context_value2.get_value(), example_ll_function3(example_x_optimal3) + (example_ll_values_min * -1))).scale(0.3).set_color(WHITE).move_to(graph_axes.c2p(context_range1[0] + 0.5, example_ll_function1(example_x_optimal3) + (example_ll_values_min * -1) - 4))
+        value_text3 = (
+            Text(
+                "[{:.2f}, {:.2f}]".format(
+                    context_value2.get_value(),
+                    example_ll_function3(example_x_optimal3)
+                    + (example_ll_values_min * -1),
+                )
+            )
+            .scale(0.3)
+            .set_color(WHITE)
+            .move_to(
+                graph_axes.c2p(
+                    context_range1[0] + 0.5,
+                    example_ll_function1(example_x_optimal3)
+                    + (example_ll_values_min * -1)
+                    - 4,
+                )
+            )
+        )
 
         example_vline_graph3 = graph_axes.get_v_line(example_dot_graph3.get_bottom())
 
-        self.play(
-            FadeOut(VGroup(*scatter_dots1)),
-            FadeOut(VGroup(*scatter_dots2))
-        )
+        self.play(FadeOut(VGroup(*scatter_dots1)), FadeOut(VGroup(*scatter_dots2)))
         example_dot_scatter_fill1 = 1
         example_dot_scatter_fill2 = 1
-        self.add(example_text_scatter1,
-                 example_text_scatter2,
-                 example_dot_graph1,
-                 example_dot_graph2,
-                 example_vline_graph1,
-                 example_vline_graph2,
-                 value_text1,
-                 value_text2)
+        self.add(
+            example_text_scatter1,
+            example_text_scatter2,
+            example_dot_graph1,
+            example_dot_graph2,
+            example_vline_graph1,
+            example_vline_graph2,
+            value_text1,
+            value_text2,
+        )
         self.wait(2 * scale_wait)
 
         # Move the example dot along the x-axis.
         dps = 1
-        self.play(context_value1.animate.set_value(context_range1[0]),
-                  context_value2.animate.set_value(context_range1[0]),
-                  ShowCreation(example_parabola1_left),
-                  ShowCreation(example_parabola2_left),
-                  run_time=(abs(example_dot_x - context_range1[0]) / dps) * scale_wait)
-        self.play(context_value1.animate.set_value(context_range1[1]),
-                  context_value2.animate.set_value(context_range1[1]),
-                  ShowCreation(example_parabola1),
-                  ShowCreation(example_parabola2),
-                  run_time=(abs(context_range1[0] - context_range1[1]) / dps) * scale_wait)
-        self.play(context_value1.animate.set_value(example_x_optimal1),
-                  context_value2.animate.set_value(example_x_optimal2),
-                  FadeOut(example_parabola1_left),
-                  FadeOut(example_parabola2_left),
-                  run_time=3 * scale_wait)
+        self.play(
+            context_value1.animate.set_value(context_range1[0]),
+            context_value2.animate.set_value(context_range1[0]),
+            ShowCreation(example_parabola1_left),
+            ShowCreation(example_parabola2_left),
+            run_time=(abs(example_dot_x - context_range1[0]) / dps) * scale_wait,
+        )
+        self.play(
+            context_value1.animate.set_value(context_range1[1]),
+            context_value2.animate.set_value(context_range1[1]),
+            ShowCreation(example_parabola1),
+            ShowCreation(example_parabola2),
+            run_time=(abs(context_range1[0] - context_range1[1]) / dps) * scale_wait,
+        )
+        self.play(
+            context_value1.animate.set_value(example_x_optimal1),
+            context_value2.animate.set_value(example_x_optimal2),
+            FadeOut(example_parabola1_left),
+            FadeOut(example_parabola2_left),
+            run_time=3 * scale_wait,
+        )
         self.wait(4 * scale_wait)
 
         ########################################################################
@@ -763,7 +928,7 @@ class GraphicalAbstractPart2(Scene):
             example_vline_graph1,
             example_vline_graph2,
             value_text1,
-            value_text2
+            value_text2,
         )
         self.play(graph_objects.animate.shift(DOWN * 1.5))
 
@@ -771,81 +936,113 @@ class GraphicalAbstractPart2(Scene):
         lines = VGroup(
             Tex("A_1", "x^2", "+", "B_1", "x"),
             Tex("A_2", "x^2", "+", "B_2", "x"),
-            Tex("(", "A_1", "x^2", "+", "B_1", "x", ")", "+", "(", "A_2", "x^2", "+", "B_2", "x", ")", isolate=to_isolate),
-            Tex("(", "A_1", "+", "A_2", ")", "x^2", "+", "(", "B_1", "+", "B_2", ")", "x", isolate=to_isolate),
+            Tex(
+                "(",
+                "A_1",
+                "x^2",
+                "+",
+                "B_1",
+                "x",
+                ")",
+                "+",
+                "(",
+                "A_2",
+                "x^2",
+                "+",
+                "B_2",
+                "x",
+                ")",
+                isolate=to_isolate,
+            ),
+            Tex(
+                "(",
+                "A_1",
+                "+",
+                "A_2",
+                ")",
+                "x^2",
+                "+",
+                "(",
+                "B_1",
+                "+",
+                "B_2",
+                ")",
+                "x",
+                isolate=to_isolate,
+            ),
         )
         lines.arrange(DOWN, buff=MED_LARGE_BUFF).scale(0.6).shift(RIGHT * 3.5 + UP * 2)
         for line in lines:
-            line.set_color_by_tex_to_color_map({
-                "A": BLUE,
-                "B": TEAL,
-                "x": WHITE
-            })
+            line.set_color_by_tex_to_color_map({"A": BLUE, "B": TEAL, "x": WHITE})
 
-        self.play(
-            FadeIn(lines[0]),
-            FadeIn(lines[1]),
-            run_time=2 * scale_wait
-        )
+        self.play(FadeIn(lines[0]), FadeIn(lines[1]), run_time=2 * scale_wait)
         self.wait(2 * scale_wait)
 
         self.play(
             TransformMatchingTex(lines[0].copy(), lines[2]),
             TransformMatchingTex(lines[1].copy(), lines[2]),
-            run_time=2 * scale_wait
+            run_time=2 * scale_wait,
         )
         self.wait(2 * scale_wait)
 
         self.play(
-            TransformMatchingTex(lines[2].copy(), lines[3]),
-            run_time=2 * scale_wait
+            TransformMatchingTex(lines[2].copy(), lines[3]), run_time=2 * scale_wait
         )
         self.wait(4 * scale_wait)
 
         self.play(
             FadeOut(lines),
             graph_objects.animate.shift(UP * 1.5),
-            run_time=2 * scale_wait
+            run_time=2 * scale_wait,
         )
 
         ########################################################################
 
-        self.play(ShowCreation(example_parabola3),
-                  run_time=2 * scale_wait)
+        self.play(ShowCreation(example_parabola3), run_time=2 * scale_wait)
         self.wait(1 * scale_wait)
 
-        self.play(FadeIn(example_dot_graph3),
-                  FadeIn(value_text3),
-                  FadeIn(example_vline_graph3),
-                  run_time=2 * scale_wait)
+        self.play(
+            FadeIn(example_dot_graph3),
+            FadeIn(value_text3),
+            FadeIn(example_vline_graph3),
+            run_time=2 * scale_wait,
+        )
         self.wait(2 * scale_wait)
 
-        self.play(context_value1.animate.set_value(example_x_optimal3),
-                  context_value2.animate.set_value(example_x_optimal3),
-                  FadeOut(example_parabola1_left),
-                  FadeOut(example_parabola2_left),
-                  run_time=4 * scale_wait)
+        self.play(
+            context_value1.animate.set_value(example_x_optimal3),
+            context_value2.animate.set_value(example_x_optimal3),
+            FadeOut(example_parabola1_left),
+            FadeOut(example_parabola2_left),
+            run_time=4 * scale_wait,
+        )
         self.wait(1 * scale_wait)
 
-        self.play(FadeOut(VGroup(example_dot_graph1,
-                                 example_dot_graph2,
-                                 example_dot_graph3,
-                                 example_vline_graph1,
-                                 example_vline_graph2,
-                                 example_vline_graph3,
-                                 value_text1,
-                                 value_text2,
-                                 value_text3,
-                                 example_parabola1,
-                                 example_parabola2,
-                                 example_parabola3,
-                                 example_dot_scatter1,
-                                 example_dot_scatter2,
-                                 example_text_scatter1,
-                                 example_text_scatter2,
-                                 graph_axes,
-                                 graph_axes_labels)),
-                  run_time=2 * scale_wait)
+        self.play(
+            FadeOut(
+                VGroup(
+                    example_dot_graph1,
+                    example_dot_graph2,
+                    example_dot_graph3,
+                    example_vline_graph1,
+                    example_vline_graph2,
+                    example_vline_graph3,
+                    value_text1,
+                    value_text2,
+                    value_text3,
+                    example_parabola1,
+                    example_parabola2,
+                    example_parabola3,
+                    example_dot_scatter1,
+                    example_dot_scatter2,
+                    example_text_scatter1,
+                    example_text_scatter2,
+                    graph_axes,
+                    graph_axes_labels,
+                )
+            ),
+            run_time=2 * scale_wait,
+        )
         self.wait(1 * scale_wait)
 
         ########################################################################
@@ -865,10 +1062,17 @@ class GraphicalAbstractPart2(Scene):
                 color = RED
 
             dot = Dot(color=color, fill_opacity=0.5).scale(0.5)
-            dot.move_to(scatter_axes1.c2p(ieqltl_row["context"], ieqltl_row["expression"]))
+            dot.move_to(
+                scatter_axes1.c2p(ieqltl_row["context"], ieqltl_row["expression"])
+            )
             scatter_dots1.append(dot)
 
-            animation = ApplyMethod(dot.move_to, scatter_axes1.c2p(ieqtl_opt_row["context"], ieqtl_opt_row["expression"]))
+            animation = ApplyMethod(
+                dot.move_to,
+                scatter_axes1.c2p(
+                    ieqtl_opt_row["context"], ieqtl_opt_row["expression"]
+                ),
+            )
             animations1.append(animation)
 
         scatter_dots2 = []
@@ -886,30 +1090,43 @@ class GraphicalAbstractPart2(Scene):
                 color = RED
 
             dot = Dot(color=color, fill_opacity=0.5).scale(0.5)
-            dot.move_to(scatter_axes2.c2p(ieqltl_row["context"], ieqltl_row["expression"]))
+            dot.move_to(
+                scatter_axes2.c2p(ieqltl_row["context"], ieqltl_row["expression"])
+            )
             scatter_dots2.append(dot)
 
-            animation = ApplyMethod(dot.move_to, scatter_axes2.c2p(ieqtl_opt_row["context"], ieqtl_opt_row["expression"]))
+            animation = ApplyMethod(
+                dot.move_to,
+                scatter_axes2.c2p(
+                    ieqtl_opt_row["context"], ieqtl_opt_row["expression"]
+                ),
+            )
             animations2.append(animation)
 
-        self.play(
-            FadeIn(VGroup(*scatter_dots1)),
-            FadeIn(VGroup(*scatter_dots2))
-        )
+        self.play(FadeIn(VGroup(*scatter_dots1)), FadeIn(VGroup(*scatter_dots2)))
         self.wait(1 * scale_wait)
         self.play(*animations1, *animations2, run_time=6 * scale_wait)
         self.wait(2 * scale_wait)
 
 
-def generate_base_model(example_index=0, example_name="Jane Doe", n_points=100,
-                        context_sd=1):
-    X = pd.DataFrame(np.nan,
-                     columns=["expression", "intercept", "genotype", "context",
-                              "interaction", "y_hat", "residuals"],
-                     index=["sample{}".format(i) for i in range(n_points)])
+def generate_base_model(
+    example_index=0, example_name="Jane Doe", n_points=100, context_sd=1
+):
+    X = pd.DataFrame(
+        np.nan,
+        columns=[
+            "expression",
+            "intercept",
+            "genotype",
+            "context",
+            "interaction",
+            "y_hat",
+            "residuals",
+        ],
+        index=["sample{}".format(i) for i in range(n_points)],
+    )
 
-    X.index = [x if i != example_index else example_name for i, x in
-               enumerate(X.index)]
+    X.index = [x if i != example_index else example_name for i, x in enumerate(X.index)]
 
     X["intercept"] = 1
     np.random.seed(0)
@@ -922,10 +1139,11 @@ def generate_ieqtl_model(maf, base_matrix, error_sd, betas, base_seed=0):
     X = base_matrix.copy()
 
     # Generate genotype array.
-    genotype = np.array([0] * round((1 - maf) ** 2. * X.shape[0]) +
-                        [1] * round(2 * (1 - maf) * maf * X.shape[0]) +
-                        [2] * round(maf ** 2 * X.shape[0])
-                        )
+    genotype = np.array(
+        [0] * round((1 - maf) ** 2.0 * X.shape[0])
+        + [1] * round(2 * (1 - maf) * maf * X.shape[0])
+        + [2] * round(maf**2 * X.shape[0])
+    )
     random.seed(base_seed)
     random.shuffle(genotype)
     X["genotype"] = genotype
@@ -935,12 +1153,17 @@ def generate_ieqtl_model(maf, base_matrix, error_sd, betas, base_seed=0):
 
     # Calculate expression.
     np.random.seed(base_seed + 1)
-    X["expression"] = X.loc[:,["intercept", "genotype", "context", "interaction"]].dot(
-        betas) + np.random.normal(0, error_sd, X.shape[0])
+    X["expression"] = X.loc[:, ["intercept", "genotype", "context", "interaction"]].dot(
+        betas
+    ) + np.random.normal(0, error_sd, X.shape[0])
 
     # Model the ieQTL.
-    betas = fit(X=X[["intercept", "genotype", "context", "interaction"]], y=X["expression"])
-    X["y_hat"] = predict(X=X[["intercept", "genotype", "context", "interaction"]], betas=betas)
+    betas = fit(
+        X=X[["intercept", "genotype", "context", "interaction"]], y=X["expression"]
+    )
+    X["y_hat"] = predict(
+        X=X[["intercept", "genotype", "context", "interaction"]], betas=betas
+    )
     X["residuals"] = X["expression"] - X["y_hat"]
 
     return X, betas
@@ -961,13 +1184,10 @@ def calc_regression_lines(ieqtl):
         betas = fit(X=subset[["intercept", "context"]], y=subset["expression"])
         subset["y_hat"] = predict(X=subset[["intercept", "context"]], betas=betas)
         subset.sort_values("context", inplace=True)
-        regression_lines[genotype_group] = [np.array(
-            [subset.iloc[0, :]["context"], subset.iloc[0, :]["y_hat"], 0]),
-                                            np.array(
-                                                [subset.iloc[-1, :]["context"],
-                                                 subset.iloc[-1, :]["y_hat"],
-                                                 0])
-                                            ]
+        regression_lines[genotype_group] = [
+            np.array([subset.iloc[0, :]["context"], subset.iloc[0, :]["y_hat"], 0]),
+            np.array([subset.iloc[-1, :]["context"], subset.iloc[-1, :]["y_hat"], 0]),
+        ]
     return regression_lines
 
 
@@ -989,23 +1209,24 @@ def optimize_ieqtl(X, betas, x1=-4, x3=4):
         eval_df["interaction"] = eval_df["context"] * eval_df["genotype"]
 
         # Calculate the y_hat of the model for the original betas.
-        eval_df["adj_y_hat"] = predict(X=eval_df[["intercept", "genotype", "context", "interaction"]], betas=betas)
+        eval_df["adj_y_hat"] = predict(
+            X=eval_df[["intercept", "genotype", "context", "interaction"]], betas=betas
+        )
 
         # Calculate the residuals squared per sample for this model.
         eval_df["adj_residuals"] = eval_df["expression"] - eval_df["adj_y_hat"]
-        eval_df["adj_log_likelihood"] = np.log(stats.norm.pdf(eval_df["adj_residuals"], 0, 1))
+        eval_df["adj_log_likelihood"] = np.log(
+            stats.norm.pdf(eval_df["adj_residuals"], 0, 1)
+        )
 
         # Save the adjusted residuals squared.
-        y_values_df.loc[:, eval_pos] = ll - eval_df["log_likelihood"] + eval_df["adj_log_likelihood"]
+        y_values_df.loc[:, eval_pos] = (
+            ll - eval_df["log_likelihood"] + eval_df["adj_log_likelihood"]
+        )
 
     # Determine the coefficients.
     coef_a, coef_b, coef_c = calc_parabola_vertex(
-        x1=x1,
-        x2=X["context"],
-        x3=x3,
-        y1=y_values_df[x1],
-        y2=ll,
-        y3=y_values_df[x3]
+        x1=x1, x2=X["context"], x3=x3, y1=y_values_df[x1], y2=ll, y3=y_values_df[x3]
     )
 
     return coef_a, coef_b, coef_c
@@ -1030,7 +1251,9 @@ def calc_parabola_vertex(x1, x2, x3, y1, y2, y3):
     denom = (x1 - x2) * (x1 - x3) * (x2 - x3)
     a = (x3 * (y2 - y1) + x2 * (y1 - y3) + x1 * (y3 - y2)) / denom
     b = (x3 * x3 * (y1 - y2) + x2 * x2 * (y3 - y1) + x1 * x1 * (y2 - y3)) / denom
-    c = (x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3) / denom
+    c = (
+        x2 * x3 * (x2 - x3) * y1 + x3 * x1 * (x3 - x1) * y2 + x1 * x2 * (x1 - x2) * y3
+    ) / denom
 
     return a, b, c
 

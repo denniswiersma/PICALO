@@ -23,7 +23,8 @@ import pandas as pd
 import seaborn as sns
 from sklearn.decomposition import PCA
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -36,12 +37,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -49,21 +50,21 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.transpose = getattr(arguments, 'transpose')
-        self.zscore = getattr(arguments, 'zscore')
-        self.save = getattr(arguments, 'save')
-        self.n_save = getattr(arguments, 'n_save')
-        self.n_plot = getattr(arguments, 'n_plot')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.palette_path = getattr(arguments, 'palette')
-        outdir = getattr(arguments, 'outdir')
-        outfolder = getattr(arguments, 'outfolder')
-        self.extensions = getattr(arguments, 'extensions')
+        self.data_path = getattr(arguments, "data")
+        self.transpose = getattr(arguments, "transpose")
+        self.zscore = getattr(arguments, "zscore")
+        self.save = getattr(arguments, "save")
+        self.n_save = getattr(arguments, "n_save")
+        self.n_plot = getattr(arguments, "n_plot")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.palette_path = getattr(arguments, "palette")
+        outdir = getattr(arguments, "outdir")
+        outfolder = getattr(arguments, "outfolder")
+        self.extensions = getattr(arguments, "extensions")
 
         # Set variables.
         if outdir is None:
@@ -83,74 +84,79 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-ns",
-                            "--n_save",
-                            type=int,
-                            required=False,
-                            default=25,
-                            help="The number of components to save. Default: 25.")
-        parser.add_argument("-np",
-                            "--n_plot",
-                            type=int,
-                            required=False,
-                            default=5,
-                            help="The number of components to plot. Default: 5.")
-        parser.add_argument("-transpose",
-                            action='store_true',
-                            help="Transpose.")
-        parser.add_argument("-zscore",
-                            action='store_true',
-                            help="Z-score transform.")
-        parser.add_argument("-save",
-                            action='store_true',
-                            help="Save.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-od",
-                            "--outdir",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The name of the output path.")
-        parser.add_argument("-of",
-                            "--outfolder",
-                            type=str,
-                            required=False,
-                            default="output",
-                            help="The name of the output folder.")
-        parser.add_argument("-e",
-                            "--extensions",
-                            type=str,
-                            nargs="+",
-                            default=["png"],
-                            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
-                            help="The output file format(s), default: ['png']")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-ns",
+            "--n_save",
+            type=int,
+            required=False,
+            default=25,
+            help="The number of components to save. Default: 25.",
+        )
+        parser.add_argument(
+            "-np",
+            "--n_plot",
+            type=int,
+            required=False,
+            default=5,
+            help="The number of components to plot. Default: 5.",
+        )
+        parser.add_argument("-transpose", action="store_true", help="Transpose.")
+        parser.add_argument("-zscore", action="store_true", help="Z-score transform.")
+        parser.add_argument("-save", action="store_true", help="Save.")
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-od",
+            "--outdir",
+            type=str,
+            required=False,
+            default=None,
+            help="The name of the output path.",
+        )
+        parser.add_argument(
+            "-of",
+            "--outfolder",
+            type=str,
+            required=False,
+            default="output",
+            help="The name of the output folder.",
+        )
+        parser.add_argument(
+            "-e",
+            "--extensions",
+            type=str,
+            nargs="+",
+            default=["png"],
+            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            help="The output file format(s), default: ['png']",
+        )
 
         return parser.parse_args()
 
@@ -173,16 +179,27 @@ class main():
         pca_df.index = df.columns
         print(pca_df)
 
-        explained_var_df = pd.DataFrame(pca.explained_variance_ratio_ * 100,
-                                        index=["PC{}".format(i + 1) for i in range(self.n_save)],
-                                        columns=["ExplainedVariance"])
+        explained_var_df = pd.DataFrame(
+            pca.explained_variance_ratio_ * 100,
+            index=["PC{}".format(i + 1) for i in range(self.n_save)],
+            columns=["ExplainedVariance"],
+        )
         print(explained_var_df)
 
         if self.save:
-            self.save_file(df=pca_df,
-                           outpath=os.path.join(self.outdir, "first{}ExpressionPCs.txt.gz".format(self.n_save)))
-            self.save_file(df=explained_var_df,
-                           outpath=os.path.join(self.outdir, "first{}ExpressionPCsExplainedVariance.txt.gz".format(self.n_save)))
+            self.save_file(
+                df=pca_df,
+                outpath=os.path.join(
+                    self.outdir, "first{}ExpressionPCs.txt.gz".format(self.n_save)
+                ),
+            )
+            self.save_file(
+                df=explained_var_df,
+                outpath=os.path.join(
+                    self.outdir,
+                    "first{}ExpressionPCsExplainedVariance.txt.gz".format(self.n_save),
+                ),
+            )
 
         print("Loading color data.")
         hue = None
@@ -192,50 +209,64 @@ class main():
             sa_df.set_index(sa_df.columns[0], inplace=True)
             sa_df.columns = ["hue"]
             sa_df["hue"] = sa_df["hue"].astype(str)
-            pca_df = pca_df.iloc[:, :self.n_plot].merge(sa_df, left_index=True, right_index=True)
+            pca_df = pca_df.iloc[:, : self.n_plot].merge(
+                sa_df, left_index=True, right_index=True
+            )
 
             hue = "hue"
             palette = self.palette
 
-
         # Plotting.
-        self.plot(df=pca_df,
-                  columns=columns[:self.n_plot],
-                  explained_variance=explained_var_df,
-                  hue=hue,
-                  palette=palette)
+        self.plot(
+            df=pca_df,
+            columns=columns[: self.n_plot],
+            explained_variance=explained_var_df,
+            hue=hue,
+            palette=palette,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def plot(self, df, columns, explained_variance, hue, palette):
         ncols = len(columns)
         nrows = len(columns)
 
-        fig, axes = plt.subplots(nrows=nrows,
-                                 ncols=ncols,
-                                 sharex='col',
-                                 sharey='row',
-                                 figsize=(10 * ncols, 10 * nrows))
+        fig, axes = plt.subplots(
+            nrows=nrows,
+            ncols=ncols,
+            sharex="col",
+            sharey="row",
+            figsize=(10 * ncols, 10 * nrows),
+        )
         sns.set(color_codes=True)
 
         for i, y_col in enumerate(columns):
@@ -259,32 +290,34 @@ class main():
                 elif i == j:
                     ax.set_axis_off()
 
-                    ax.annotate("{}\n{:.2f}%".format(y_col, explained_variance.loc[y_col, "ExplainedVariance"]),
-                                xy=(0.5, 0.5),
-                                ha='center',
-                                xycoords=ax.transAxes,
-                                color="#000000",
-                                fontsize=40,
-                                fontweight='bold')
+                    ax.annotate(
+                        "{}\n{:.2f}%".format(
+                            y_col, explained_variance.loc[y_col, "ExplainedVariance"]
+                        ),
+                        xy=(0.5, 0.5),
+                        ha="center",
+                        xycoords=ax.transAxes,
+                        color="#000000",
+                        fontsize=40,
+                        fontweight="bold",
+                    )
                 else:
                     sns.despine(fig=fig, ax=ax)
 
-                    sns.scatterplot(x=x_col,
-                                    y=y_col,
-                                    hue=hue,
-                                    data=df,
-                                    s=100,
-                                    palette=palette,
-                                    linewidth=0,
-                                    legend=False,
-                                    ax=ax)
+                    sns.scatterplot(
+                        x=x_col,
+                        y=y_col,
+                        hue=hue,
+                        data=df,
+                        s=100,
+                        palette=palette,
+                        linewidth=0,
+                        legend=False,
+                        ax=ax,
+                    )
 
-                    ax.set_ylabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
-                    ax.set_xlabel("",
-                                  fontsize=20,
-                                  fontweight='bold')
+                    ax.set_ylabel("", fontsize=20, fontweight="bold")
+                    ax.set_xlabel("", fontsize=20, fontweight="bold")
 
         for extension in self.extensions:
             fig.savefig(os.path.join(self.plot_outdir, "pca_plot.{}".format(extension)))
@@ -304,6 +337,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

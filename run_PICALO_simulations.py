@@ -32,78 +32,87 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "GPLv3"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
 ./run_PICALO_simulations.py -h
 """
 
-TIME_DICT = {
-    "short": "05:59:59",
-    "medium": "23:59:00",
-    "long": "6-23:59:00"
-}
+TIME_DICT = {"short": "05:59:59", "medium": "23:59:00", "long": "6-23:59:00"}
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
-        self.n_covariates = getattr(arguments, 'n_covariates')
-        self.current_date = getattr(arguments, 'date')
-        self.outdir = getattr(arguments, 'outdir')
-        self.dryrun = getattr(arguments, 'dryrun')
+        self.indir = getattr(arguments, "indir")
+        self.n_covariates = getattr(arguments, "n_covariates")
+        self.current_date = getattr(arguments, "date")
+        self.outdir = getattr(arguments, "outdir")
+        self.dryrun = getattr(arguments, "dryrun")
 
-        if not re.match("^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])", os.path.basename(self.indir)):
+        if not re.match(
+            "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])",
+            os.path.basename(self.indir),
+        ):
             print("Error, expected date at start of -i / --indir.")
             exit()
-        self.input_date = re.search("^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])", os.path.basename(self.indir)).group(0)
+        self.input_date = re.search(
+            "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])",
+            os.path.basename(self.indir),
+        ).group(0)
         if self.current_date is None:
             self.current_date = datetime.now().strftime("%Y-%m-%d")
 
-        self.program_outdir = os.path.join(self.outdir, "run_PICALO_simulations", "{}".format(os.path.basename(self.indir).replace(self.input_date, self.current_date)))
+        self.program_outdir = os.path.join(
+            self.outdir,
+            "run_PICALO_simulations",
+            "{}".format(
+                os.path.basename(self.indir).replace(self.input_date, self.current_date)
+            ),
+        )
         if not os.path.exists(self.program_outdir):
             os.makedirs(self.program_outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add other arguments.
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to the input directory.")
-        parser.add_argument("-n",
-                            "--n_covariates",
-                            nargs="+",
-                            type=int,
-                            default=[2],
-                            help="The number of covariates to simulate. "
-                                 "Default: [2].")
-        parser.add_argument("-d",
-                            "--date",
-                            type=str,
-                            default=None,
-                            help="")
-        parser.add_argument("-o",
-                            "--outdir",
-                            type=str,
-                            required=True,
-                            help="The path to the base output directory.")
-        parser.add_argument("--dryrun",
-                            action='store_true',
-                            help="Add this flag to disable submitting the"
-                                 "job files.")
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to the input directory.",
+        )
+        parser.add_argument(
+            "-n",
+            "--n_covariates",
+            nargs="+",
+            type=int,
+            default=[2],
+            help="The number of covariates to simulate. " "Default: [2].",
+        )
+        parser.add_argument("-d", "--date", type=str, default=None, help="")
+        parser.add_argument(
+            "-o",
+            "--outdir",
+            type=str,
+            required=True,
+            help="The path to the base output directory.",
+        )
+        parser.add_argument(
+            "--dryrun",
+            action="store_true",
+            help="Add this flag to disable submitting the" "job files.",
+        )
 
         return parser.parse_args()
 
@@ -119,64 +128,182 @@ class main():
 
         for n_covariates in self.n_covariates:
             print("Processing N covariates = {:,}".format(n_covariates))
-            covdir = os.path.join(self.program_outdir, "{}Covariates".format(n_covariates))
+            covdir = os.path.join(
+                self.program_outdir, "{}Covariates".format(n_covariates)
+            )
             job_dir = os.path.join(covdir, "jobs")
             jobs_outdir = os.path.join(job_dir, "output")
             for dir in [covdir, job_dir, jobs_outdir]:
                 if not os.path.exists(dir):
                     os.makedirs(dir)
 
-            cov_scp_outdir = os.path.join(scp_outdir, "{}Covariates".format(n_covariates))
+            cov_scp_outdir = os.path.join(
+                scp_outdir, "{}Covariates".format(n_covariates)
+            )
             scp_lines.append("mkdir {}".format(cov_scp_outdir))
 
             print("  Submitting pre-processing script")
-            fem_output_folder = "{}-first{}ExprPCForceNormalised".format(os.path.basename(self.indir).replace(self.input_date, self.current_date), n_covariates)
-            output_folder = "{}-BIOS-SimulationOf-{}-first{}ExprPCForceNormalised".format(self.current_date, self.input_date, n_covariates)
-            prep_commands = ["python3 {} \\".format(os.path.join(self.outdir, "fast_eqtl_mapper.py")),
-                             "    -ge {} \\".format(os.path.join(self.indir, "genotype_table.txt.gz")),
-                             "    -ex {} \\".format(os.path.join(self.indir, "expression_table.txt.gz")),
-                             "    -co {} \\".format(os.path.join(self.indir, "first{}ExpressionPCs.txt.gz".format(n_covariates))),
-                             "    -force_normalise_covariates \\",
-                             "    -ols \\",
-                             "    -od {} \\".format(self.outdir),
-                             "    -of {} \\".format(fem_output_folder),
-                             "    -verbose",
-                             "",
-                             "python3 {} \\".format(os.path.join(self.outdir, "simulate_expression2.py")),
-                             "    -s {} \\".format(os.path.join(self.outdir, "fast_eqtl_mapper", fem_output_folder, "eQTLSummaryStats.txt.gz")),
-                             "    -od {} \\".format(self.outdir),
-                             "    -of {}".format(output_folder),
-                             "",
-                             "python3 {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts", "plot_pca.py")),
-                             "    -d {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "expression_table.txt.gz")),
-                             "    -zscore \\",
-                             "    -ns 10 \\",
-                             "    -save \\",
-                             "    -od {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts")),
-                             "    -of {}-SimulatedExpression".format(output_folder),
-                             "",
-                             "python3 {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts", "generate_starting_vectors.py")),
-                             "    -rc {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "simulated_covariates.txt.gz")),
-                             "    -od {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts")),
-                             "    -of {}".format(output_folder)
-                             ]
+            fem_output_folder = "{}-first{}ExprPCForceNormalised".format(
+                os.path.basename(self.indir).replace(
+                    self.input_date, self.current_date
+                ),
+                n_covariates,
+            )
+            output_folder = (
+                "{}-BIOS-SimulationOf-{}-first{}ExprPCForceNormalised".format(
+                    self.current_date, self.input_date, n_covariates
+                )
+            )
+            prep_commands = [
+                "python3 {} \\".format(
+                    os.path.join(self.outdir, "fast_eqtl_mapper.py")
+                ),
+                "    -ge {} \\".format(
+                    os.path.join(self.indir, "genotype_table.txt.gz")
+                ),
+                "    -ex {} \\".format(
+                    os.path.join(self.indir, "expression_table.txt.gz")
+                ),
+                "    -co {} \\".format(
+                    os.path.join(
+                        self.indir, "first{}ExpressionPCs.txt.gz".format(n_covariates)
+                    )
+                ),
+                "    -force_normalise_covariates \\",
+                "    -ols \\",
+                "    -od {} \\".format(self.outdir),
+                "    -of {} \\".format(fem_output_folder),
+                "    -verbose",
+                "",
+                "python3 {} \\".format(
+                    os.path.join(self.outdir, "simulate_expression2.py")
+                ),
+                "    -s {} \\".format(
+                    os.path.join(
+                        self.outdir,
+                        "fast_eqtl_mapper",
+                        fem_output_folder,
+                        "eQTLSummaryStats.txt.gz",
+                    )
+                ),
+                "    -od {} \\".format(self.outdir),
+                "    -of {}".format(output_folder),
+                "",
+                "python3 {} \\".format(
+                    os.path.join(
+                        self.outdir, "dev", "simulation_scripts", "plot_pca.py"
+                    )
+                ),
+                "    -d {} \\".format(
+                    os.path.join(
+                        self.outdir,
+                        "simulate_expression2",
+                        output_folder,
+                        "expression_table.txt.gz",
+                    )
+                ),
+                "    -zscore \\",
+                "    -ns 10 \\",
+                "    -save \\",
+                "    -od {} \\".format(
+                    os.path.join(self.outdir, "dev", "simulation_scripts")
+                ),
+                "    -of {}-SimulatedExpression".format(output_folder),
+                "",
+                "python3 {} \\".format(
+                    os.path.join(
+                        self.outdir,
+                        "dev",
+                        "simulation_scripts",
+                        "generate_starting_vectors.py",
+                    )
+                ),
+                "    -rc {} \\".format(
+                    os.path.join(
+                        self.outdir,
+                        "simulate_expression2",
+                        output_folder,
+                        "simulated_covariates.txt.gz",
+                    )
+                ),
+                "    -od {} \\".format(
+                    os.path.join(self.outdir, "dev", "simulation_scripts")
+                ),
+                "    -of {}".format(output_folder),
+            ]
             scp_lines.append(
-                "scp airlock+gearshift:{} {}".format(os.path.join(self.outdir, "dev", "simulation_scripts", "plot_pca", "{}-SimulatedExpression".format(output_folder), "plot", "pca_plot.png"), os.path.join(cov_scp_outdir, "pca_plot.png"))
+                "scp airlock+gearshift:{} {}".format(
+                    os.path.join(
+                        self.outdir,
+                        "dev",
+                        "simulation_scripts",
+                        "plot_pca",
+                        "{}-SimulatedExpression".format(output_folder),
+                        "plot",
+                        "pca_plot.png",
+                    ),
+                    os.path.join(cov_scp_outdir, "pca_plot.png"),
+                )
             )
 
             if n_covariates < 3:
-                prep_commands.extend([
-                          "",
-                          "python3 {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts", "create_comparison_scatterplot2.py")),
-                          "    -xd {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "simulated_covariates.txt.gz")),
-                          "    -x_transpose \\",
-                          "    -yd {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts", "generate_starting_vectors", output_folder, "starting_vectors.txt.gz")),
-                          "    -y_transpose \\",
-                          "    -od {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts")),
-                          "    -of {}-SimulatedCovariates-vs-StartingVectors".format(output_folder)
-                          ])
+                prep_commands.extend(
+                    [
+                        "",
+                        "python3 {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "plot_scripts",
+                                "create_comparison_scatterplot2.py",
+                            )
+                        ),
+                        "    -xd {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "simulate_expression2",
+                                output_folder,
+                                "simulated_covariates.txt.gz",
+                            )
+                        ),
+                        "    -x_transpose \\",
+                        "    -yd {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "simulation_scripts",
+                                "generate_starting_vectors",
+                                output_folder,
+                                "starting_vectors.txt.gz",
+                            )
+                        ),
+                        "    -y_transpose \\",
+                        "    -od {} \\".format(
+                            os.path.join(self.outdir, "dev", "plot_scripts")
+                        ),
+                        "    -of {}-SimulatedCovariates-vs-StartingVectors".format(
+                            output_folder
+                        ),
+                    ]
+                )
                 scp_lines.append(
-                    "scp airlock+gearshift:{} {}".format(os.path.join(self.outdir, "dev", "plot_scripts", "plot", "{}-SimulatedCovariates-vs-StartingVectors_comparison_scatterplot2.png".format(output_folder)), os.path.join(cov_scp_outdir, "{}-SimulatedCovariates-vs-StartingVectors.png".format(output_folder)))
+                    "scp airlock+gearshift:{} {}".format(
+                        os.path.join(
+                            self.outdir,
+                            "dev",
+                            "plot_scripts",
+                            "plot",
+                            "{}-SimulatedCovariates-vs-StartingVectors_comparison_scatterplot2.png".format(
+                                output_folder
+                            ),
+                        ),
+                        os.path.join(
+                            cov_scp_outdir,
+                            "{}-SimulatedCovariates-vs-StartingVectors.png".format(
+                                output_folder
+                            ),
+                        ),
+                    )
                 )
 
             pre_jobfile, pre_logfile = self.create_jobfile(
@@ -184,14 +311,14 @@ class main():
                 jobs_outdir=jobs_outdir,
                 job_name="PICALO_SIMULATION_PRE_{}COVS".format(n_covariates),
                 mem=7 + (n_covariates * 3),
-                preflights=["module load Python/3.7.4-GCCcore-7.3.0-bare", "source $HOME/env/bin/activate"],
-                commands=prep_commands
+                preflights=[
+                    "module load Python/3.7.4-GCCcore-7.3.0-bare",
+                    "source $HOME/env/bin/activate",
+                ],
+                commands=prep_commands,
             )
 
-            pre_jobid = self.submit_job(
-                jobfile=pre_jobfile,
-                logfile=pre_logfile
-            )
+            pre_jobid = self.submit_job(jobfile=pre_jobfile, logfile=pre_logfile)
             del pre_jobfile, pre_logfile
 
             ####################################################################
@@ -203,22 +330,55 @@ class main():
                 job_name="PICALO_SIMULATION_PAV_{}COVS".format(n_covariates),
                 cpu=2,
                 mem=8,
-                preflights=["module load Python/3.7.4-GCCcore-7.3.0-bare", "source $HOME/env/bin/activate"],
-                commands=["python3 {} \\".format(os.path.join(self.outdir, "picalo.py")),
-                          "    -eq {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "eQTLProbesProbeLevel.txt.gz")),
-                          "    -ge {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "genotype_table.txt.gz")),
-                          "    -ex {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "expression_table.txt.gz")),
-                          "    -co {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts", "generate_starting_vectors", output_folder, "starting_vectors.txt.gz")),
-                          "    -maf 0.05 \\",
-                          "    -n_components 1 \\",
-                          "    -o {}-AllRandomVectors-1PIC \\".format(output_folder),
-                          "    -verbose"]
+                preflights=[
+                    "module load Python/3.7.4-GCCcore-7.3.0-bare",
+                    "source $HOME/env/bin/activate",
+                ],
+                commands=[
+                    "python3 {} \\".format(os.path.join(self.outdir, "picalo.py")),
+                    "    -eq {} \\".format(
+                        os.path.join(
+                            self.outdir,
+                            "simulate_expression2",
+                            output_folder,
+                            "eQTLProbesProbeLevel.txt.gz",
+                        )
+                    ),
+                    "    -ge {} \\".format(
+                        os.path.join(
+                            self.outdir,
+                            "simulate_expression2",
+                            output_folder,
+                            "genotype_table.txt.gz",
+                        )
+                    ),
+                    "    -ex {} \\".format(
+                        os.path.join(
+                            self.outdir,
+                            "simulate_expression2",
+                            output_folder,
+                            "expression_table.txt.gz",
+                        )
+                    ),
+                    "    -co {} \\".format(
+                        os.path.join(
+                            self.outdir,
+                            "dev",
+                            "simulation_scripts",
+                            "generate_starting_vectors",
+                            output_folder,
+                            "starting_vectors.txt.gz",
+                        )
+                    ),
+                    "    -maf 0.05 \\",
+                    "    -n_components 1 \\",
+                    "    -o {}-AllRandomVectors-1PIC \\".format(output_folder),
+                    "    -verbose",
+                ],
             )
 
             _ = self.submit_job(
-                jobfile=pav_jobfile,
-                logfile=pav_logfile,
-                depend=pre_jobid
+                jobfile=pav_jobfile, logfile=pav_logfile, depend=pre_jobid
             )
             del pav_jobfile, pav_logfile
 
@@ -229,26 +389,61 @@ class main():
                 pr_jobfile, pr_logfile = self.create_jobfile(
                     job_dir=job_dir,
                     jobs_outdir=jobs_outdir,
-                    job_name="PICALO_SIMULATION_RUN_R{}_{}COVS".format(rho_str, n_covariates),
+                    job_name="PICALO_SIMULATION_RUN_R{}_{}COVS".format(
+                        rho_str, n_covariates
+                    ),
                     time="short" if n_covariates < 5 else "medium",
                     cpu=2,
                     mem=8,
-                    preflights=["module load Python/3.7.4-GCCcore-7.3.0-bare", "source $HOME/env/bin/activate"],
-                    commands=["python3 {} \\".format(os.path.join(self.outdir, "picalo.py")),
-                              "    -eq {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "eQTLProbesProbeLevel.txt.gz")),
-                              "    -ge {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "genotype_table.txt.gz")),
-                              "    -ex {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "expression_table.txt.gz")),
-                              "    -co {} \\".format(os.path.join(self.outdir, "dev", "simulation_scripts", "generate_starting_vectors", output_folder, "starting_vector_rho{}.txt.gz".format(rho_str))),
-                              "    -maf 0.05 \\",
-                              "    -n_components {} \\".format(n_covariates * 3),
-                              "    -o {} \\".format(rho_output_folder),
-                              "    -verbose"]
+                    preflights=[
+                        "module load Python/3.7.4-GCCcore-7.3.0-bare",
+                        "source $HOME/env/bin/activate",
+                    ],
+                    commands=[
+                        "python3 {} \\".format(os.path.join(self.outdir, "picalo.py")),
+                        "    -eq {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "simulate_expression2",
+                                output_folder,
+                                "eQTLProbesProbeLevel.txt.gz",
+                            )
+                        ),
+                        "    -ge {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "simulate_expression2",
+                                output_folder,
+                                "genotype_table.txt.gz",
+                            )
+                        ),
+                        "    -ex {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "simulate_expression2",
+                                output_folder,
+                                "expression_table.txt.gz",
+                            )
+                        ),
+                        "    -co {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "simulation_scripts",
+                                "generate_starting_vectors",
+                                output_folder,
+                                "starting_vector_rho{}.txt.gz".format(rho_str),
+                            )
+                        ),
+                        "    -maf 0.05 \\",
+                        "    -n_components {} \\".format(n_covariates * 3),
+                        "    -o {} \\".format(rho_output_folder),
+                        "    -verbose",
+                    ],
                 )
 
                 pr_jobid = self.submit_job(
-                    jobfile=pr_jobfile,
-                    logfile=pr_logfile,
-                    depend=pre_jobid
+                    jobfile=pr_jobfile, logfile=pr_logfile, depend=pre_jobid
                 )
                 del pr_jobfile, pr_logfile
 
@@ -257,38 +452,112 @@ class main():
                 plot_commands = []
                 if n_covariates > 1:
                     plot_commands = [
-                        "python3 {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts", "create_comparison_scatterplot.py")),
-                        "    -d {} \\".format(os.path.join(self.outdir, "output", rho_output_folder, "PICs.txt.gz")),
+                        "python3 {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "plot_scripts",
+                                "create_comparison_scatterplot.py",
+                            )
+                        ),
+                        "    -d {} \\".format(
+                            os.path.join(
+                                self.outdir, "output", rho_output_folder, "PICs.txt.gz"
+                            )
+                        ),
                         "    -transpose \\",
                         "    -n 5 \\",
-                        "    -od {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts")),
-                        "    -of {}-PICs".format(rho_output_folder)]
-                    scp_lines.append("scp airlock+gearshift:{} {}".format(os.path.join(self.outdir, "dev", "plot_scripts", "plot", "{}-PICs_comparison_scatterplot.png".format(rho_output_folder)), os.path.join(cov_scp_outdir, "{}-PICs.png".format(rho_output_folder))))
-                plot_commands.extend([
-                    "",
-                    "python3 {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts", "create_comparison_scatterplot2.py")),
-                    "    -xd {} \\".format(os.path.join(self.outdir, "simulate_expression2", output_folder, "simulated_covariates.txt.gz")),
-                    "    -x_transpose \\",
-                    "    -yd {} \\".format(os.path.join(self.outdir, "output", rho_output_folder, "PICs.txt.gz")),
-                    "    -y_transpose \\",
-                    "    -od {} \\".format(os.path.join(self.outdir, "dev", "plot_scripts")),
-                    "    -of {}-SimulatedCovariates-vs-PICs".format(rho_output_folder)
-                ])
-                scp_lines.append("scp airlock+gearshift:{} {}".format(os.path.join(self.outdir, "dev", "plot_scripts", "plot", "{}-SimulatedCovariates-vs-PICs_comparison_scatterplot2.png".format(rho_output_folder)), os.path.join(cov_scp_outdir, "{}-SimulatedCovariates-vs-PICs.png".format(rho_output_folder))))
+                        "    -od {} \\".format(
+                            os.path.join(self.outdir, "dev", "plot_scripts")
+                        ),
+                        "    -of {}-PICs".format(rho_output_folder),
+                    ]
+                    scp_lines.append(
+                        "scp airlock+gearshift:{} {}".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "plot_scripts",
+                                "plot",
+                                "{}-PICs_comparison_scatterplot.png".format(
+                                    rho_output_folder
+                                ),
+                            ),
+                            os.path.join(
+                                cov_scp_outdir, "{}-PICs.png".format(rho_output_folder)
+                            ),
+                        )
+                    )
+                plot_commands.extend(
+                    [
+                        "",
+                        "python3 {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "dev",
+                                "plot_scripts",
+                                "create_comparison_scatterplot2.py",
+                            )
+                        ),
+                        "    -xd {} \\".format(
+                            os.path.join(
+                                self.outdir,
+                                "simulate_expression2",
+                                output_folder,
+                                "simulated_covariates.txt.gz",
+                            )
+                        ),
+                        "    -x_transpose \\",
+                        "    -yd {} \\".format(
+                            os.path.join(
+                                self.outdir, "output", rho_output_folder, "PICs.txt.gz"
+                            )
+                        ),
+                        "    -y_transpose \\",
+                        "    -od {} \\".format(
+                            os.path.join(self.outdir, "dev", "plot_scripts")
+                        ),
+                        "    -of {}-SimulatedCovariates-vs-PICs".format(
+                            rho_output_folder
+                        ),
+                    ]
+                )
+                scp_lines.append(
+                    "scp airlock+gearshift:{} {}".format(
+                        os.path.join(
+                            self.outdir,
+                            "dev",
+                            "plot_scripts",
+                            "plot",
+                            "{}-SimulatedCovariates-vs-PICs_comparison_scatterplot2.png".format(
+                                rho_output_folder
+                            ),
+                        ),
+                        os.path.join(
+                            cov_scp_outdir,
+                            "{}-SimulatedCovariates-vs-PICs.png".format(
+                                rho_output_folder
+                            ),
+                        ),
+                    )
+                )
 
                 plot_jobfile, plot_logfile = self.create_jobfile(
                     job_dir=job_dir,
                     jobs_outdir=jobs_outdir,
-                    job_name="PICALO_SIMULATION_PLOT_R{}_{}COVS".format(rho_str, n_covariates),
+                    job_name="PICALO_SIMULATION_PLOT_R{}_{}COVS".format(
+                        rho_str, n_covariates
+                    ),
                     mem=4,
-                    preflights=["module load Python/3.7.4-GCCcore-7.3.0-bare", "source $HOME/env/bin/activate"],
-                    commands=plot_commands
+                    preflights=[
+                        "module load Python/3.7.4-GCCcore-7.3.0-bare",
+                        "source $HOME/env/bin/activate",
+                    ],
+                    commands=plot_commands,
                 )
 
                 _ = self.submit_job(
-                    jobfile=plot_jobfile,
-                    logfile=plot_logfile,
-                    depend=pr_jobid
+                    jobfile=plot_jobfile, logfile=plot_logfile, depend=pr_jobid
                 )
                 del plot_jobfile, plot_logfile
 
@@ -298,25 +567,36 @@ class main():
 
         self.write_lines_to_file(
             lines=scp_lines,
-            filepath=os.path.join(self.program_outdir, "download_results.sh")
+            filepath=os.path.join(self.program_outdir, "download_results.sh"),
         )
 
-    def create_jobfile(self, job_dir, jobs_outdir, job_name, commands, time="short", cpu=1,
-                       mem=1, preflights=None):
+    def create_jobfile(
+        self,
+        job_dir,
+        jobs_outdir,
+        job_name,
+        commands,
+        time="short",
+        cpu=1,
+        mem=1,
+        preflights=None,
+    ):
         joblog_path = os.path.join(jobs_outdir, job_name + ".out")
 
-        lines = ["#!/bin/bash",
-                 "#SBATCH --job-name={}".format(job_name),
-                 "#SBATCH --output={}".format(joblog_path),
-                 "#SBATCH --error={}".format(joblog_path),
-                 "#SBATCH --time={}".format(TIME_DICT[time]),
-                 "#SBATCH --cpus-per-task={}".format(cpu),
-                 "#SBATCH --mem={}gb".format(mem),
-                 "#SBATCH --nodes=1",
-                 "#SBATCH --open-mode=append",
-                 "#SBATCH --export=NONE",
-                 "#SBATCH --get-user-env=L",
-                 ""]
+        lines = [
+            "#!/bin/bash",
+            "#SBATCH --job-name={}".format(job_name),
+            "#SBATCH --output={}".format(joblog_path),
+            "#SBATCH --error={}".format(joblog_path),
+            "#SBATCH --time={}".format(TIME_DICT[time]),
+            "#SBATCH --cpus-per-task={}".format(cpu),
+            "#SBATCH --mem={}gb".format(mem),
+            "#SBATCH --nodes=1",
+            "#SBATCH --open-mode=append",
+            "#SBATCH --export=NONE",
+            "#SBATCH --get-user-env=L",
+            "",
+        ]
 
         if preflights is not None and isinstance(preflights, list):
             for preflight in preflights:
@@ -326,10 +606,7 @@ class main():
         lines.extend(["", "echo 'Job finished'"])
 
         jobfile_path = os.path.join(job_dir, job_name + ".sh")
-        self.write_lines_to_file(
-            lines=lines,
-            filepath=jobfile_path
-        )
+        self.write_lines_to_file(lines=lines, filepath=jobfile_path)
         return jobfile_path, joblog_path
 
     @staticmethod
@@ -345,16 +622,16 @@ class main():
             return None
 
         if os.path.exists(logfile):
-            for line in open(logfile, 'r'):
+            for line in open(logfile, "r"):
                 if line == "Job finished":
                     print("\t\tSkipping '{}'".format(os.path.basename(jobfile)))
                     return None
 
-        command = ['sbatch', jobfile]
+        command = ["sbatch", jobfile]
         if depend is not None and (isinstance(depend, str) or isinstance(depend, list)):
             if isinstance(depend, str):
                 depend = [depend]
-            command.insert(1, '--depend=afterok:{}'.format(":".join(depend)))
+            command.insert(1, "--depend=afterok:{}".format(":".join(depend)))
             time.sleep(1)
 
         print("\t\t" + " ".join(command))
@@ -389,6 +666,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

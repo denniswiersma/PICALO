@@ -22,12 +22,29 @@ from statsmodels.stats import multitest
 from src.objects.ieqtl import IeQTL
 
 
-def load_dataframe(inpath, header, index_col, sep="\t", low_memory=True,
-                   nrows=None, skiprows=None, log=None):
-    df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                     low_memory=low_memory, nrows=nrows, skiprows=skiprows)
+def load_dataframe(
+    inpath,
+    header,
+    index_col,
+    sep="\t",
+    low_memory=True,
+    nrows=None,
+    skiprows=None,
+    log=None,
+):
+    df = pd.read_csv(
+        inpath,
+        sep=sep,
+        header=header,
+        index_col=index_col,
+        low_memory=low_memory,
+        nrows=nrows,
+        skiprows=skiprows,
+    )
 
-    message = "\tLoaded dataframe: {} with shape: {}".format(os.path.basename(inpath), df.shape)
+    message = "\tLoaded dataframe: {} with shape: {}".format(
+        os.path.basename(inpath), df.shape
+    )
     if log is None:
         print(message)
     else:
@@ -40,14 +57,15 @@ def save_dataframe(df, outpath, header, index, sep="\t", log=None):
     if df is None:
         return
 
-    compression = 'infer'
-    if outpath.endswith('.gz'):
-        compression = 'gzip'
+    compression = "infer"
+    if outpath.endswith(".gz"):
+        compression = "gzip"
 
-    df.to_csv(outpath, sep=sep, index=index, header=header,
-              compression=compression)
+    df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
 
-    message = "\tSaved dataframe: {} with shape: {}".format(os.path.basename(outpath), df.shape)
+    message = "\tSaved dataframe: {} with shape: {}".format(
+        os.path.basename(outpath), df.shape
+    )
     if log is None:
         print(message)
     else:
@@ -63,23 +81,29 @@ def get_ieqtls(eqtl_m, geno_m, expr_m, context_a, cov, alpha):
     p_values = np.empty(n_eqtls, dtype=np.float64)
     for row_index in range(n_eqtls):
         snp, gene = eqtl_m[row_index, :]
-        ieqtl = IeQTL(snp=snp,
-                      gene=gene,
-                      cov=cov,
-                      genotype=geno_m[row_index, :],
-                      covariate=context_a,
-                      expression=expr_m[row_index, :]
-                      )
+        ieqtl = IeQTL(
+            snp=snp,
+            gene=gene,
+            cov=cov,
+            genotype=geno_m[row_index, :],
+            covariate=context_a,
+            expression=expr_m[row_index, :],
+        )
         sample_mask = ieqtl.get_mask()
         sample_masks.append(sample_mask)
 
         ieqtl.compute()
         p_values[row_index] = ieqtl.p_value
         ieqtls.append(ieqtl)
-        results.append([snp, gene, cov, ieqtl.n] + ieqtl.betas.tolist() + ieqtl.std.tolist() + [ieqtl.p_value])
+        results.append(
+            [snp, gene, cov, ieqtl.n]
+            + ieqtl.betas.tolist()
+            + ieqtl.std.tolist()
+            + [ieqtl.p_value]
+        )
 
     # Calculate the FDR.
-    fdr_values = multitest.multipletests(p_values, method='fdr_bh')[1]
+    fdr_values = multitest.multipletests(p_values, method="fdr_bh")[1]
 
     # Calculate the number of significant hits.
     mask = fdr_values <= alpha
@@ -88,13 +112,29 @@ def get_ieqtls(eqtl_m, geno_m, expr_m, context_a, cov, alpha):
     # Calculate the number of hits per sample.
     n_hits_per_sample = np.stack(sample_masks, axis=0)[mask, :].sum(axis=0)
 
-    results_df = pd.DataFrame(results,
-                              columns=["SNP", "gene", "covariate", "N",
-                                       "beta-intercept", "beta-genotype",
-                                       "beta-covariate", "beta-interaction",
-                                       "std-intercept", "std-genotype",
-                                       "std-covariate", "std-interaction",
-                                       "p-value"])
+    results_df = pd.DataFrame(
+        results,
+        columns=[
+            "SNP",
+            "gene",
+            "covariate",
+            "N",
+            "beta-intercept",
+            "beta-genotype",
+            "beta-covariate",
+            "beta-interaction",
+            "std-intercept",
+            "std-genotype",
+            "std-covariate",
+            "std-interaction",
+            "p-value",
+        ],
+    )
     results_df["FDR"] = fdr_values
 
-    return n_hits, n_hits_per_sample, [ieqtl for ieqtl, include in zip(ieqtls, mask) if include], results_df
+    return (
+        n_hits,
+        n_hits_per_sample,
+        [ieqtl for ieqtl, include in zip(ieqtls, mask) if include],
+        results_df,
+    )

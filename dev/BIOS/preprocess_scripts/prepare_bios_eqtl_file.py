@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -43,92 +43,120 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.eqtl_path = getattr(arguments, 'eqtl')
-        self.snps_path = getattr(arguments, 'snps')
-        self.n_iterations = getattr(arguments, 'n_iterations')
-        self.n_datasets = getattr(arguments, 'n_datasets')
-        self.min_avg_expression = getattr(arguments, 'min_avg_expression')
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.expression_path = getattr(arguments, 'expression')
-        self.prefix = getattr(arguments, 'prefix')
+        self.eqtl_path = getattr(arguments, "eqtl")
+        self.snps_path = getattr(arguments, "snps")
+        self.n_iterations = getattr(arguments, "n_iterations")
+        self.n_datasets = getattr(arguments, "n_datasets")
+        self.min_avg_expression = getattr(arguments, "min_avg_expression")
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.expression_path = getattr(arguments, "expression")
+        self.prefix = getattr(arguments, "prefix")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'prepare_bios_eqtl_file')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "prepare_bios_eqtl_file"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
-        self.dataset_order = ['RS', 'LL', 'LLS_660Q', 'NTR_AFFY', 'LLS_OmniExpr', 'CODAM', 'PAN', 'NTR_GONL', 'GONL']
+        self.dataset_order = [
+            "RS",
+            "LL",
+            "LLS_660Q",
+            "NTR_AFFY",
+            "LLS_OmniExpr",
+            "CODAM",
+            "PAN",
+            "NTR_GONL",
+            "GONL",
+        ]
         self.dataset_sizes = np.array([765, 733, 400, 341, 255, 184, 169, 138, 74])
 
         if self.min_avg_expression is not None:
             if self.std_path is None:
-                print("Argument -std / --sample_to_dataset is required if -mae / --min_avg_expression is not None.")
+                print(
+                    "Argument -std / --sample_to_dataset is required if -mae / --min_avg_expression is not None."
+                )
                 exit()
             if self.expression_path is None:
-                print("Argument -ex / --expression is required if -mae / --min_avg_expression is not None.")
+                print(
+                    "Argument -ex / --expression is required if -mae / --min_avg_expression is not None."
+                )
                 exit()
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-eq",
-                            "--eqtl",
-                            type=str,
-                            required=True,
-                            help="The path to the replication eqtl matrix.")
-        parser.add_argument("-s",
-                            "--snps",
-                            type=str,
-                            required=True,
-                            help="The path to the genotype directory")
-        parser.add_argument("-ni",
-                            "--n_iterations",
-                            type=int,
-                            default=4,
-                            help="The number of eQTL iterations to include. "
-                                 "Default: 4.")
-        parser.add_argument("-nd",
-                            "--n_datasets",
-                            type=int,
-                            default=2,
-                            help="The number of required datasets per SNP. "
-                                 "Default: 2.")
-        parser.add_argument("-mae",
-                            "--min_avg_expression",
-                            type=float,
-                            default=None,
-                            help="The minimal average expression of a gene."
-                                 "Default: None.")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            default=None,
-                            help="The path to the expression matrix in TMM"
-                                 "format.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-p",
-                            "--prefix",
-                            type=str,
-                            required=True,
-                            help="Prefix for the output file.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-eq",
+            "--eqtl",
+            type=str,
+            required=True,
+            help="The path to the replication eqtl matrix.",
+        )
+        parser.add_argument(
+            "-s",
+            "--snps",
+            type=str,
+            required=True,
+            help="The path to the genotype directory",
+        )
+        parser.add_argument(
+            "-ni",
+            "--n_iterations",
+            type=int,
+            default=4,
+            help="The number of eQTL iterations to include. " "Default: 4.",
+        )
+        parser.add_argument(
+            "-nd",
+            "--n_datasets",
+            type=int,
+            default=2,
+            help="The number of required datasets per SNP. " "Default: 2.",
+        )
+        parser.add_argument(
+            "-mae",
+            "--min_avg_expression",
+            type=float,
+            default=None,
+            help="The minimal average expression of a gene." "Default: None.",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            default=None,
+            help="The path to the expression matrix in TMM" "format.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-p",
+            "--prefix",
+            type=str,
+            required=True,
+            help="Prefix for the output file.",
+        )
 
         return parser.parse_args()
 
@@ -143,23 +171,26 @@ class main():
 
         print("Preprocessing data")
         # Translating column names.
-        trans_dict = {"P-value": "PValue",
-                      "SNP": "SNPName",
-                      "SNP Chr": "SNPChr",
-                      "SNP Chr Position": "SNPChrPos",
-                      "Gene": "ProbeName",
-                      "Gene Chr": "ProbeChr",
-                      "Gene Chr position": "ProbeCenterChrPos",
-                      "GeneId": "ProbeName",
-                      "GeneChr": "ProbeChr",
-                      "GeneCenterChrPos": "ProbeCenterChrPos",
-                      "SNP Alleles": "SNPType",
-                      "Assesed Allele": "AlleleAssessed",
-                      "Z-score": "OverallZScore",
-                      "Gene name": "HGNCName",
-                      "eQTLLevelNumber": "Iteration"
-                      }
-        eqtl_df.columns = [trans_dict[x] if x in trans_dict else x for x in eqtl_df.columns]
+        trans_dict = {
+            "P-value": "PValue",
+            "SNP": "SNPName",
+            "SNP Chr": "SNPChr",
+            "SNP Chr Position": "SNPChrPos",
+            "Gene": "ProbeName",
+            "Gene Chr": "ProbeChr",
+            "Gene Chr position": "ProbeCenterChrPos",
+            "GeneId": "ProbeName",
+            "GeneChr": "ProbeChr",
+            "GeneCenterChrPos": "ProbeCenterChrPos",
+            "SNP Alleles": "SNPType",
+            "Assesed Allele": "AlleleAssessed",
+            "Z-score": "OverallZScore",
+            "Gene name": "HGNCName",
+            "eQTLLevelNumber": "Iteration",
+        }
+        eqtl_df.columns = [
+            trans_dict[x] if x in trans_dict else x for x in eqtl_df.columns
+        ]
 
         # Remove interaction columns.
         drop_columns = []
@@ -180,24 +211,32 @@ class main():
 
         # Calculating the number of samples and datasets per SNP.
         snps_df["N datasets"] = snps_df.sum(axis=1).to_frame()
-        snps_df["N samples"] = np.dot(snps_df.loc[:, self.dataset_order].to_numpy(), self.dataset_sizes)
+        snps_df["N samples"] = np.dot(
+            snps_df.loc[:, self.dataset_order].to_numpy(), self.dataset_sizes
+        )
         snps_df.index.name = None
         print(snps_df)
         present_snps = set(snps_df.index)
 
         print("Parsing eQTL file.")
         mask = np.zeros(eqtl_df.shape[0], dtype=bool)
-        found_genes = {i: set() for i in range(1, self.n_iterations+1)}
+        found_genes = {i: set() for i in range(1, self.n_iterations + 1)}
         for i, (_, row) in enumerate(eqtl_df.iterrows()):
             if (i == 0) or (i % 5000 == 0):
                 print("\tprocessed {} lines".format(i))
 
-            if "," not in row["ProbeName"] and row["ProbeName"] not in found_genes[row["Iteration"]] and row["SNPName"] in present_snps:
+            if (
+                "," not in row["ProbeName"]
+                and row["ProbeName"] not in found_genes[row["Iteration"]]
+                and row["SNPName"] in present_snps
+            ):
                 mask[i] = True
                 found_genes[row["Iteration"]].add(row["ProbeName"])
 
         top_eqtl_df = eqtl_df.loc[mask, :]
-        top_eqtl_df = top_eqtl_df.merge(snps_df, left_on="SNPName", right_index=True, how="left")
+        top_eqtl_df = top_eqtl_df.merge(
+            snps_df, left_on="SNPName", right_index=True, how="left"
+        )
         top_eqtl_df["index"] = top_eqtl_df.index
         print(top_eqtl_df["Iteration"].value_counts())
 
@@ -220,8 +259,14 @@ class main():
                 else:
                     missing_genes.append(gene)
             if len(missing_genes) > 0:
-                print("Warning: {} genes are not in the expression matrix: {}".format(len(missing_genes), ", ".join(missing_genes)))
-                top_eqtl_df = top_eqtl_df.loc[top_eqtl_df["ProbeName"].isin(present_genes), :]
+                print(
+                    "Warning: {} genes are not in the expression matrix: {}".format(
+                        len(missing_genes), ", ".join(missing_genes)
+                    )
+                )
+                top_eqtl_df = top_eqtl_df.loc[
+                    top_eqtl_df["ProbeName"].isin(present_genes), :
+                ]
             del missing_genes
 
             print("Sample / gene selection.")
@@ -238,35 +283,55 @@ class main():
             averages = expr_df.mean(axis=1)
 
             print("Remove eQTLs")
-            top_eqtl_df = top_eqtl_df.loc[(averages > self.min_avg_expression).to_numpy(), :]
+            top_eqtl_df = top_eqtl_df.loc[
+                (averages > self.min_avg_expression).to_numpy(), :
+            ]
 
             file_appendix = "_GT{}AvgExprFilter".format(self.min_avg_expression)
 
         print("Saving file.")
         print(top_eqtl_df)
-        self.save_file(df=top_eqtl_df, outpath=os.path.join(self.outdir, "{}eQTLProbesFDR0.05-ProbeLevel{}.txt.gz".format(self.prefix, file_appendix)), index=False)
+        self.save_file(
+            df=top_eqtl_df,
+            outpath=os.path.join(
+                self.outdir,
+                "{}eQTLProbesFDR0.05-ProbeLevel{}.txt.gz".format(
+                    self.prefix, file_appendix
+                ),
+            ),
+            index=False,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -282,6 +347,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

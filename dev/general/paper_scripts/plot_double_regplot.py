@@ -23,7 +23,8 @@ import pandas as pd
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -36,12 +37,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -49,44 +50,44 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.metax_path = getattr(arguments, 'metabrain_filex')
-        self.metax_transpose = getattr(arguments, 'metabrain_filex_transpose')
-        self.metax_index = getattr(arguments, 'metabrain_filex_index').replace("_", " ")
+        self.metax_path = getattr(arguments, "metabrain_filex")
+        self.metax_transpose = getattr(arguments, "metabrain_filex_transpose")
+        self.metax_index = getattr(arguments, "metabrain_filex_index").replace("_", " ")
 
-        self.metay_path = getattr(arguments, 'metabrain_filey')
-        self.metay_transpose = getattr(arguments, 'metabrain_filey_transpose')
-        self.metay_index = getattr(arguments, 'metabrain_filey_index').replace("_", " ")
+        self.metay_path = getattr(arguments, "metabrain_filey")
+        self.metay_transpose = getattr(arguments, "metabrain_filey_transpose")
+        self.metay_index = getattr(arguments, "metabrain_filey_index").replace("_", " ")
 
-        self.meta_std_path = getattr(arguments, 'metabrain_std')
-        self.meta_palette_path = getattr(arguments, 'metabrain_palette_path')
+        self.meta_std_path = getattr(arguments, "metabrain_std")
+        self.meta_palette_path = getattr(arguments, "metabrain_palette_path")
 
-        self.biosx_path = getattr(arguments, 'bios_filex')
-        self.biosx_transpose = getattr(arguments, 'bios_filex_transpose')
-        self.biosx_index = getattr(arguments, 'bios_filex_index').replace("_", " ")
+        self.biosx_path = getattr(arguments, "bios_filex")
+        self.biosx_transpose = getattr(arguments, "bios_filex_transpose")
+        self.biosx_index = getattr(arguments, "bios_filex_index").replace("_", " ")
 
-        self.biosy_path = getattr(arguments, 'bios_filey')
-        self.biosy_transpose = getattr(arguments, 'bios_filey_transpose')
-        self.biosy_index = getattr(arguments, 'bios_filey_index').replace("_", " ")
+        self.biosy_path = getattr(arguments, "bios_filey")
+        self.biosy_transpose = getattr(arguments, "bios_filey_transpose")
+        self.biosy_index = getattr(arguments, "bios_filey_index").replace("_", " ")
 
-        self.bios_std_path = getattr(arguments, 'bios_std')
-        self.bios_palette_path = getattr(arguments, 'bios_palette_path')
+        self.bios_std_path = getattr(arguments, "bios_std")
+        self.bios_palette_path = getattr(arguments, "bios_palette_path")
 
-        self.extensions = getattr(arguments, 'extensions')
-        self.outfile = getattr(arguments, 'outfile')
+        self.extensions = getattr(arguments, "extensions")
+        self.outfile = getattr(arguments, "outfile")
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.outdir = os.path.join(base_dir, 'plot')
+        self.outdir = os.path.join(base_dir, "plot")
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         # Set the right pdf font for exporting.
-        matplotlib.rcParams['pdf.fonttype'] = 42
-        matplotlib.rcParams['ps.fonttype'] = 42
+        matplotlib.rcParams["pdf.fonttype"] = 42
+        matplotlib.rcParams["ps.fonttype"] = 42
 
         # Loading palette.
         self.meta_palette = None
@@ -103,114 +104,148 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-mx",
-                            "--metabrain_filex",
-                            type=str,
-                            required=True,
-                            help="The path to MetaBrain x-axis file.")
-        parser.add_argument("-metabrain_filex_transpose",
-                            action='store_true',
-                            help="Transpose the x-axis MetaBrain file.")
-        parser.add_argument("-mxi",
-                            "--metabrain_filex_index",
-                            type=str,
-                            required=True,
-                            help="The index of the MetaBrain x-axis data.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-mx",
+            "--metabrain_filex",
+            type=str,
+            required=True,
+            help="The path to MetaBrain x-axis file.",
+        )
+        parser.add_argument(
+            "-metabrain_filex_transpose",
+            action="store_true",
+            help="Transpose the x-axis MetaBrain file.",
+        )
+        parser.add_argument(
+            "-mxi",
+            "--metabrain_filex_index",
+            type=str,
+            required=True,
+            help="The index of the MetaBrain x-axis data.",
+        )
 
-        parser.add_argument("-my",
-                            "--metabrain_filey",
-                            type=str,
-                            required=True,
-                            help="The path to MetaBrain y-axis file.")
-        parser.add_argument("-metabrain_filey_transpose",
-                            action='store_true',
-                            help="Transpose the y-axis MetaBrain file.")
-        parser.add_argument("-myi",
-                            "--metabrain_filey_index",
-                            type=str,
-                            required=True,
-                            help="The index of the MetaBrain y-axis data.")
+        parser.add_argument(
+            "-my",
+            "--metabrain_filey",
+            type=str,
+            required=True,
+            help="The path to MetaBrain y-axis file.",
+        )
+        parser.add_argument(
+            "-metabrain_filey_transpose",
+            action="store_true",
+            help="Transpose the y-axis MetaBrain file.",
+        )
+        parser.add_argument(
+            "-myi",
+            "--metabrain_filey_index",
+            type=str,
+            required=True,
+            help="The index of the MetaBrain y-axis data.",
+        )
 
-        parser.add_argument("-mstd",
-                            "--metabrain_std",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the MetaBrain sample-to-dataset"
-                                 "file.")
-        parser.add_argument("-mp",
-                            "--metabrain_palette_path",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the MetaBrain json file with the"
-                                 "dataset to color combinations.")
+        parser.add_argument(
+            "-mstd",
+            "--metabrain_std",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the MetaBrain sample-to-dataset" "file.",
+        )
+        parser.add_argument(
+            "-mp",
+            "--metabrain_palette_path",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the MetaBrain json file with the"
+            "dataset to color combinations.",
+        )
 
-        parser.add_argument("-bx",
-                            "--bios_filex",
-                            type=str,
-                            required=True,
-                            help="The path to BIOS x-axis file.")
-        parser.add_argument("-bios_filex_transpose",
-                            action='store_true',
-                            help="Transpose the x-axis BIOS file.")
-        parser.add_argument("-bxi",
-                            "--bios_filex_index",
-                            type=str,
-                            required=True,
-                            help="The index of the BIOS x-axis data.")
+        parser.add_argument(
+            "-bx",
+            "--bios_filex",
+            type=str,
+            required=True,
+            help="The path to BIOS x-axis file.",
+        )
+        parser.add_argument(
+            "-bios_filex_transpose",
+            action="store_true",
+            help="Transpose the x-axis BIOS file.",
+        )
+        parser.add_argument(
+            "-bxi",
+            "--bios_filex_index",
+            type=str,
+            required=True,
+            help="The index of the BIOS x-axis data.",
+        )
 
-        parser.add_argument("-by",
-                            "--bios_filey",
-                            type=str,
-                            required=True,
-                            help="The path to BIOS y-axis file.")
-        parser.add_argument("-bios_filey_transpose",
-                            action='store_true',
-                            help="Transpose the y-axis BIOS file.")
-        parser.add_argument("-byi",
-                            "--bios_filey_index",
-                            type=str,
-                            required=True,
-                            help="The index of the BIOS y-axis data.")
+        parser.add_argument(
+            "-by",
+            "--bios_filey",
+            type=str,
+            required=True,
+            help="The path to BIOS y-axis file.",
+        )
+        parser.add_argument(
+            "-bios_filey_transpose",
+            action="store_true",
+            help="Transpose the y-axis BIOS file.",
+        )
+        parser.add_argument(
+            "-byi",
+            "--bios_filey_index",
+            type=str,
+            required=True,
+            help="The index of the BIOS y-axis data.",
+        )
 
-        parser.add_argument("-bstd",
-                            "--bios_std",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the BIOS sample-to-dataset"
-                                 "file.")
-        parser.add_argument("-bp",
-                            "--bios_palette_path",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the BIOS json file with the"
-                                 "dataset to color combinations.")
+        parser.add_argument(
+            "-bstd",
+            "--bios_std",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the BIOS sample-to-dataset" "file.",
+        )
+        parser.add_argument(
+            "-bp",
+            "--bios_palette_path",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the BIOS json file with the"
+            "dataset to color combinations.",
+        )
 
-        parser.add_argument("-e",
-                            "--extensions",
-                            type=str,
-                            nargs="+",
-                            default=["png"],
-                            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
-                            help="The output file format(s), default: ['png']")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the output file")
+        parser.add_argument(
+            "-e",
+            "--extensions",
+            type=str,
+            nargs="+",
+            default=["png"],
+            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            help="The output file format(s), default: ['png']",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            required=True,
+            help="The name of the output file",
+        )
 
         return parser.parse_args()
 
@@ -218,31 +253,35 @@ class main():
         self.print_arguments()
 
         print("Loading data")
-        meta_df = self.load_data(pathx=self.metax_path,
-                                 pathy=self.metay_path,
-                                 transposex=self.metax_transpose,
-                                 transposey=self.metay_transpose,
-                                 indexx=self.metax_index,
-                                 indexy=self.metay_index,
-                                 path_std=self.meta_std_path
-                                 )
-        bios_df = self.load_data(pathx=self.biosx_path,
-                                 pathy=self.biosy_path,
-                                 transposex=self.biosx_transpose,
-                                 transposey=self.biosy_transpose,
-                                 indexx=self.biosx_index,
-                                 indexy=self.biosy_index,
-                                 path_std=self.bios_std_path
-                                 )
+        meta_df = self.load_data(
+            pathx=self.metax_path,
+            pathy=self.metay_path,
+            transposex=self.metax_transpose,
+            transposey=self.metay_transpose,
+            indexx=self.metax_index,
+            indexy=self.metay_index,
+            path_std=self.meta_std_path,
+        )
+        bios_df = self.load_data(
+            pathx=self.biosx_path,
+            pathy=self.biosy_path,
+            transposex=self.biosx_transpose,
+            transposey=self.biosy_transpose,
+            indexx=self.biosx_index,
+            indexy=self.biosy_index,
+            path_std=self.bios_std_path,
+        )
 
         print(meta_df)
         print(bios_df)
 
         print("Plotting regression plot")
-        self.plot_double_regplot(bios_df=bios_df,
-                                 bios_hue="dataset" if self.bios_std_path is not None else None,
-                                 meta_df=meta_df,
-                                 meta_hue="dataset" if self.meta_std_path is not None else None)
+        self.plot_double_regplot(
+            bios_df=bios_df,
+            bios_hue="dataset" if self.bios_std_path is not None else None,
+            meta_df=meta_df,
+            meta_hue="dataset" if self.meta_std_path is not None else None,
+        )
 
     def load_data(self, pathx, pathy, transposex, transposey, indexx, indexy, path_std):
         dfx = self.load_file(pathx, header=0, index_col=0)
@@ -264,52 +303,79 @@ class main():
         return df
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def plot_double_regplot(self, bios_df, bios_hue, meta_df, meta_hue):
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=2,
-                                 ncols=2,
-                                 figsize=(24, 10),
-                                 sharex="none",
-                                 sharey="none",
-                                 gridspec_kw={"height_ratios": [0.9, 0.1]})
+        fig, axes = plt.subplots(
+            nrows=2,
+            ncols=2,
+            figsize=(24, 10),
+            sharex="none",
+            sharey="none",
+            gridspec_kw={"height_ratios": [0.9, 0.1]},
+        )
         sns.set(color_codes=True)
 
-        self.single_regplot(fig=fig,
-                            plot_ax=axes[0, 0],
-                            legend_ax=axes[1, 0],
-                            df=bios_df,
-                            x=self.biosx_index,
-                            y=self.biosy_index,
-                            hue=bios_hue,
-                            palette=self.bios_palette,
-                            title="blood")
-        self.single_regplot(fig=fig,
-                            plot_ax=axes[0, 1],
-                            legend_ax=axes[1, 1],
-                            df=meta_df,
-                            x=self.metax_index,
-                            y=self.metay_index,
-                            hue=meta_hue,
-                            palette=self.meta_palette,
-                            title="brain")
+        self.single_regplot(
+            fig=fig,
+            plot_ax=axes[0, 0],
+            legend_ax=axes[1, 0],
+            df=bios_df,
+            x=self.biosx_index,
+            y=self.biosy_index,
+            hue=bios_hue,
+            palette=self.bios_palette,
+            title="blood",
+        )
+        self.single_regplot(
+            fig=fig,
+            plot_ax=axes[0, 1],
+            legend_ax=axes[1, 1],
+            df=meta_df,
+            x=self.metax_index,
+            y=self.metay_index,
+            hue=meta_hue,
+            palette=self.meta_palette,
+            title="brain",
+        )
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "{}.{}".format(self.outfile, extension)))
+            fig.savefig(
+                os.path.join(self.outdir, "{}.{}".format(self.outfile, extension))
+            )
         plt.close()
 
     @staticmethod
-    def single_regplot(fig, plot_ax, legend_ax, df, x="x", y="y",
-                       hue=None, palette=None, xlabel=None, ylabel=None,
-                       title=""):
+    def single_regplot(
+        fig,
+        plot_ax,
+        legend_ax,
+        df,
+        x="x",
+        y="y",
+        hue=None,
+        palette=None,
+        xlabel=None,
+        ylabel=None,
+        title="",
+    ):
         if xlabel is None:
             xlabel = x
         if ylabel is None:
@@ -324,19 +390,21 @@ class main():
         if pearson_coef < 0:
             annot_xpos = 0.8
         plot_ax.annotate(
-            'total N = {:,}'.format(df.shape[0]),
+            "total N = {:,}".format(df.shape[0]),
             xy=(annot_xpos, 0.94),
             xycoords=plot_ax.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
         plot_ax.annotate(
-            'total r = {:.2f}'.format(pearson_coef),
+            "total r = {:.2f}".format(pearson_coef),
             xy=(annot_xpos, 0.90),
             xycoords=plot_ax.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
 
         group_column = hue
         ci = None
@@ -363,31 +431,37 @@ class main():
                     facecolors = palette[y]
                     color = "#000000"
 
-            sns.regplot(x=x, y=y, data=subset, ci=ci,
-                        scatter_kws={'facecolors': facecolors,
-                                     'alpha': alpha,
-                                     'linewidth': 0},
-                        line_kws={"color": color},
-                        ax=plot_ax)
+            sns.regplot(
+                x=x,
+                y=y,
+                data=subset,
+                ci=ci,
+                scatter_kws={"facecolors": facecolors, "alpha": alpha, "linewidth": 0},
+                line_kws={"color": color},
+                ax=plot_ax,
+            )
 
             subset_pearson_coef, _ = stats.pearsonr(subset[y], subset[x])
-            handles.append([mpatches.Patch(color=color,
-                                           label="{} [n={:,}; r={:.2f}]".format(hue_group, subset.shape[0], subset_pearson_coef)), subset_pearson_coef])
+            handles.append(
+                [
+                    mpatches.Patch(
+                        color=color,
+                        label="{} [n={:,}; r={:.2f}]".format(
+                            hue_group, subset.shape[0], subset_pearson_coef
+                        ),
+                    ),
+                    subset_pearson_coef,
+                ]
+            )
 
         if len(df[group_column].unique()) > 1:
             handles.sort(key=lambda x: -x[1])
             handles = [x[0] for x in handles]
             legend_ax.legend(handles=handles, loc=8, fontsize=8, ncol=3)
 
-        plot_ax.set_xlabel(xlabel,
-                           fontsize=14,
-                           fontweight='bold')
-        plot_ax.set_ylabel(ylabel,
-                           fontsize=14,
-                           fontweight='bold')
-        plot_ax.set_title(title,
-                          fontsize=18,
-                          fontweight='bold')
+        plot_ax.set_xlabel(xlabel, fontsize=14, fontweight="bold")
+        plot_ax.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        plot_ax.set_title(title, fontsize=18, fontweight="bold")
 
         # Change margins.
         xlim = (df[x].min(), df[x].max())
@@ -404,13 +478,29 @@ class main():
     def print_arguments(self):
         print("Arguments:")
         print("  > MetaBrain:")
-        print("  >     (1) {}: {} {}".format(self.metax_index, self.metax_path, "[T]" if self.metax_transpose else ""))
-        print("  >     (2) {}: {} {}".format(self.metay_index, self.metay_path, "[T]" if self.metay_transpose else ""))
+        print(
+            "  >     (1) {}: {} {}".format(
+                self.metax_index, self.metax_path, "[T]" if self.metax_transpose else ""
+            )
+        )
+        print(
+            "  >     (2) {}: {} {}".format(
+                self.metay_index, self.metay_path, "[T]" if self.metay_transpose else ""
+            )
+        )
         print("  >     Sample-to-dataset: {}".format(self.meta_std_path))
         print("  >     Palette: {}".format(self.meta_palette_path))
         print("  > BIOS:")
-        print("  >     (1) {}: {} {}".format(self.biosx_index, self.biosx_path, "[T]" if self.biosx_transpose else ""))
-        print("  >     (2) {}: {} {}".format(self.biosy_index, self.biosy_path, "[T]" if self.biosy_transpose else ""))
+        print(
+            "  >     (1) {}: {} {}".format(
+                self.biosx_index, self.biosx_path, "[T]" if self.biosx_transpose else ""
+            )
+        )
+        print(
+            "  >     (2) {}: {} {}".format(
+                self.biosy_index, self.biosy_path, "[T]" if self.biosy_transpose else ""
+            )
+        )
         print("  >     Sample-to-dataset: {}".format(self.bios_std_path))
         print("  >     Palette: {}".format(self.bios_palette_path))
         print("  > Extensions: {}".format(self.extensions))
@@ -419,6 +509,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

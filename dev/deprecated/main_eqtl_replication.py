@@ -22,7 +22,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import stats
 from statsmodels.regression.linear_model import OLS
@@ -38,12 +39,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -51,58 +52,66 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.eqtl_path = getattr(arguments, 'eqtl')
-        self.geno_path = getattr(arguments, 'genotype')
-        self.alleles_path = getattr(arguments, 'alleles')
-        self.expr_path = getattr(arguments, 'expression')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.eqtl_path = getattr(arguments, "eqtl")
+        self.geno_path = getattr(arguments, "genotype")
+        self.alleles_path = getattr(arguments, "alleles")
+        self.expr_path = getattr(arguments, "expression")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'main_eqtl_replication')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "main_eqtl_replication"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit")
-        parser.add_argument("-eq",
-                            "--eqtl",
-                            type=str,
-                            required=True,
-                            help="The path to the replication eqtl matrix.")
-        parser.add_argument("-ge",
-                            "--genotype",
-                            type=str,
-                            required=True,
-                            help="The path to the genotype matrix")
-        parser.add_argument("-al",
-                            "--alleles",
-                            type=str,
-                            required=True,
-                            help="The path to the alleles matrix")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            required=True,
-                            help="The path to the deconvolution matrix")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit",
+        )
+        parser.add_argument(
+            "-eq",
+            "--eqtl",
+            type=str,
+            required=True,
+            help="The path to the replication eqtl matrix.",
+        )
+        parser.add_argument(
+            "-ge",
+            "--genotype",
+            type=str,
+            required=True,
+            help="The path to the genotype matrix",
+        )
+        parser.add_argument(
+            "-al",
+            "--alleles",
+            type=str,
+            required=True,
+            help="The path to the alleles matrix",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            required=True,
+            help="The path to the deconvolution matrix",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
 
         return parser.parse_args()
 
@@ -149,20 +158,32 @@ class main():
         # results_df = pd.DataFrame(results_m, index=eqtl_df.index, columns=["N", "df", "RSS", "beta intercept", "beta genotype", "std intercept", "std genotype", "t-value intercept", "t-value genotype", "f-value", "p-value", "z-score"])
         # results_df["AA"] = alleles_df.loc[:, "AltAllele"].to_numpy()
         # self.save_file(df=results_df, outpath=os.path.join(self.outdir, "{}_results_df.txt.gz".format(self.out_filename)))
-        results_df = self.load_file(os.path.join(self.outdir, "{}_results_df.txt.gz".format(self.out_filename)), header=0, index_col=0)
+        results_df = self.load_file(
+            os.path.join(self.outdir, "{}_results_df.txt.gz".format(self.out_filename)),
+            header=0,
+            index_col=0,
+        )
         print(results_df)
 
         print("Combining data")
         # eqtl_data_df = eqtl_df.loc[:, ["AssessedAllele", "Pvalue", "Zscore"]].copy()
-        eqtl_data_df = eqtl_df.loc[:, ["AlleleAssessed", "PValue", "OverallZScore"]].copy()
+        eqtl_data_df = eqtl_df.loc[
+            :, ["AlleleAssessed", "PValue", "OverallZScore"]
+        ].copy()
         eqtl_data_df.columns = ["eqtl AA", "eQTL p-value", "eQTL z-score"]
         eqtl_data_df.loc[eqtl_data_df["eQTL p-value"] == 0, "eQTL p-value"] = 1e-307
-        plot_df = results_df.loc[:, ["AA", "p-value", "t-value genotype"]].merge(eqtl_data_df, left_index=True, right_index=True)
+        plot_df = results_df.loc[:, ["AA", "p-value", "t-value genotype"]].merge(
+            eqtl_data_df, left_index=True, right_index=True
+        )
         plot_df.dropna(inplace=True)
 
         # flip.
-        plot_df["flip"] = (plot_df["eqtl AA"] == plot_df["AA"]).map({True: 1, False: -1})
-        plot_df["t-value genotype flipped"] = plot_df["t-value genotype"] * plot_df["flip"]
+        plot_df["flip"] = (plot_df["eqtl AA"] == plot_df["AA"]).map(
+            {True: 1, False: -1}
+        )
+        plot_df["t-value genotype flipped"] = (
+            plot_df["t-value genotype"] * plot_df["flip"]
+        )
         print(plot_df)
 
         # log10 transform.
@@ -170,27 +191,31 @@ class main():
         plot_df["-log10 eQTL p-value"] = np.log10(plot_df["eQTL p-value"]) * -1
 
         print("Comparing")
-        self.plot_replication(df=plot_df,
-                              x="eQTL z-score",
-                              y="t-value genotype flipped",
-                              xlabel="eQTL file z-score",
-                              ylabel="t-value",
-                              name="{}_zscore_vs_tvalue_replication".format(self.out_filename))
+        self.plot_replication(
+            df=plot_df,
+            x="eQTL z-score",
+            y="t-value genotype flipped",
+            xlabel="eQTL file z-score",
+            ylabel="t-value",
+            name="{}_zscore_vs_tvalue_replication".format(self.out_filename),
+        )
 
-        self.plot_replication(df=plot_df,
-                              x="-log10 eQTL p-value",
-                              y="-log10 p-value",
-                              xlabel="-log10 eQTL p-value",
-                              ylabel="-log10 p-value",
-                              name="{}_eqtl_pvalue_replication".format(self.out_filename))
+        self.plot_replication(
+            df=plot_df,
+            x="-log10 eQTL p-value",
+            y="-log10 p-value",
+            xlabel="-log10 eQTL p-value",
+            ylabel="-log10 p-value",
+            name="{}_eqtl_pvalue_replication".format(self.out_filename),
+        )
 
     @staticmethod
     def load_file(path, sep="\t", header=0, index_col=0, nrows=None):
-        df = pd.read_csv(path, sep=sep, header=header, index_col=index_col,
-                         nrows=nrows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(path),
-                                      df.shape))
+        df = pd.read_csv(path, sep=sep, header=header, index_col=index_col, nrows=nrows)
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(path), df.shape)
+        )
         return df
 
     @staticmethod
@@ -220,28 +245,37 @@ class main():
         dfn = 1
         dfd = n - df
         f_value = ((null_rss - rss) / dfn) / (rss / dfd)
-        p_value = betainc(dfd / 2, dfn / 2, 1 - ((dfn * f_value) / ((dfn * f_value) + dfd)))
+        p_value = betainc(
+            dfd / 2, dfn / 2, 1 - ((dfn * f_value) / ((dfn * f_value) + dfd))
+        )
         if p_value == 0:
             p_value = 2.2250738585072014e-308
 
         z_score = stats.norm.ppf(p_value)
 
-        return np.array([n, df, rss] + betas.tolist() + std.tolist() + t_values.tolist() + [f_value, p_value, z_score])
+        return np.array(
+            [n, df, rss]
+            + betas.tolist()
+            + std.tolist()
+            + t_values.tolist()
+            + [f_value, p_value, z_score]
+        )
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
-    def plot_replication(self, df, x="x", y="y", hue=None, xlabel="",
-                         ylabel="", name="", title=""):
+    def plot_replication(
+        self, df, x="x", y="y", hue=None, xlabel="", ylabel="", name="", title=""
+    ):
         if df.shape[0] <= 2:
             return
 
@@ -257,55 +291,56 @@ class main():
 
         lower_quadrant = df.loc[(df[x] < 0) & (df[y] < 0), :]
         upper_quadrant = df.loc[(df[x] > 0) & (df[y] > 0), :]
-        concordance = (100 / df.shape[0]) * (lower_quadrant.shape[0] + upper_quadrant.shape[0])
+        concordance = (100 / df.shape[0]) * (
+            lower_quadrant.shape[0] + upper_quadrant.shape[0]
+        )
 
         coef, _ = stats.pearsonr(df[y], df[x])
 
-        sns.regplot(x=x, y=y, data=df, ci=None,
-                    scatter_kws={'facecolors': facecolors,
-                                 'linewidth': 0,
-                                 'alpha': 0.75},
-                    line_kws={"color": "#0072B2",
-                              'linewidth': 5},
-                    ax=ax)
+        sns.regplot(
+            x=x,
+            y=y,
+            data=df,
+            ci=None,
+            scatter_kws={"facecolors": facecolors, "linewidth": 0, "alpha": 0.75},
+            line_kws={"color": "#0072B2", "linewidth": 5},
+            ax=ax,
+        )
 
         ax.annotate(
-            'N = {}'.format(df.shape[0]),
+            "N = {}".format(df.shape[0]),
             xy=(0.03, 0.94),
             xycoords=ax.transAxes,
             color="#000000",
             alpha=1,
             fontsize=18,
-            fontweight='bold')
+            fontweight="bold",
+        )
         ax.annotate(
-            'r = {:.2f}'.format(coef),
+            "r = {:.2f}".format(coef),
             xy=(0.03, 0.90),
             xycoords=ax.transAxes,
             color="#000000",
             alpha=1,
             fontsize=18,
-            fontweight='bold')
+            fontweight="bold",
+        )
         ax.annotate(
-            'concordance = {:.0f}%'.format(concordance),
+            "concordance = {:.0f}%".format(concordance),
             xy=(0.03, 0.86),
             xycoords=ax.transAxes,
             color="#000000",
             alpha=1,
             fontsize=18,
-            fontweight='bold')
+            fontweight="bold",
+        )
 
-        ax.axhline(0, ls='--', color="#000000", zorder=-1)
-        ax.axvline(0, ls='--', color="#000000", zorder=-1)
+        ax.axhline(0, ls="--", color="#000000", zorder=-1)
+        ax.axvline(0, ls="--", color="#000000", zorder=-1)
 
-        ax.set_xlabel(xlabel,
-                      fontsize=20,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=20,
-                      fontweight='bold')
-        ax.set_title(title,
-                     fontsize=25,
-                     fontweight='bold')
+        ax.set_xlabel(xlabel, fontsize=20, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=20, fontweight="bold")
+        ax.set_title(title, fontsize=25, fontweight="bold")
 
         outpath = os.path.join(self.outdir, "{}.png".format(name))
         fig.savefig(outpath)
@@ -322,6 +357,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

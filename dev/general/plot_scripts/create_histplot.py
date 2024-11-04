@@ -21,7 +21,8 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # Local application imports.
@@ -33,12 +34,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -46,40 +47,38 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.data_path = getattr(arguments, 'data')
-        self.out_filename = getattr(arguments, 'outfile')
+        self.data_path = getattr(arguments, "data")
+        self.out_filename = getattr(arguments, "outfile")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-d",
-                            "--data",
-                            type=str,
-                            required=True,
-                            help="The path to the data matrix.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
 
         return parser.parse_args()
 
@@ -92,53 +91,56 @@ class main():
 
         print("Pre-processing data.")
         df = df.loc[df["mask"] == 1, :]
-        df.drop(['mask'], axis=1, inplace=True)
+        df.drop(["mask"], axis=1, inplace=True)
 
         print("Plotting.")
         for column in df.columns:
             print("\t{}".format(column))
-            self.histplot(df=df,
-                          x=column,
-                          title=column,
-                          filename=self.out_filename + "_histplot_" + column.lower(),
-                          outdir=self.outdir)
+            self.histplot(
+                df=df,
+                x=column,
+                title=column,
+                filename=self.out_filename + "_histplot_" + column.lower(),
+                outdir=self.outdir,
+            )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
-    def histplot(df, x="x", xlabel="", ylabel="", title="", filename="plot",
-                outdir=None):
-        sns.set(rc={'figure.figsize': (12, 9)})
+    def histplot(
+        df, x="x", xlabel="", ylabel="", title="", filename="plot", outdir=None
+    ):
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
         fig, ax = plt.subplots()
         sns.despine(fig=fig, ax=ax)
 
         range = abs(df[x].max() - df[x].min())
 
-        g = sns.histplot(data=df,
-                         x=x,
-                         kde=True,
-                         binwidth=range / 100,
-                         color="#000000",
-                         ax=ax)
+        g = sns.histplot(
+            data=df, x=x, kde=True, binwidth=range / 100, color="#000000", ax=ax
+        )
 
-        ax.set_title(title,
-                     fontsize=14,
-                     fontweight='bold')
-        ax.set_xlabel(xlabel,
-                      fontsize=10,
-                      fontweight='bold')
-        ax.set_ylabel(ylabel,
-                      fontsize=10,
-                      fontweight='bold')
+        ax.set_title(title, fontsize=14, fontweight="bold")
+        ax.set_xlabel(xlabel, fontsize=10, fontweight="bold")
+        ax.set_ylabel(ylabel, fontsize=10, fontweight="bold")
 
         plt.tight_layout()
         outpath = "{}.png".format(filename)
@@ -155,6 +157,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

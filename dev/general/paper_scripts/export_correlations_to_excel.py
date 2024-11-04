@@ -40,28 +40,32 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.input_data_path = getattr(arguments, 'input_data')
-        self.pf_path = getattr(arguments, 'picalo_files')
-        self.expression_preprocessing_path = getattr(arguments, 'expression_preprocessing_dir')
-        self.dataset = getattr(arguments, 'dataset')
-        self.palette_path = getattr(arguments, 'palette')
-        self.outname = getattr(arguments, 'outname')
-        self.extensions = getattr(arguments, 'extensions')
+        self.input_data_path = getattr(arguments, "input_data")
+        self.pf_path = getattr(arguments, "picalo_files")
+        self.expression_preprocessing_path = getattr(
+            arguments, "expression_preprocessing_dir"
+        )
+        self.dataset = getattr(arguments, "dataset")
+        self.palette_path = getattr(arguments, "palette")
+        self.outname = getattr(arguments, "outname")
+        self.extensions = getattr(arguments, "extensions")
 
         # Set variables.
-        outdir = os.path.join(str(Path(__file__).parent.parent), 'export_correlations_to_excel')
+        outdir = os.path.join(
+            str(Path(__file__).parent.parent), "export_correlations_to_excel"
+        )
         if not os.path.exists(outdir):
             os.makedirs(outdir)
 
@@ -98,59 +102,99 @@ class main():
             print("Error")
             exit()
 
-        self.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        self.alphabet = [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G",
+            "H",
+            "I",
+            "J",
+            "K",
+            "L",
+            "M",
+            "N",
+            "O",
+            "P",
+            "Q",
+            "R",
+            "S",
+            "T",
+            "U",
+            "V",
+            "W",
+            "X",
+            "Y",
+            "Z",
+        ]
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-id",
-                            "--input_data",
-                            type=str,
-                            required=True,
-                            help="The path to PICALO results.")
-        parser.add_argument("-pf",
-                            "--picalo_files",
-                            type=str,
-                            required=True,
-                            help="The path to the picalo files.")
-        parser.add_argument("-ep",
-                            "--expression_preprocessing_dir",
-                            type=str,
-                            required=True,
-                            help="The path to the expression preprocessing data.")
-        parser.add_argument("-d",
-                            "--dataset",
-                            type=str,
-                            required=True,
-                            choices=["blood", "brain"],
-                            help="The dataset.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=True,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-o",
-                            "--outname",
-                            type=str,
-                            required=True,
-                            help="The name of the output files.")
-        parser.add_argument("-e",
-                            "--extensions",
-                            type=str,
-                            nargs="+",
-                            default=["png"],
-                            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
-                            help="The output file format(s), default: ['png']")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-id",
+            "--input_data",
+            type=str,
+            required=True,
+            help="The path to PICALO results.",
+        )
+        parser.add_argument(
+            "-pf",
+            "--picalo_files",
+            type=str,
+            required=True,
+            help="The path to the picalo files.",
+        )
+        parser.add_argument(
+            "-ep",
+            "--expression_preprocessing_dir",
+            type=str,
+            required=True,
+            help="The path to the expression preprocessing data.",
+        )
+        parser.add_argument(
+            "-d",
+            "--dataset",
+            type=str,
+            required=True,
+            choices=["blood", "brain"],
+            help="The dataset.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=True,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-o",
+            "--outname",
+            type=str,
+            required=True,
+            help="The name of the output files.",
+        )
+        parser.add_argument(
+            "-e",
+            "--extensions",
+            type=str,
+            nargs="+",
+            default=["png"],
+            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            help="The output file format(s), default: ['png']",
+        )
 
         return parser.parse_args()
 
@@ -158,7 +202,9 @@ class main():
         self.print_arguments()
 
         print("Loading PICs")
-        col_df = self.load_file(os.path.join(self.input_data_path, "PICs.txt.gz"), header=0, index_col=0)
+        col_df = self.load_file(
+            os.path.join(self.input_data_path, "PICs.txt.gz"), header=0, index_col=0
+        )
         col_df = col_df._get_numeric_data()
 
         if col_df.shape[1] > col_df.shape[0]:
@@ -168,9 +214,12 @@ class main():
 
         col_labels = col_df.columns.tolist()
         col_n_na = col_df.isna().sum(axis=0).values.tolist()
-        col_indices = ["{} [N={:,}]".format(label, col_df.shape[0] - n_na) for label, n_na in zip(col_labels, col_n_na)]
+        col_indices = [
+            "{} [N={:,}]".format(label, col_df.shape[0] - n_na)
+            for label, n_na in zip(col_labels, col_n_na)
+        ]
 
-        with pd.ExcelWriter(self.outpath, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(self.outpath, engine="xlsxwriter") as writer:
             for sheet_name, filepath in self.data_files.items():
                 print("Processing {}.".format(sheet_name))
                 row_df = self.load_file(filepath, header=0, index_col=0)
@@ -183,11 +232,16 @@ class main():
 
                 row_labels = row_df.columns.tolist()
                 row_n_na = row_df.isna().sum(axis=0).values.tolist()
-                row_indices = ["{} [N={:,}]".format(label, row_df.shape[0] - n_na) for label, n_na in zip(row_labels, row_n_na)]
+                row_indices = [
+                    "{} [N={:,}]".format(label, row_df.shape[0] - n_na)
+                    for label, n_na in zip(row_labels, row_n_na)
+                ]
 
                 print("\tGetting overlap.")
                 # Make sure order is the same.
-                samples = set(col_df.index.tolist()).intersection(set(row_df.index.tolist()))
+                samples = set(col_df.index.tolist()).intersection(
+                    set(row_df.index.tolist())
+                )
                 print("\tN = {}".format(len(samples)))
                 if len(samples) == 0:
                     print("No data overlapping.")
@@ -204,29 +258,38 @@ class main():
                 print(corr_df)
 
                 corr_df.to_excel(writer, sheet_name=sheet_name, na_rep="NA", index=True)
-                print("Saving sheet '{}' with shape {}".format(sheet_name, corr_df.shape))
+                print(
+                    "Saving sheet '{}' with shape {}".format(sheet_name, corr_df.shape)
+                )
                 print("")
 
                 worksheet = writer.sheets[sheet_name]
-                worksheet.conditional_format(1, 1, corr_df.shape[0], corr_df.shape[1],
-                                            {"type": "3_color_scale",
-                                             'min_type': 'num',
-                                             "min_value": -1,
-                                             'mid_type': 'num',
-                                             "mid_value": 0,
-                                             'max_type': 'num',
-                                             "max_value": 1,
-                                             "min_color": "#437bb2",
-                                             "mid_color": "#FFFFFF",
-                                             "max_color": "#BA5B39"})
+                worksheet.conditional_format(
+                    1,
+                    1,
+                    corr_df.shape[0],
+                    corr_df.shape[1],
+                    {
+                        "type": "3_color_scale",
+                        "min_type": "num",
+                        "min_value": -1,
+                        "mid_type": "num",
+                        "mid_value": 0,
+                        "max_type": "num",
+                        "max_value": 1,
+                        "min_color": "#437bb2",
+                        "mid_color": "#FFFFFF",
+                        "max_color": "#BA5B39",
+                    },
+                )
 
     @staticmethod
     def load_file(path, sep="\t", header=0, index_col=0, nrows=None):
-        df = pd.read_csv(path, sep=sep, header=header, index_col=index_col,
-                         nrows=nrows)
-        print("Loaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(path),
-                                      df.shape))
+        df = pd.read_csv(path, sep=sep, header=header, index_col=index_col, nrows=nrows)
+        print(
+            "Loaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(path), df.shape)
+        )
         return df
 
     @staticmethod
@@ -246,7 +309,9 @@ class main():
         for i in range(m1_dev.shape[1]):
             for j in range(m2_dev.shape[1]):
                 mask = np.logical_or(np.isnan(m1_dev[:, i]), np.isnan(m2_dev[:, j]))
-                r[i, j] = np.sum(m1_dev[~mask, i] * m2_dev[~mask, j]) / np.sqrt(m1_rss[i] * m2_rss[j])
+                r[i, j] = np.sum(m1_dev[~mask, i] * m2_dev[~mask, j]) / np.sqrt(
+                    m1_rss[i] * m2_rss[j]
+                )
 
         rf = r.flatten()
         df = m1.shape[0] - 2
@@ -259,7 +324,11 @@ class main():
         print("Arguments:")
         print("  > Input data path: {}".format(self.input_data_path))
         print("  > Picalo files path: {}".format(self.pf_path))
-        print("  > Expression pre-processing data path: {}".format(self.expression_preprocessing_path))
+        print(
+            "  > Expression pre-processing data path: {}".format(
+                self.expression_preprocessing_path
+            )
+        )
         print("  > Dataset: {}".format(self.dataset))
         print("  > Palette path: {}".format(self.palette_path))
         print("  > Outname: {}".format(self.outname))
@@ -268,6 +337,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

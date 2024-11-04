@@ -30,12 +30,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -43,46 +43,54 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.expr_path = getattr(arguments, 'expression')
-        self.log2 = getattr(arguments, 'log2')
-        self.outfile_prefix = getattr(arguments, 'outfile_prefix')
+        self.expr_path = getattr(arguments, "expression")
+        self.log2 = getattr(arguments, "log2")
+        self.outfile_prefix = getattr(arguments, "outfile_prefix")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'correlate_samples_with_avg_gene_expression')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "correlate_samples_with_avg_gene_expression",
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-ex",
-                            "--expression",
-                            type=str,
-                            required=True,
-                            help="The path to the deconvolution matrix")
-        parser.add_argument("-log2",
-                            action='store_true',
-                            help="Combine the created files with force."
-                                 " Default: False.")
-        parser.add_argument("-op",
-                            "--outfile_prefix",
-                            type=str,
-                            required=False,
-                            default="Data",
-                            help="The name of the outfile.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-ex",
+            "--expression",
+            type=str,
+            required=True,
+            help="The path to the deconvolution matrix",
+        )
+        parser.add_argument(
+            "-log2",
+            action="store_true",
+            help="Combine the created files with force." " Default: False.",
+        )
+        parser.add_argument(
+            "-op",
+            "--outfile_prefix",
+            type=str,
+            required=False,
+            default="Data",
+            help="The name of the outfile.",
+        )
 
         return parser.parse_args()
 
@@ -121,35 +129,51 @@ class main():
         expr_avg_a = np.mean(expr_m, axis=0)
 
         print("Correlating.")
-        corr_m = np.corrcoef(expr_m, expr_avg_a)[:expr_m.shape[0], expr_m.shape[0]:]
+        corr_m = np.corrcoef(expr_m, expr_avg_a)[: expr_m.shape[0], expr_m.shape[0] :]
         corr_df = pd.DataFrame(corr_m, index=samples, columns=["AvgExprCorrelation"])
         print(corr_df)
 
         print("Saving file.")
-        self.save_file(df=corr_df,
-                       outpath=os.path.join(self.outdir, "{}_CorrelationsWithAverageExpression.txt.gz".format(self.outfile_prefix)))
+        self.save_file(
+            df=corr_df,
+            outpath=os.path.join(
+                self.outdir,
+                "{}_CorrelationsWithAverageExpression.txt.gz".format(
+                    self.outfile_prefix
+                ),
+            ),
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def save_file(df, outpath, header=True, index=True, sep="\t"):
-        compression = 'infer'
-        if outpath.endswith('.gz'):
-            compression = 'gzip'
+        compression = "infer"
+        if outpath.endswith(".gz"):
+            compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header,
-                  compression=compression)
-        print("\tSaved dataframe: {} "
-              "with shape: {}".format(os.path.basename(outpath),
-                                      df.shape))
+        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        print(
+            "\tSaved dataframe: {} "
+            "with shape: {}".format(os.path.basename(outpath), df.shape)
+        )
 
     def print_arguments(self):
         print("Arguments:")
@@ -160,6 +184,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

@@ -25,7 +25,8 @@ from statsmodels.stats import multitest
 from statsmodels.regression.linear_model import OLS
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # Local application imports.
@@ -37,12 +38,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -50,125 +51,154 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.meta1_path = getattr(arguments, 'metabrain_file1')
-        self.meta1_transpose = getattr(arguments, 'metabrain_file1_transpose')
-        self.meta1_name = getattr(arguments, 'metabrain_file1_name').replace("_", " ")
+        self.meta1_path = getattr(arguments, "metabrain_file1")
+        self.meta1_transpose = getattr(arguments, "metabrain_file1_transpose")
+        self.meta1_name = getattr(arguments, "metabrain_file1_name").replace("_", " ")
 
-        self.meta2_path = getattr(arguments, 'metabrain_file2')
-        self.meta2_transpose = getattr(arguments, 'metabrain_file2_transpose')
-        self.meta2_name = getattr(arguments, 'metabrain_file2_name').replace("_", " ")
+        self.meta2_path = getattr(arguments, "metabrain_file2")
+        self.meta2_transpose = getattr(arguments, "metabrain_file2_transpose")
+        self.meta2_name = getattr(arguments, "metabrain_file2_name").replace("_", " ")
 
-        self.bios1_path = getattr(arguments, 'bios_file1')
-        self.bios1_transpose = getattr(arguments, 'bios_file1_transpose')
-        self.bios1_name = getattr(arguments, 'bios_file1_name').replace("_", " ")
+        self.bios1_path = getattr(arguments, "bios_file1")
+        self.bios1_transpose = getattr(arguments, "bios_file1_transpose")
+        self.bios1_name = getattr(arguments, "bios_file1_name").replace("_", " ")
 
-        self.bios2_path = getattr(arguments, 'bios_file2')
-        self.bios2_transpose = getattr(arguments, 'bios_file2_transpose')
-        self.bios2_name = getattr(arguments, 'bios_file2_name').replace("_", " ")
+        self.bios2_path = getattr(arguments, "bios_file2")
+        self.bios2_transpose = getattr(arguments, "bios_file2_transpose")
+        self.bios2_name = getattr(arguments, "bios_file2_name").replace("_", " ")
 
-        self.rsquared_threshold = getattr(arguments, 'rsquared_threshold')
-        self.extensions = getattr(arguments, 'extensions')
-        self.outfile = getattr(arguments, 'outfile')
+        self.rsquared_threshold = getattr(arguments, "rsquared_threshold")
+        self.extensions = getattr(arguments, "extensions")
+        self.outfile = getattr(arguments, "outfile")
 
         # Set variables.
         base_dir = str(os.path.dirname(os.path.abspath(__file__)))
-        self.outdir = os.path.join(base_dir, 'plot_double_correlation_heatmap')
+        self.outdir = os.path.join(base_dir, "plot_double_correlation_heatmap")
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         # Set the right pdf font for exporting.
-        matplotlib.rcParams['pdf.fonttype'] = 42
-        matplotlib.rcParams['ps.fonttype'] = 42
+        matplotlib.rcParams["pdf.fonttype"] = 42
+        matplotlib.rcParams["ps.fonttype"] = 42
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-m1",
-                            "--metabrain_file1",
-                            type=str,
-                            required=True,
-                            help="The path to MetaBrain first file.")
-        parser.add_argument("-metabrain_file1_transpose",
-                            action='store_true',
-                            help="Transpose the first MetaBrain file.")
-        parser.add_argument("-m1n",
-                            "--metabrain_file1_name",
-                            type=str,
-                            default="metabrain1",
-                            help="The name of the MetaBrain first file.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-m1",
+            "--metabrain_file1",
+            type=str,
+            required=True,
+            help="The path to MetaBrain first file.",
+        )
+        parser.add_argument(
+            "-metabrain_file1_transpose",
+            action="store_true",
+            help="Transpose the first MetaBrain file.",
+        )
+        parser.add_argument(
+            "-m1n",
+            "--metabrain_file1_name",
+            type=str,
+            default="metabrain1",
+            help="The name of the MetaBrain first file.",
+        )
 
-        parser.add_argument("-m2",
-                            "--metabrain_file2",
-                            type=str,
-                            required=True,
-                            help="The path to MetaBrain second file.")
-        parser.add_argument("-metabrain_file2_transpose",
-                            action='store_true',
-                            help="Transpose the second MetaBrain file.")
-        parser.add_argument("-m2n",
-                            "--metabrain_file2_name",
-                            type=str,
-                            default="metabrain2",
-                            help="The name of the MetaBrain second file.")
+        parser.add_argument(
+            "-m2",
+            "--metabrain_file2",
+            type=str,
+            required=True,
+            help="The path to MetaBrain second file.",
+        )
+        parser.add_argument(
+            "-metabrain_file2_transpose",
+            action="store_true",
+            help="Transpose the second MetaBrain file.",
+        )
+        parser.add_argument(
+            "-m2n",
+            "--metabrain_file2_name",
+            type=str,
+            default="metabrain2",
+            help="The name of the MetaBrain second file.",
+        )
 
-        parser.add_argument("-b1",
-                            "--bios_file1",
-                            type=str,
-                            required=True,
-                            help="The path to BIOS first file.")
-        parser.add_argument("-bios_file1_transpose",
-                            action='store_true',
-                            help="Transpose the first BIOS file.")
-        parser.add_argument("-b1n",
-                            "--bios_file1_name",
-                            type=str,
-                            default="bios1",
-                            help="The name of the BIOS first file.")
+        parser.add_argument(
+            "-b1",
+            "--bios_file1",
+            type=str,
+            required=True,
+            help="The path to BIOS first file.",
+        )
+        parser.add_argument(
+            "-bios_file1_transpose",
+            action="store_true",
+            help="Transpose the first BIOS file.",
+        )
+        parser.add_argument(
+            "-b1n",
+            "--bios_file1_name",
+            type=str,
+            default="bios1",
+            help="The name of the BIOS first file.",
+        )
 
-        parser.add_argument("-b2",
-                            "--bios_file2",
-                            type=str,
-                            required=True,
-                            help="The path to BIOS second file.")
-        parser.add_argument("-bios_file2_transpose",
-                            action='store_true',
-                            help="Transpose the second BIOS file.")
-        parser.add_argument("-b2n",
-                            "--bios_file2_name",
-                            type=str,
-                            default="bios2",
-                            help="The name of the BIOS second file.")
-        parser.add_argument("-r2",
-                            "--rsquared_threshold",
-                            type=float,
-                            default=0.99,
-                            help="The rsquared threshold to remove multicolinearity."
-                                 "Default: 0.99")
-        parser.add_argument("-e",
-                            "--extensions",
-                            type=str,
-                            nargs="+",
-                            default=["png"],
-                            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
-                            help="The output file format(s), default: ['png']")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the output file")
+        parser.add_argument(
+            "-b2",
+            "--bios_file2",
+            type=str,
+            required=True,
+            help="The path to BIOS second file.",
+        )
+        parser.add_argument(
+            "-bios_file2_transpose",
+            action="store_true",
+            help="Transpose the second BIOS file.",
+        )
+        parser.add_argument(
+            "-b2n",
+            "--bios_file2_name",
+            type=str,
+            default="bios2",
+            help="The name of the BIOS second file.",
+        )
+        parser.add_argument(
+            "-r2",
+            "--rsquared_threshold",
+            type=float,
+            default=0.99,
+            help="The rsquared threshold to remove multicolinearity." "Default: 0.99",
+        )
+        parser.add_argument(
+            "-e",
+            "--extensions",
+            type=str,
+            nargs="+",
+            default=["png"],
+            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            help="The output file format(s), default: ['png']",
+        )
+        parser.add_argument(
+            "-o",
+            "--outfile",
+            type=str,
+            required=True,
+            help="The name of the output file",
+        )
 
         return parser.parse_args()
 
@@ -176,16 +206,18 @@ class main():
         self.print_arguments()
 
         print("Loading data")
-        meta_df = self.load_data(path1=self.meta1_path,
-                                 path2=self.meta2_path,
-                                 transpose1=self.meta1_transpose,
-                                 transpose2=self.meta2_transpose,
-                                 )
-        bios_df = self.load_data(path1=self.bios1_path,
-                                 path2=self.bios2_path,
-                                 transpose1=self.bios1_transpose,
-                                 transpose2=self.bios2_transpose,
-                                 )
+        meta_df = self.load_data(
+            path1=self.meta1_path,
+            path2=self.meta2_path,
+            transpose1=self.meta1_transpose,
+            transpose2=self.meta2_transpose,
+        )
+        bios_df = self.load_data(
+            path1=self.bios1_path,
+            path2=self.bios2_path,
+            transpose1=self.bios1_transpose,
+            transpose2=self.bios2_transpose,
+        )
 
         # print(meta_df)
         # print(bios_df)
@@ -197,12 +229,14 @@ class main():
         # bios_df = pd.read_csv("bios_df.txt.gz", sep="\t", header=0, index_col=0)
 
         print("Plotting heatmap")
-        self.plot_heatmap(df1=bios_df,
-                          df2=meta_df,
-                          xlabel1=self.bios2_name,
-                          ylabel1=self.bios1_name,
-                          xlabel2=self.meta2_name,
-                          ylabel2=self.meta1_name)
+        self.plot_heatmap(
+            df1=bios_df,
+            df2=meta_df,
+            xlabel1=self.bios2_name,
+            ylabel1=self.bios1_name,
+            xlabel2=self.meta2_name,
+            ylabel2=self.meta1_name,
+        )
 
     def load_data(self, path1, path2, transpose1, transpose2):
         df1 = self.load_file(path1, header=0, index_col=0)
@@ -230,14 +264,15 @@ class main():
         df2 = self.remove_multicollinearity(df=df2)
 
         print("Correlating")
-        corr_m, pvalue_m = self.corrcoef(m1=df1.to_numpy(),
-                                         m2=df2.to_numpy())
+        corr_m, pvalue_m = self.corrcoef(m1=df1.to_numpy(), m2=df2.to_numpy())
 
         print("Perform BH correction")
         fdr_df = pd.DataFrame({"pvalue": pvalue_m.flatten()})
         mask = ~fdr_df["pvalue"].isnull()
         fdr_df["FDR"] = np.nan
-        fdr_df.loc[mask, "FDR"] = multitest.multipletests(fdr_df.loc[mask, "pvalue"], method='fdr_bh')[1]
+        fdr_df.loc[mask, "FDR"] = multitest.multipletests(
+            fdr_df.loc[mask, "pvalue"], method="fdr_bh"
+        )[1]
         fdr_m = fdr_df["FDR"].to_numpy().reshape(pvalue_m.shape)
         del fdr_df, mask
 
@@ -246,20 +281,34 @@ class main():
         return pd.DataFrame(corr_m, index=df1.columns, columns=df2.columns)
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     def remove_multicollinearity(self, df):
         indices = np.arange(df.shape[1])
         max_r2 = np.inf
         while len(indices) > 1 and max_r2 > self.rsquared_threshold:
-            r2 = np.array([self.calc_ols_rsquared(df=df.iloc[:, indices], idx=ix) for ix in range(len(indices))])
+            r2 = np.array(
+                [
+                    self.calc_ols_rsquared(df=df.iloc[:, indices], idx=ix)
+                    for ix in range(len(indices))
+                ]
+            )
             max_r2 = max(r2)
 
             if max_r2 > self.rsquared_threshold:
@@ -272,7 +321,11 @@ class main():
     def calc_ols_rsquared(df, idx):
         tmp_df = df.copy()
         tmp_df.dropna(inplace=True)
-        rsquared = OLS(tmp_df.iloc[:, idx], tmp_df.loc[:, np.arange(tmp_df.shape[1]) != idx]).fit().rsquared
+        rsquared = (
+            OLS(tmp_df.iloc[:, idx], tmp_df.loc[:, np.arange(tmp_df.shape[1]) != idx])
+            .fit()
+            .rsquared
+        )
         del tmp_df
         return rsquared
 
@@ -293,7 +346,9 @@ class main():
         for i in range(m1_dev.shape[1]):
             for j in range(m2_dev.shape[1]):
                 mask = np.logical_or(np.isnan(m1_dev[:, i]), np.isnan(m2_dev[:, j]))
-                r[i, j] = np.sum(m1_dev[~mask, i] * m2_dev[~mask, j]) / np.sqrt(m1_rss[i] * m2_rss[j])
+                r[i, j] = np.sum(m1_dev[~mask, i] * m2_dev[~mask, j]) / np.sqrt(
+                    m1_rss[i] * m2_rss[j]
+                )
 
         rf = r.flatten()
         df = m1.shape[0] - 2
@@ -302,32 +357,45 @@ class main():
         p = pf.reshape(m1.shape[1], m2.shape[1])
         return r, p
 
-    def plot_heatmap(self, df1, df2, xlabel1="", ylabel1="", xlabel2="",
-                     ylabel2=""):
+    def plot_heatmap(self, df1, df2, xlabel1="", ylabel1="", xlabel2="", ylabel2=""):
         sns.set_style("ticks")
-        fig, axes = plt.subplots(nrows=2,
-                                 ncols=2,
-                                 figsize=(1 * (df1.shape[1] + df2.shape[1]) + 10, 1 * max(df1.shape[0], df2.shape[0]) + 10),
-                                 gridspec_kw={"width_ratios": [(1 / (df1.shape[1] + df2.shape[1])) * df1.shape[1],
-                                                               (1 / (df1.shape[1] + df2.shape[1])) * df2.shape[1]],
-                                              "height_ratios": [0.8, 0.2]})
+        fig, axes = plt.subplots(
+            nrows=2,
+            ncols=2,
+            figsize=(
+                1 * (df1.shape[1] + df2.shape[1]) + 10,
+                1 * max(df1.shape[0], df2.shape[0]) + 10,
+            ),
+            gridspec_kw={
+                "width_ratios": [
+                    (1 / (df1.shape[1] + df2.shape[1])) * df1.shape[1],
+                    (1 / (df1.shape[1] + df2.shape[1])) * df2.shape[1],
+                ],
+                "height_ratios": [0.8, 0.2],
+            },
+        )
         sns.set(color_codes=True)
 
-        self.single_heatmap(ax=axes[0, 0],
-                            df=df1,
-                            xlabel=xlabel1,
-                            ylabel=ylabel1,
-                            title="blood")
-        self.single_heatmap(ax=axes[0, 1],
-                            df=df2,
-                            xlabel=xlabel2,
-                            ylabel=ylabel2,
-                            title="brain")
+        self.single_heatmap(
+            ax=axes[0, 0], df=df1, xlabel=xlabel1, ylabel=ylabel1, title="blood"
+        )
+        self.single_heatmap(
+            ax=axes[0, 1], df=df2, xlabel=xlabel2, ylabel=ylabel2, title="brain"
+        )
         axes[1, 0].set_axis_off()
         axes[1, 1].set_axis_off()
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "{}_{}RSquaredFiltering.{}".format(self.outfile, str(self.rsquared_threshold).replace(".", ""), extension)))
+            fig.savefig(
+                os.path.join(
+                    self.outdir,
+                    "{}_{}RSquaredFiltering.{}".format(
+                        self.outfile,
+                        str(self.rsquared_threshold).replace(".", ""),
+                        extension,
+                    ),
+                )
+            )
         plt.close()
 
     @staticmethod
@@ -336,18 +404,19 @@ class main():
         annot_df = annot_df.round(2)
         annot_df.fillna("", inplace=True)
 
-        hm = sns.heatmap(df,
-                         cmap=sns.diverging_palette(246, 24,
-                                                    as_cmap=True),
-                         vmin=-1,
-                         vmax=1,
-                         center=0,
-                         square=True,
-                         annot=annot_df,
-                         fmt='',
-                         cbar=False,
-                         annot_kws={"size": 14, "color": "#000000"},
-                         ax=ax)
+        hm = sns.heatmap(
+            df,
+            cmap=sns.diverging_palette(246, 24, as_cmap=True),
+            vmin=-1,
+            vmax=1,
+            center=0,
+            square=True,
+            annot=annot_df,
+            fmt="",
+            cbar=False,
+            annot_kws={"size": 14, "color": "#000000"},
+            ax=ax,
+        )
 
         ax.set_xlabel(xlabel, fontsize=75)
         ax.set_ylabel(ylabel, fontsize=75)
@@ -359,11 +428,27 @@ class main():
     def print_arguments(self):
         print("Arguments:")
         print("  > MetaBrain:")
-        print("  >     (1) {}: {} {}".format(self.meta1_name, self.meta1_path, "[T]" if self.meta1_transpose else ""))
-        print("  >     (2) {}: {} {}".format(self.meta2_name, self.meta2_path, "[T]" if self.meta2_transpose else ""))
+        print(
+            "  >     (1) {}: {} {}".format(
+                self.meta1_name, self.meta1_path, "[T]" if self.meta1_transpose else ""
+            )
+        )
+        print(
+            "  >     (2) {}: {} {}".format(
+                self.meta2_name, self.meta2_path, "[T]" if self.meta2_transpose else ""
+            )
+        )
         print("  > BIOS:")
-        print("  >     (1) {}: {} {}".format(self.bios1_name, self.bios1_path, "[T]" if self.bios1_transpose else ""))
-        print("  >     (2) {}: {} {}".format(self.bios2_name, self.bios2_path, "[T]" if self.bios2_transpose else ""))
+        print(
+            "  >     (1) {}: {} {}".format(
+                self.bios1_name, self.bios1_path, "[T]" if self.bios1_transpose else ""
+            )
+        )
+        print(
+            "  >     (2) {}: {} {}".format(
+                self.bios2_name, self.bios2_path, "[T]" if self.bios2_transpose else ""
+            )
+        )
         print("  > R2 threshold: {}".format(self.rsquared_threshold))
         print("  > Extensions: {}".format(self.extensions))
         print("  > Outfile: {}".format(self.outfile))
@@ -371,6 +456,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

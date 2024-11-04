@@ -24,7 +24,8 @@ import numpy as np
 from scipy import stats
 import seaborn as sns
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
@@ -37,12 +38,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -50,35 +51,37 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.x_data_path = getattr(arguments, 'x_data')
-        self.x_transpose = getattr(arguments, 'x_transpose')
-        self.x_index = " ".join(getattr(arguments, 'x_index'))
-        self.x_ranked = getattr(arguments, 'x_ranked')
-        self.x_log10 = getattr(arguments, 'x_log10')
-        x_label = getattr(arguments, 'x_label')
+        self.x_data_path = getattr(arguments, "x_data")
+        self.x_transpose = getattr(arguments, "x_transpose")
+        self.x_index = " ".join(getattr(arguments, "x_index"))
+        self.x_ranked = getattr(arguments, "x_ranked")
+        self.x_log10 = getattr(arguments, "x_log10")
+        x_label = getattr(arguments, "x_label")
         if x_label is None:
             x_label = self.x_index
         self.x_label = x_label
-        self.y_data_path = getattr(arguments, 'y_data')
-        self.y_transpose = getattr(arguments, 'y_transpose')
-        self.y_index = " ".join(getattr(arguments, 'y_index'))
-        self.y_ranked = getattr(arguments, 'y_ranked')
-        self.y_log10 = getattr(arguments, 'y_log10')
-        y_label = getattr(arguments, 'y_label')
+        self.y_data_path = getattr(arguments, "y_data")
+        self.y_transpose = getattr(arguments, "y_transpose")
+        self.y_index = " ".join(getattr(arguments, "y_index"))
+        self.y_ranked = getattr(arguments, "y_ranked")
+        self.y_log10 = getattr(arguments, "y_log10")
+        y_label = getattr(arguments, "y_label")
         if y_label is None:
             y_label = self.y_index
         self.y_label = y_label
-        self.std_path = getattr(arguments, 'sample_to_dataset')
-        self.palette_path = getattr(arguments, 'palette')
-        self.out_filename = getattr(arguments, 'outfile')
-        self.extensions = getattr(arguments, 'extension')
+        self.std_path = getattr(arguments, "sample_to_dataset")
+        self.palette_path = getattr(arguments, "palette")
+        self.out_filename = getattr(arguments, "outfile")
+        self.extensions = getattr(arguments, "extension")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
@@ -91,96 +94,104 @@ class main():
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-xd",
-                            "--x_data",
-                            type=str,
-                            required=True,
-                            help="The path to the x-axis data matrix.")
-        parser.add_argument("-x_transpose",
-                            action='store_true',
-                            help="Transpose X.")
-        parser.add_argument("-xi",
-                            "--x_index",
-                            nargs="*",
-                            type=str,
-                            required=True,
-                            help="The index name.")
-        parser.add_argument("-x_ranked",
-                            action='store_true',
-                            help="Rank X.")
-        parser.add_argument("-x_log10",
-                            action='store_true',
-                            help="-log10 transform the x values."
-                                 " Default: False.")
-        parser.add_argument("-xl",
-                            "--x_label",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The x-axis label.")
-        parser.add_argument("-yd",
-                            "--y_data",
-                            type=str,
-                            required=True,
-                            help="The path to the y-axis data matrix.")
-        parser.add_argument("-y_transpose",
-                            action='store_true',
-                            help="Transpose Y.")
-        parser.add_argument("-yi",
-                            "--y_index",
-                            nargs="*",
-                            type=str,
-                            required=True,
-                            help="The index name.")
-        parser.add_argument("-y_ranked",
-                            action='store_true',
-                            help="Rank Y.")
-        parser.add_argument("-y_log10",
-                            action='store_true',
-                            help="-log10 transform the y values."
-                                 " Default: False.")
-        parser.add_argument("-yl",
-                            "--y_label",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The y-axis label.")
-        parser.add_argument("-std",
-                            "--sample_to_dataset",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to the sample-dataset link matrix.")
-        parser.add_argument("-p",
-                            "--palette",
-                            type=str,
-                            required=False,
-                            default=None,
-                            help="The path to a json file with the"
-                                 "dataset to color combinations.")
-        parser.add_argument("-o",
-                            "--outfile",
-                            type=str,
-                            required=True,
-                            help="The name of the outfile.")
-        parser.add_argument("-e",
-                            "--extension",
-                            nargs="+",
-                            type=str,
-                            choices=["png", "pdf", "eps"],
-                            default=["png"],
-                            help="The figure file extension. "
-                                 "Default: 'png'.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-xd",
+            "--x_data",
+            type=str,
+            required=True,
+            help="The path to the x-axis data matrix.",
+        )
+        parser.add_argument("-x_transpose", action="store_true", help="Transpose X.")
+        parser.add_argument(
+            "-xi",
+            "--x_index",
+            nargs="*",
+            type=str,
+            required=True,
+            help="The index name.",
+        )
+        parser.add_argument("-x_ranked", action="store_true", help="Rank X.")
+        parser.add_argument(
+            "-x_log10",
+            action="store_true",
+            help="-log10 transform the x values." " Default: False.",
+        )
+        parser.add_argument(
+            "-xl",
+            "--x_label",
+            type=str,
+            required=False,
+            default=None,
+            help="The x-axis label.",
+        )
+        parser.add_argument(
+            "-yd",
+            "--y_data",
+            type=str,
+            required=True,
+            help="The path to the y-axis data matrix.",
+        )
+        parser.add_argument("-y_transpose", action="store_true", help="Transpose Y.")
+        parser.add_argument(
+            "-yi",
+            "--y_index",
+            nargs="*",
+            type=str,
+            required=True,
+            help="The index name.",
+        )
+        parser.add_argument("-y_ranked", action="store_true", help="Rank Y.")
+        parser.add_argument(
+            "-y_log10",
+            action="store_true",
+            help="-log10 transform the y values." " Default: False.",
+        )
+        parser.add_argument(
+            "-yl",
+            "--y_label",
+            type=str,
+            required=False,
+            default=None,
+            help="The y-axis label.",
+        )
+        parser.add_argument(
+            "-std",
+            "--sample_to_dataset",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to the sample-dataset link matrix.",
+        )
+        parser.add_argument(
+            "-p",
+            "--palette",
+            type=str,
+            required=False,
+            default=None,
+            help="The path to a json file with the" "dataset to color combinations.",
+        )
+        parser.add_argument(
+            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+        )
+        parser.add_argument(
+            "-e",
+            "--extension",
+            nargs="+",
+            type=str,
+            choices=["png", "pdf", "eps"],
+            default=["png"],
+            help="The figure file extension. " "Default: 'png'.",
+        )
 
         return parser.parse_args()
 
@@ -262,53 +273,77 @@ class main():
             palette = self.palette
 
         print("Plotting.")
-        self.single_regplot(df=plot_df,
-                            hue=hue,
-                            palette=palette,
-                            xlabel=xlabel,
-                            ylabel=ylabel,
-                            filename=self.out_filename)
+        self.single_regplot(
+            df=plot_df,
+            hue=hue,
+            palette=palette,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            filename=self.out_filename,
+        )
 
     @staticmethod
-    def load_file(inpath, header, index_col, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
-    def single_regplot(self, df, x="x", y="y", hue=None, palette=None,
-                       xlabel=None, ylabel=None, title="", filename="plot"):
+    def single_regplot(
+        self,
+        df,
+        x="x",
+        y="y",
+        hue=None,
+        palette=None,
+        xlabel=None,
+        ylabel=None,
+        title="",
+        filename="plot",
+    ):
         if xlabel is None:
             xlabel = x
         if ylabel is None:
             ylabel = y
 
-        sns.set(rc={'figure.figsize': (12, 9)})
+        sns.set(rc={"figure.figsize": (12, 9)})
         sns.set_style("ticks")
-        fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2,
-                                       gridspec_kw={"width_ratios": [0.8, 0.2]})
+        fig, (ax1, ax2) = plt.subplots(
+            nrows=1, ncols=2, gridspec_kw={"width_ratios": [0.8, 0.2]}
+        )
         sns.despine(fig=fig, ax=ax1)
-        ax2.axis('off')
+        ax2.axis("off")
 
         # Set annotation.
         pearson_coef, pearson_p = stats.pearsonr(df[y], df[x])
         ax1.annotate(
-            'total N = {:,}'.format(df.shape[0]),
+            "total N = {:,}".format(df.shape[0]),
             xy=(0.03, 0.94),
             xycoords=ax1.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
         ax1.annotate(
-            'total r = {:.2f} [p = {:.2e}]'.format(pearson_coef, pearson_p),
+            "total r = {:.2f} [p = {:.2e}]".format(pearson_coef, pearson_p),
             xy=(0.03, 0.90),
             xycoords=ax1.transAxes,
             color="#000000",
             fontsize=14,
-            fontweight='bold')
+            fontweight="bold",
+        )
 
         group_column = hue
         if hue is None:
@@ -328,13 +363,20 @@ class main():
                 facecolors = palette[hue_group]
                 color = facecolors
 
-            sns.regplot(x=x, y=y, data=subset, ci=None,
-                        scatter_kws={'facecolors': facecolors,
-                                     # 's': 10,
-                                     # 'alpha': 0.2,
-                                     'linewidth': 0},
-                        line_kws={"color": color},
-                        ax=ax1)
+            sns.regplot(
+                x=x,
+                y=y,
+                data=subset,
+                ci=None,
+                scatter_kws={
+                    "facecolors": facecolors,
+                    # 's': 10,
+                    # 'alpha': 0.2,
+                    "linewidth": 0,
+                },
+                line_kws={"color": color},
+                ax=ax1,
+            )
 
             if hue is not None:
                 subset_pearson_coef, _ = stats.pearsonr(subset[y], subset[x])
@@ -351,20 +393,22 @@ class main():
                     r = "NA"
                     if hue_group in group_corr_coef:
                         r = "{:.2f}".format(group_corr_coef[hue_group])
-                    handles.append([mpatches.Patch(color=palette[hue_group], label="{} [n={}; r={}]".format(hue_group, n, r)), group_corr_coef[hue_group]])
+                    handles.append(
+                        [
+                            mpatches.Patch(
+                                color=palette[hue_group],
+                                label="{} [n={}; r={}]".format(hue_group, n, r),
+                            ),
+                            group_corr_coef[hue_group],
+                        ]
+                    )
             handles.sort(key=lambda x: -x[1])
             handles = [x[0] for x in handles]
             ax2.legend(handles=handles, loc="center", fontsize=8)
 
-        ax1.set_xlabel(xlabel,
-                       fontsize=14,
-                       fontweight='bold')
-        ax1.set_ylabel(ylabel,
-                       fontsize=14,
-                       fontweight='bold')
-        ax1.set_title(title,
-                      fontsize=18,
-                      fontweight='bold')
+        ax1.set_xlabel(xlabel, fontsize=14, fontweight="bold")
+        ax1.set_ylabel(ylabel, fontsize=14, fontweight="bold")
+        ax1.set_title(title, fontsize=18, fontweight="bold")
 
         # Change margins.
         xlim = ax1.get_xlim()
@@ -405,6 +449,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

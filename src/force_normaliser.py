@@ -62,4 +62,6 @@ class ForceNormaliser:
 
     @staticmethod
     def force_normalise(x, axis):
-        return ndtri((pd.DataFrame(x).rank(axis=axis, ascending=True) - 0.5) / x.shape[axis])
+        return ndtri(
+            (pd.DataFrame(x).rank(axis=axis, ascending=True) - 0.5) / x.shape[axis]
+        )

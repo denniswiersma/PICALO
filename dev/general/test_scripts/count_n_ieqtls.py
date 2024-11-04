@@ -24,7 +24,8 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import upsetplot as up
 
@@ -37,12 +38,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax:
@@ -50,63 +51,73 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         # Get the command line arguments.
         arguments = self.create_argument_parser()
-        self.indir = getattr(arguments, 'indir')
-        self.exclude = getattr(arguments, 'exclude')
-        self.skip_files = getattr(arguments, 'skip_files')
-        self.n_files = getattr(arguments, 'n_files')
-        self.conditional = getattr(arguments, 'conditional')
-        self.plot = getattr(arguments, 'plot')
+        self.indir = getattr(arguments, "indir")
+        self.exclude = getattr(arguments, "exclude")
+        self.skip_files = getattr(arguments, "skip_files")
+        self.n_files = getattr(arguments, "n_files")
+        self.conditional = getattr(arguments, "conditional")
+        self.plot = getattr(arguments, "plot")
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'plot')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))), "plot"
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__,
-                                         description=__description__)
+        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
 
         # Add optional arguments.
-        parser.add_argument("-v",
-                            "--version",
-                            action="version",
-                            version="{} {}".format(__program__,
-                                                   __version__),
-                            help="show program's version number and exit.")
-        parser.add_argument("-i",
-                            "--indir",
-                            type=str,
-                            required=True,
-                            help="The path to input directory.")
-        parser.add_argument("-e",
-                            "--exclude",
-                            nargs="*",
-                            type=str,
-                            default=None,
-                            help="The covariates to exclude.")
-        parser.add_argument("-s",
-                            "--skip_files",
-                            type=int,
-                            default=0,
-                            help="The number of files to load. "
-                                 "Default: 0.")
-        parser.add_argument("-n",
-                            "--n_files",
-                            type=int,
-                            default=None,
-                            help="The number of files to load. "
-                                 "Default: all.")
-        parser.add_argument("-conditional",
-                            action='store_true',
-                            help="Perform conditional analysis. Default: False.")
-        parser.add_argument("-plot",
-                            action='store_true',
-                            help="Create upsetplot. Default: False.")
+        parser.add_argument(
+            "-v",
+            "--version",
+            action="version",
+            version="{} {}".format(__program__, __version__),
+            help="show program's version number and exit.",
+        )
+        parser.add_argument(
+            "-i",
+            "--indir",
+            type=str,
+            required=True,
+            help="The path to input directory.",
+        )
+        parser.add_argument(
+            "-e",
+            "--exclude",
+            nargs="*",
+            type=str,
+            default=None,
+            help="The covariates to exclude.",
+        )
+        parser.add_argument(
+            "-s",
+            "--skip_files",
+            type=int,
+            default=0,
+            help="The number of files to load. " "Default: 0.",
+        )
+        parser.add_argument(
+            "-n",
+            "--n_files",
+            type=int,
+            default=None,
+            help="The number of files to load. " "Default: all.",
+        )
+        parser.add_argument(
+            "-conditional",
+            action="store_true",
+            help="Perform conditional analysis. Default: False.",
+        )
+        parser.add_argument(
+            "-plot", action="store_true", help="Create upsetplot. Default: False."
+        )
 
         return parser.parse_args()
 
@@ -118,17 +129,28 @@ class main():
         ieqtl_fdr_df_list = []
         inpaths = glob.glob(os.path.join(self.indir, "*.txt.gz"))
         if self.conditional:
-            inpaths = [inpath for inpath in inpaths if inpath.endswith("_conditional.txt.gz")]
+            inpaths = [
+                inpath for inpath in inpaths if inpath.endswith("_conditional.txt.gz")
+            ]
         else:
-            inpaths = [inpath for inpath in inpaths if not inpath.endswith("_conditional.txt.gz")]
+            inpaths = [
+                inpath
+                for inpath in inpaths
+                if not inpath.endswith("_conditional.txt.gz")
+            ]
         inpaths.sort(key=self.natural_keys)
         for i, inpath in enumerate(inpaths):
-            if (self.skip_files is not None and i < self.skip_files) or \
-                    (self.n_files is not None and len(ieqtl_fdr_df_list) == self.n_files):
+            if (self.skip_files is not None and i < self.skip_files) or (
+                self.n_files is not None and len(ieqtl_fdr_df_list) == self.n_files
+            ):
                 continue
 
-            filename = os.path.basename(inpath).split(".")[0].replace("_conditional", "")
-            if filename in ["call_rate", "genotype_stats"] or (self.exclude is not None and filename in self.exclude):
+            filename = (
+                os.path.basename(inpath).split(".")[0].replace("_conditional", "")
+            )
+            if filename in ["call_rate", "genotype_stats"] or (
+                self.exclude is not None and filename in self.exclude
+            ):
                 continue
 
             df = self.load_file(inpath, header=0, index_col=None)
@@ -158,13 +180,23 @@ class main():
         total_eqtls = ieqtl_fdr_df.shape[0]
         for value, n in counts.items():
             if value != 0:
-                print("\tN-eQTLs with {} interaction: {:,} [{:.2f}%]".format(value, n, (100 / eqtls_w_inter) * n))
-        print("\tUnique: {:,} / {:,} [{:.2f}%]".format(eqtls_w_inter, total_eqtls, (100 / total_eqtls) * eqtls_w_inter))
+                print(
+                    "\tN-eQTLs with {} interaction: {:,} [{:.2f}%]".format(
+                        value, n, (100 / eqtls_w_inter) * n
+                    )
+                )
+        print(
+            "\tUnique: {:,} / {:,} [{:.2f}%]".format(
+                eqtls_w_inter, total_eqtls, (100 / total_eqtls) * eqtls_w_inter
+            )
+        )
 
         if self.plot:
             pic_data = {}
             for col in ieqtl_fdr_df.columns:
-                pic_data[col] = set(ieqtl_fdr_df.loc[ieqtl_fdr_df[col] == 1, :].index.tolist())
+                pic_data[col] = set(
+                    ieqtl_fdr_df.loc[ieqtl_fdr_df[col] == 1, :].index.tolist()
+                )
 
             # Plot upsetplot of all PICS combined.
             counts = self.count(pic_data)
@@ -172,24 +204,43 @@ class main():
             print(counts)
 
             print("Creating plot.")
-            up.plot(counts, sort_by='cardinality', show_counts=True)
-            plt.savefig(os.path.join(self.outdir, "{}_PICS_upsetplot.png".format(os.path.basename(self.indir))))
+            up.plot(counts, sort_by="cardinality", show_counts=True)
+            plt.savefig(
+                os.path.join(
+                    self.outdir,
+                    "{}_PICS_upsetplot.png".format(os.path.basename(self.indir)),
+                )
+            )
             plt.close()
 
     @staticmethod
-    def load_file(inpath, header=0, index_col=0, sep="\t", low_memory=True,
-                  nrows=None, skiprows=None):
-        df = pd.read_csv(inpath, sep=sep, header=header, index_col=index_col,
-                         low_memory=low_memory, nrows=nrows, skiprows=skiprows)
-        print("\tLoaded dataframe: {} "
-              "with shape: {}".format(os.path.basename(inpath),
-                                      df.shape))
+    def load_file(
+        inpath,
+        header=0,
+        index_col=0,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
+    ):
+        df = pd.read_csv(
+            inpath,
+            sep=sep,
+            header=header,
+            index_col=index_col,
+            low_memory=low_memory,
+            nrows=nrows,
+            skiprows=skiprows,
+        )
+        print(
+            "\tLoaded dataframe: {} "
+            "with shape: {}".format(os.path.basename(inpath), df.shape)
+        )
         return df
 
     @staticmethod
     def natural_keys(text):
-        return [int(c) if c.isdigit() else c for c in re.split(r'(\d+)', text)]
-
+        return [int(c) if c.isdigit() else c for c in re.split(r"(\d+)", text)]
 
     @staticmethod
     def count(input_data):
@@ -245,6 +296,6 @@ class main():
         print("")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()

@@ -28,12 +28,12 @@ __maintainer__ = "Martijn Vochteloo"
 __email__ = "m.vochteloo@rug.nl"
 __license__ = "BSD (3-Clause)"
 __version__ = 1.0
-__description__ = "{} is a program developed and maintained by {}. " \
-                  "This program is licensed under the {} license and is " \
-                  "provided 'as-is' without any warranty or indemnification " \
-                  "of any kind.".format(__program__,
-                                        __author__,
-                                        __license__)
+__description__ = (
+    "{} is a program developed and maintained by {}. "
+    "This program is licensed under the {} license and is "
+    "provided 'as-is' without any warranty or indemnification "
+    "of any kind.".format(__program__, __author__, __license__)
+)
 
 """
 Syntax: 
@@ -41,26 +41,46 @@ Syntax:
 """
 
 
-class main():
+class main:
     def __init__(self):
         self.bryois_path = "/groups/umcg-biogen/tmp01/output/2019-11-06-FreezeTwoDotOne/2020-10-12-deconvolution/deconvolution/data/julienbryois2021/media-3.xlsx"
         self.snps_indir = "/groups/umcg-biogen/tmp01/input/GENOTYPES/MAFFilteredSorted/"
-        self.datasets = ["NABEC-Human550", "GVEX-V2", "LIBD-h650", "UCLA-ASD", "NABEC-Human610", "BrainGVEX-V2", "CMC", "LIBD-1M", "CMC-set2", "TargetALS", "AMPAD-ROSMAP", "GTEX-WGS", "AMPAD-MAYO", "AMPAD-MSBB", "2020-01-08-ENA-genotypes", "LIBD-h650"]
+        self.datasets = [
+            "NABEC-Human550",
+            "GVEX-V2",
+            "LIBD-h650",
+            "UCLA-ASD",
+            "NABEC-Human610",
+            "BrainGVEX-V2",
+            "CMC",
+            "LIBD-1M",
+            "CMC-set2",
+            "TargetALS",
+            "AMPAD-ROSMAP",
+            "GTEX-WGS",
+            "AMPAD-MAYO",
+            "AMPAD-MSBB",
+            "2020-01-08-ENA-genotypes",
+            "LIBD-h650",
+        ]
 
         # Set variables.
-        self.outdir = os.path.join(str(os.path.dirname(os.path.abspath(__file__))), 'prepare_bryois_genotype_dump')
+        self.outdir = os.path.join(
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "prepare_bryois_genotype_dump",
+        )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
         self.bryois_ct_trans = {
-            'Astrocytes': 'Astrocytes',
-            'Endothelial cells': 'EndothelialCells',
-            'Excitatory neurons': 'ExcitatoryNeurons',
-            'Inhibitory neurons': 'InhibitoryNeurons',
-            'Microglia': 'Microglia',
-            'OPCs / COPs': 'Oligodendrocytes',
-            'Oligodendrocytes': 'OPCsCOPs',
-            'Pericytes': 'Pericytes'
+            "Astrocytes": "Astrocytes",
+            "Endothelial cells": "EndothelialCells",
+            "Excitatory neurons": "ExcitatoryNeurons",
+            "Inhibitory neurons": "InhibitoryNeurons",
+            "Microglia": "Microglia",
+            "OPCs / COPs": "Oligodendrocytes",
+            "Oligodendrocytes": "OPCsCOPs",
+            "Pericytes": "Pericytes",
         }
 
     def start(self):
@@ -96,17 +116,27 @@ class main():
 
         print("Save.")
         # bryois_df.to_csv(os.path.join(self.outdir, "bryois_cis_eqtl.txt.gz"), sep="\t", header=True, index=False, compression="gzip")
-        bryois_df = pd.read_csv(os.path.join(self.outdir, "bryois_cis_eqtl.txt.gz"), sep="\t", header=0, index_col=None)
+        bryois_df = pd.read_csv(
+            os.path.join(self.outdir, "bryois_cis_eqtl.txt.gz"),
+            sep="\t",
+            header=0,
+            index_col=None,
+        )
         print(bryois_df)
 
         print("Save SNPs for genotype dump")
         snp_df = bryois_df[["SNPName"]].copy()
         snp_df.dropna(inplace=True)
         snp_df.drop_duplicates(inplace=True)
-        snp_df.to_csv(os.path.join(self.outdir, "bryois_cis_eqtl_snps.txt"), sep="\t", header=False, index=False)
+        snp_df.to_csv(
+            os.path.join(self.outdir, "bryois_cis_eqtl_snps.txt"),
+            sep="\t",
+            header=False,
+            index=False,
+        )
         del snp_df
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     m = main()
     m.start()
