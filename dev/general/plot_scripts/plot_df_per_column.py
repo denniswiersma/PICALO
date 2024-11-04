@@ -14,17 +14,18 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import os
 
 # Third party imports.
+import matplotlib
 import pandas as pd
 import seaborn as sns
-import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 
 # Local application imports.
 
@@ -43,7 +44,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./plot_df_per_column.py -h
 """
 
@@ -129,7 +130,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -140,7 +143,11 @@ class main:
             help="show program's version number and exit.",
         )
         parser.add_argument(
-            "-d", "--data", type=str, required=True, help="The path to the input data."
+            "-d",
+            "--data",
+            type=str,
+            required=True,
+            help="The path to the input data.",
         )
         parser.add_argument(
             "-n",
@@ -193,12 +200,17 @@ class main:
 
         print("Loading sample to dataset")
         std_df = self.load_file(self.std_path, header=0, index_col=None)
-        std_dict = dict(zip(std_df.iloc[:, 0], std_df.iloc[:, 1]))
+        # WARNING: changed indexes from 0 to 1 and 1 to 2 to accept the full gte file
+        std_dict = dict(zip(std_df.iloc[:, 1], std_df.iloc[:, 2]))
 
         print("\tAdding color.")
-        overlap = set(df.index.values).intersection(set(std_df.iloc[:, 0].values))
+        overlap = set(df.index.values).intersection(
+            # WARNING: changed index from 0 to 1 to accept the full gte file
+            set(std_df.iloc[:, 1].values)
+        )
         if len(overlap) != df.shape[0]:
             print("Error, some samples do not have a dataset.")
+            print(f"overlap len {len(overlap)}")
             exit()
         df["dataset"] = df.index.map(std_dict)
 
@@ -230,7 +242,9 @@ class main:
         print(outlier_df)
         print(outlier_df["dataset"].value_counts())
         outlier_df.to_csv(
-            os.path.join(self.outdir, self.output_filename + "_outliers.txt.gz"),
+            os.path.join(
+                self.outdir, self.output_filename + "_outliers.txt.gz"
+            ),
             compression="gzip",
             sep="\t",
             header=True,
@@ -248,7 +262,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -337,7 +357,9 @@ class main:
         fig.suptitle(title, fontsize=40, fontweight="bold")
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "{}.{}".format(name, extension)))
+            fig.savefig(
+                os.path.join(self.outdir, "{}.{}".format(name, extension))
+            )
         plt.close()
 
     def print_arguments(self):

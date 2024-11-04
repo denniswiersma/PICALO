@@ -14,17 +14,18 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
-from pathlib import Path
+
 import argparse
 import os
+from pathlib import Path
 
 # Third party imports.
+import matplotlib
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from scipy import stats
 from scipy.special import ndtri
-import seaborn as sns
-import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -86,7 +87,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -123,7 +126,8 @@ class main:
             type=int,
             required=False,
             default=-1,
-            help="The genotype value that equals a missing " "value. Default: -1.",
+            help="The genotype value that equals a missing "
+            "value. Default: -1.",
         )
         parser.add_argument(
             "-ex",
@@ -256,18 +260,24 @@ class main:
         tcov_inter_m = None
         tcov_inter_labels = None
         if self.tcov_inter_path is not None:
-            tcov_inter_df = self.load_file(self.tcov_inter_path, header=0, index_col=0)
+            tcov_inter_df = self.load_file(
+                self.tcov_inter_path, header=0, index_col=0
+            )
             tcov_inter_m, tcov_inter_labels = self.load_tech_cov(
-                df=tcov_inter_df, name="tech. cov. with interaction", std_df=std_df
+                df=tcov_inter_df,
+                name="tech. cov. with interaction",
+                std_df=std_df,
             )
 
-        corr_m, corr_inter_m, correction_m_labels = self.construct_correct_matrices(
-            dataset_m=dataset_m,
-            dataset_labels=datasets,
-            tcov_m=tcov_m,
-            tcov_labels=tcov_labels,
-            tcov_inter_m=tcov_inter_m,
-            tcov_inter_labels=tcov_inter_labels,
+        corr_m, corr_inter_m, correction_m_labels = (
+            self.construct_correct_matrices(
+                dataset_m=dataset_m,
+                dataset_labels=datasets,
+                tcov_m=tcov_m,
+                tcov_labels=tcov_labels,
+                tcov_inter_m=tcov_inter_m,
+                tcov_inter_labels=tcov_inter_labels,
+            )
         )
 
         ########################################################################
@@ -290,7 +300,9 @@ class main:
                 plot_ids[cov2] = [eqlt_id]
         ########################################################################
 
-        eqtls_loaded = ["{}_{}".format(gene, snp) for gene, snp in zip(genes, snps)]
+        eqtls_loaded = [
+            "{}_{}".format(gene, snp) for gene, snp in zip(genes, snps)
+        ]
         pic_corr_m = np.copy(corr_m)
         pic_corr_inter_m = np.copy(corr_inter_m)
         for pic_index in range(1, max_pic + 1):
@@ -299,7 +311,9 @@ class main:
                 # Loading previous run PIC.
                 with open(
                     os.path.join(
-                        self.picalo_path, "PIC{}".format(pic_index - 1), "component.npy"
+                        self.picalo_path,
+                        "PIC{}".format(pic_index - 1),
+                        "component.npy",
                     ),
                     "rb",
                 ) as f:
@@ -364,7 +378,9 @@ class main:
 
                 # Check the call rate.
                 for dataset in data["dataset"].unique():
-                    sample_mask = (data["dataset"] == dataset).to_numpy(dtype=bool)
+                    sample_mask = (data["dataset"] == dataset).to_numpy(
+                        dtype=bool
+                    )
                     n_not_na = (
                         (data.loc[sample_mask, "genotype"] != self.genotype_na)
                         .astype(int)
@@ -428,28 +444,44 @@ class main:
 
                 # Force normalise.
                 for dataset in data["dataset"].unique():
-                    sample_mask = (data["dataset"] == dataset).to_numpy(dtype=bool)
+                    sample_mask = (data["dataset"] == dataset).to_numpy(
+                        dtype=bool
+                    )
                     data.loc[sample_mask, "expression1"] = ndtri(
                         (
-                            data.loc[sample_mask, "expression1"].rank(ascending=True)
+                            data.loc[sample_mask, "expression1"].rank(
+                                ascending=True
+                            )
                             - 0.5
                         )
                         / np.sum(sample_mask)
                     )
                     data.loc[sample_mask, "covariate1"] = ndtri(
-                        (data.loc[sample_mask, "covariate1"].rank(ascending=True) - 0.5)
+                        (
+                            data.loc[sample_mask, "covariate1"].rank(
+                                ascending=True
+                            )
+                            - 0.5
+                        )
                         / np.sum(sample_mask)
                     )
 
                     data.loc[sample_mask, "expression2"] = ndtri(
                         (
-                            data.loc[sample_mask, "expression2"].rank(ascending=True)
+                            data.loc[sample_mask, "expression2"].rank(
+                                ascending=True
+                            )
                             - 0.5
                         )
                         / np.sum(sample_mask)
                     )
                     data.loc[sample_mask, "covariate2"] = ndtri(
-                        (data.loc[sample_mask, "covariate2"].rank(ascending=True) - 0.5)
+                        (
+                            data.loc[sample_mask, "covariate2"].rank(
+                                ascending=True
+                            )
+                            - 0.5
+                        )
                         / np.sum(sample_mask)
                     )
 
@@ -469,9 +501,9 @@ class main:
                         counts.loc[x] = 0
                 zero_geno_count = (counts[0.0] * 2) + counts[1.0]
                 two_geno_count = (counts[2.0] * 2) + counts[1.0]
-                minor_allele_frequency = min(zero_geno_count, two_geno_count) / (
-                    zero_geno_count + two_geno_count
-                )
+                minor_allele_frequency = min(
+                    zero_geno_count, two_geno_count
+                ) / (zero_geno_count + two_geno_count)
                 (
                     eqtl_pvalue1,
                     eqtl_pearsonr1,
@@ -542,7 +574,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -581,7 +619,9 @@ class main:
 
         n_samples = std_df.shape[0]
 
-        print("\tWorking on technical covariates matrix matrix '{}'".format(name))
+        print(
+            "\tWorking on technical covariates matrix matrix '{}'".format(name)
+        )
 
         # Check for nan values.
         if df.isna().values.sum() > 0:
@@ -597,7 +637,9 @@ class main:
         variance_mask = df.std(axis=0) != 0
         n_zero_variance = variance_mask.shape[0] - variance_mask.sum()
         if n_zero_variance > 0:
-            print("\t  Dropping {} rows with 0 variance".format(n_zero_variance))
+            print(
+                "\t  Dropping {} rows with 0 variance".format(n_zero_variance)
+            )
             df = df.loc[:, variance_mask]
 
         # Convert to numpy.
@@ -616,7 +658,12 @@ class main:
 
     @staticmethod
     def construct_correct_matrices(
-        dataset_m, dataset_labels, tcov_m, tcov_labels, tcov_inter_m, tcov_inter_labels
+        dataset_m,
+        dataset_labels,
+        tcov_m,
+        tcov_labels,
+        tcov_inter_m,
+        tcov_inter_labels,
     ):
         # Create the correction matrices.
         corr_m = None
@@ -661,7 +708,10 @@ class main:
     @staticmethod
     def calculate_annot(data, suffix=""):
         eqtl_pvalue = (
-            OLS(data["expression{}".format(suffix)], data[["intercept", "genotype"]])
+            OLS(
+                data["expression{}".format(suffix)],
+                data[["intercept", "genotype"]],
+            )
             .fit()
             .pvalues[1]
         )
@@ -760,7 +810,9 @@ class main:
         fig.suptitle(title, fontsize=25, fontweight="bold")
 
         for extension in self.extensions:
-            outpath = os.path.join(self.outdir, "{}.{}".format(filename, extension))
+            outpath = os.path.join(
+                self.outdir, "{}.{}".format(filename, extension)
+            )
             print("\t\tSaving plot: {}".format(os.path.basename(outpath)))
             fig.savefig(outpath)
         plt.close()
@@ -817,7 +869,11 @@ class main:
                         "linewidth": 0,
                         "alpha": 0.60,
                     },
-                    line_kws={"color": palette[group_id], "linewidth": 5, "alpha": 1},
+                    line_kws={
+                        "color": palette[group_id],
+                        "linewidth": 5,
+                        "alpha": 1,
+                    },
                     ax=ax,
                 )
 

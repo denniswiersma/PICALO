@@ -14,19 +14,20 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import os
 
+import matplotlib
 # Third party imports.
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from scipy import stats
-import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 
 # Local application imports.
 
@@ -45,7 +46,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./compare_tvalues.py -h
 """
 
@@ -78,7 +79,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -137,9 +140,13 @@ class main:
                 and "ieQTL std-interaction.1" in df.columns
             ):
                 df["t-value"] = (
-                    df["ieQTL beta-interaction.1"] / df["ieQTL std-interaction.1"]
+                    df["ieQTL beta-interaction.1"]
+                    / df["ieQTL std-interaction.1"]
                 )
-            elif "beta-interaction" in df.columns and "std-interaction" in df.columns:
+            elif (
+                "beta-interaction" in df.columns
+                and "std-interaction" in df.columns
+            ):
                 df["t-value"] = df["beta-interaction"] / df["std-interaction"]
             else:
                 print(df.columns.tolist())
@@ -170,7 +177,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -264,15 +277,27 @@ class main:
                         y="y",
                         data=plot_df,
                         ci=None,
-                        scatter_kws={"facecolors": plot_df["hue"], "linewidth": 0},
+                        scatter_kws={
+                            "facecolors": plot_df["hue"],
+                            "linewidth": 0,
+                        },
                         line_kws={"color": "#000000"},
                         ax=ax,
                     )
 
-                    ax.axvline(0, ls="--", color="#000000", alpha=0.15, zorder=-1)
-                    ax.axhline(0, ls="--", color="#000000", alpha=0.15, zorder=-1)
+                    ax.axvline(
+                        0, ls="--", color="#000000", alpha=0.15, zorder=-1
+                    )
+                    ax.axhline(
+                        0, ls="--", color="#000000", alpha=0.15, zorder=-1
+                    )
                     ax.axline(
-                        (0, 0), slope=1, ls="--", color="#000000", alpha=0.15, zorder=-1
+                        (0, 0),
+                        slope=1,
+                        ls="--",
+                        color="#000000",
+                        alpha=0.15,
+                        zorder=-1,
                     )
                     ax.axline(
                         (0, 0),
@@ -296,7 +321,9 @@ class main:
                         fontweight="bold",
                     )
 
-                    counts = dict(zip(*np.unique(plot_df["hue"], return_counts=True)))
+                    counts = dict(
+                        zip(*np.unique(plot_df["hue"], return_counts=True))
+                    )
                     for color in self.palette.values():
                         if color not in counts:
                             counts[color] = 0
@@ -312,7 +339,9 @@ class main:
 
         fig.suptitle(title, fontsize=40, fontweight="bold")
 
-        fig.savefig(os.path.join(self.outdir, "{}.png".format(self.output_filename)))
+        fig.savefig(
+            os.path.join(self.outdir, "{}.png".format(self.output_filename))
+        )
         plt.close()
 
     def print_arguments(self):

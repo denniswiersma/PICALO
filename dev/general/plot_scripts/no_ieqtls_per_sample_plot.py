@@ -14,16 +14,17 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import json
 import math
 import os
 
+import matplotlib
 # Third party imports.
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -75,7 +76,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -98,15 +101,21 @@ class main:
             type=str,
             required=False,
             default=None,
-            help="The path to a json file with the" "dataset to color combinations.",
+            help="The path to a json file with the"
+            "dataset to color combinations.",
         )
         parser.add_argument(
-            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+            "-o",
+            "--outfile",
+            type=str,
+            required=True,
+            help="The name of the outfile.",
         )
 
         return parser.parse_args()
 
     def start(self):
+        print("\n### no_ieqtls_per_sample_plot.py ###\n")
         self.print_arguments()
 
         print("Loading data")

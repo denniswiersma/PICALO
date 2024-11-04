@@ -14,6 +14,7 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import os
 
@@ -37,7 +38,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./filter_gte_file.py -h
 """
 
@@ -53,7 +54,9 @@ class main:
 
         # Set variables.
         self.outdir = os.path.join(
-            str(os.path.dirname(os.path.abspath(__file__))), "filter_gte_file", outdir
+            str(os.path.dirname(os.path.abspath(__file__))),
+            "filter_gte_file",
+            outdir,
         )
         if not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
@@ -109,11 +112,18 @@ class main:
         self.print_arguments()
 
         print("Loading data.")
-        gte_df = self.load_file(self.gte_path, header=0, index_col=None)
+        gte_df = self.load_file(
+            self.gte_path,
+            header=None,
+            names=["genotype_id", "rnaseq_id", "dataset"],
+            index_col=None,
+        )
+        print("dit is gte df")
         print(gte_df)
         se_df = None
         if self.e_gte_path is not None:
             se_df = self.load_file(self.e_gte_path, header=0, index_col=None)
+            print("dit is se df")
             print(se_df)
             print(se_df["dataset"].value_counts())
 
@@ -173,7 +183,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         if inpath.endswith(".pkl"):
             df = pd.read_pickle(inpath)
@@ -199,7 +215,13 @@ class main:
         if outpath.endswith(".gz"):
             compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        df.to_csv(
+            outpath,
+            sep=sep,
+            index=index,
+            header=header,
+            compression=compression,
+        )
         print(
             "\tSaved dataframe: {} "
             "with shape: {}".format(os.path.basename(outpath), df.shape)

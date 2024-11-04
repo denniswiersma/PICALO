@@ -14,22 +14,21 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
-import json
+
 import argparse
-import time
+import json
 import os
+import time
 
 # Third party imports.
+import matplotlib
 import numpy as np
 import pandas as pd
-from statsmodels.regression.linear_model import OLS
-from sklearn.decomposition import PCA
 import seaborn as sns
-import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 
 # Local application imports.
 
@@ -48,7 +47,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./pre_process_expression_matrix.py -h
 """
 
@@ -89,7 +88,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -100,7 +101,11 @@ class main:
             help="show program's version number and exit.",
         )
         parser.add_argument(
-            "-d", "--data", type=str, required=True, help="The path to the data matrix."
+            "-d",
+            "--data",
+            type=str,
+            required=True,
+            help="The path to the data matrix.",
         )
         parser.add_argument(
             "-ra",
@@ -148,7 +153,8 @@ class main:
             type=str,
             required=False,
             default=None,
-            help="The path to a json file with the" "dataset to color combinations.",
+            help="The path to a json file with the"
+            "dataset to color combinations.",
         )
         parser.add_argument(
             "-od",
@@ -174,7 +180,9 @@ class main:
 
         # Construct the output filename.
         filename = (
-            os.path.basename(self.data_path).replace(".gz", "").replace(".txt", "")
+            os.path.basename(self.data_path)
+            .replace(".gz", "")
+            .replace(".txt", "")
         )
 
         # Load sample-dataset file.
@@ -191,7 +199,11 @@ class main:
         )
         dataset_sample_counts.sort(key=lambda x: -x[1])
         datasets = [csc[0] for csc in dataset_sample_counts]
-        print("\tDatasets: {} [N = {:,}]".format(", ".join(datasets), len(datasets)))
+        print(
+            "\tDatasets: {} [N = {:,}]".format(
+                ", ".join(datasets), len(datasets)
+            )
+        )
 
         dataset_s = std_df.copy()
         dataset_s.set_index(std_df.columns[0], inplace=True)
@@ -246,7 +258,9 @@ class main:
         print("Step 6: construct correction matrix 1.")
         ram_df = None
         if self.rna_alignment_path is not None:
-            ram_df = self.load_file(self.rna_alignment_path, header=0, index_col=0)
+            ram_df = self.load_file(
+                self.rna_alignment_path, header=0, index_col=0
+            )
             ram_df = ram_df.loc[samples, :]
 
         sex_df = None
@@ -279,7 +293,12 @@ class main:
         )
 
         print("Step 7: remove technical covariates OLS.")
-        corrected_df = self.calculate_residuals(df=df, correction_df=correction_df)
+        bool_columns = correction_df.select_dtypes(include=["bool"]).columns
+        correction_df[bool_columns] = correction_df[bool_columns].astype(int)
+
+        corrected_df = self.calculate_residuals(
+            df=df, correction_df=correction_df
+        )
 
         print("Step 8: return distribution shape and location.")
         corrected_df = (
@@ -325,7 +344,9 @@ class main:
         )
 
         print("Step 13: remove technical covariates OLS.")
-        corrected_df = self.calculate_residuals(df=df, correction_df=correction_df)
+        corrected_df = self.calculate_residuals(
+            df=df, correction_df=correction_df
+        )
 
         print("\tSaving file.")
         self.save_file(
@@ -348,7 +369,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -371,7 +398,13 @@ class main:
         if outpath.endswith(".gz"):
             compression = "gzip"
 
-        df.to_csv(outpath, sep=sep, index=index, header=header, compression=compression)
+        df.to_csv(
+            outpath,
+            sep=sep,
+            index=index,
+            header=header,
+            compression=compression,
+        )
         print(
             "\tSaved dataframe: {} "
             "with shape: {}".format(os.path.basename(outpath), df.shape)
@@ -395,7 +428,9 @@ class main:
 
         return out_dict
 
-    def prepare_correction_matrix(self, ram_df, sex_df, mds_df, pic_df, dataset_df):
+    def prepare_correction_matrix(
+        self, ram_df, sex_df, mds_df, pic_df, dataset_df
+    ):
         ram_df_subset_df = None
         if ram_df is not None:
             # Remove columns without variance and filter the RNAseq alignment
@@ -502,7 +537,14 @@ class main:
 
         return pd.DataFrame(corrected_m, index=df.index, columns=df.columns)
 
-    def pca(self, df, filename, sample_to_dataset, file_appendix="", plot_appendix=""):
+    def pca(
+        self,
+        df,
+        filename,
+        sample_to_dataset,
+        file_appendix="",
+        plot_appendix="",
+    ):
         # samples should be on the columns and genes on the rows.
         zscores = (df - df.mean(axis=0)) / df.std(axis=0)
         pca = PCA(n_components=100)
@@ -533,8 +575,12 @@ class main:
             y="Comp2",
             hue="hue",
             palette=self.palette,
-            xlabel="PC1 [{:.2f}%]".format(pca.explained_variance_ratio_[0] * 100),
-            ylabel="PC2 [{:.2f}%]".format(pca.explained_variance_ratio_[1] * 100),
+            xlabel="PC1 [{:.2f}%]".format(
+                pca.explained_variance_ratio_[0] * 100
+            ),
+            ylabel="PC2 [{:.2f}%]".format(
+                pca.explained_variance_ratio_[1] * 100
+            ),
             title="PCA - eigenvectors",
             filename="eigenvectors_plot{}".format(plot_appendix),
         )
@@ -596,7 +642,9 @@ class main:
     def print_arguments(self):
         print("Arguments:")
         print("  > Data: {}".format(self.data_path))
-        print("  > RNAseq alignment metrics: {}".format(self.rna_alignment_path))
+        print(
+            "  > RNAseq alignment metrics: {}".format(self.rna_alignment_path)
+        )
         print("  > Sex: {}".format(self.sex_path))
         print("  > MDS: {}".format(self.mds_path))
         print("  > PIC: {}".format(self.pic_path))

@@ -14,20 +14,20 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import json
 import os
 
 # Third party imports.
-import pandas as pd
-import numpy as np
-from scipy import stats
-import seaborn as sns
 import matplotlib
+import numpy as np
+import pandas as pd
+import seaborn as sns
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 
 # Local application imports.
 
@@ -46,7 +46,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./create_regplot.py -h
 """
 
@@ -94,7 +94,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -111,7 +113,9 @@ class main:
             required=True,
             help="The path to the x-axis data matrix.",
         )
-        parser.add_argument("-x_transpose", action="store_true", help="Transpose X.")
+        parser.add_argument(
+            "-x_transpose", action="store_true", help="Transpose X."
+        )
         parser.add_argument(
             "-xi",
             "--x_index",
@@ -141,7 +145,9 @@ class main:
             required=True,
             help="The path to the y-axis data matrix.",
         )
-        parser.add_argument("-y_transpose", action="store_true", help="Transpose Y.")
+        parser.add_argument(
+            "-y_transpose", action="store_true", help="Transpose Y."
+        )
         parser.add_argument(
             "-yi",
             "--y_index",
@@ -178,10 +184,15 @@ class main:
             type=str,
             required=False,
             default=None,
-            help="The path to a json file with the" "dataset to color combinations.",
+            help="The path to a json file with the"
+            "dataset to color combinations.",
         )
         parser.add_argument(
-            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+            "-o",
+            "--outfile",
+            type=str,
+            required=True,
+            help="The name of the outfile.",
         )
         parser.add_argument(
             "-e",
@@ -237,7 +248,9 @@ class main:
         print(y_subset_df)
 
         print("Merging.")
-        plot_df = x_subset_df.merge(y_subset_df, left_index=True, right_index=True)
+        plot_df = x_subset_df.merge(
+            y_subset_df, left_index=True, right_index=True
+        )
         plot_df.columns = ["x", "y"]
         plot_df.dropna(inplace=True)
         plot_df = plot_df.astype(float)
@@ -284,7 +297,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -424,7 +443,9 @@ class main:
         ax1.set_ylim(new_ylim[0], new_ylim[1])
 
         for extension in self.extensions:
-            fig.savefig(os.path.join(self.outdir, "{}.{}".format(filename, extension)))
+            fig.savefig(
+                os.path.join(self.outdir, "{}.{}".format(filename, extension))
+            )
         plt.close()
 
     def print_arguments(self):
