@@ -14,15 +14,16 @@ LICENSE file in the root directory of this source tree.
 
 # Standard imports.
 from __future__ import print_function
+
 import argparse
 import os
 
+import matplotlib
 # Third party imports.
 import numpy as np
 import pandas as pd
-from scipy import stats
 import seaborn as sns
-import matplotlib
+from scipy import stats
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -44,7 +45,7 @@ __description__ = (
 )
 
 """
-Syntax: 
+Syntax:
 ./create_correlation_heatmap.py -h
 """
 
@@ -75,7 +76,9 @@ class main:
 
     @staticmethod
     def create_argument_parser():
-        parser = argparse.ArgumentParser(prog=__program__, description=__description__)
+        parser = argparse.ArgumentParser(
+            prog=__program__, description=__description__
+        )
 
         # Add optional arguments.
         parser.add_argument(
@@ -142,7 +145,11 @@ class main:
             help="The correlation method. Default: Spearman.",
         )
         parser.add_argument(
-            "-o", "--outfile", type=str, required=True, help="The name of the outfile."
+            "-o",
+            "--outfile",
+            type=str,
+            required=True,
+            help="The name of the outfile.",
         )
         parser.add_argument(
             "-e",
@@ -150,7 +157,17 @@ class main:
             type=str,
             nargs="+",
             default=["png"],
-            choices=["eps", "pdf", "pgf", "png", "ps", "raw", "rgba", "svg", "svgz"],
+            choices=[
+                "eps",
+                "pdf",
+                "pgf",
+                "png",
+                "ps",
+                "raw",
+                "rgba",
+                "svg",
+                "svgz",
+            ],
             help="The output file format(s), default: ['png']",
         )
 
@@ -216,15 +233,21 @@ class main:
                 appendix = "_{}".format(dataset)
 
             print("Removing columns without variance.")
-            dataset_row_df = dataset_row_df.loc[:, dataset_row_df.std(axis=0) != 0]
-            dataset_col_df = dataset_col_df.loc[:, dataset_col_df.std(axis=0) != 0]
+            dataset_row_df = dataset_row_df.loc[
+                :, dataset_row_df.std(axis=0) != 0
+            ]
+            dataset_col_df = dataset_col_df.loc[
+                :, dataset_col_df.std(axis=0) != 0
+            ]
 
             print(dataset_row_df)
             print(dataset_col_df)
 
             print("Correlating.")
             corr_df, pvalue_df = self.correlate(
-                index_df=dataset_row_df, columns_df=dataset_col_df, triangle=triangle
+                index_df=dataset_row_df,
+                columns_df=dataset_col_df,
+                triangle=triangle,
             )
 
             print(corr_df)
@@ -247,7 +270,9 @@ class main:
                 )
 
             print("Masking non-significant")
-            signif_df = self.mask_non_significant(df=corr_df, pvalue_df=pvalue_df)
+            signif_df = self.mask_non_significant(
+                df=corr_df, pvalue_df=pvalue_df
+            )
 
             print("Plotting.")
             self.plot_heatmap(
@@ -260,7 +285,13 @@ class main:
 
     @staticmethod
     def load_file(
-        inpath, header, index_col, sep="\t", low_memory=True, nrows=None, skiprows=None
+        inpath,
+        header,
+        index_col,
+        sep="\t",
+        low_memory=True,
+        nrows=None,
+        skiprows=None,
     ):
         df = pd.read_csv(
             inpath,
@@ -279,7 +310,9 @@ class main:
 
     def correlate(self, index_df, columns_df, triangle=False):
         index_df_n_nan_values = index_df.shape[0] - index_df.isna().sum(axis=0)
-        column_df_n_nan_values = columns_df.shape[0] - columns_df.isna().sum(axis=0)
+        column_df_n_nan_values = columns_df.shape[0] - columns_df.isna().sum(
+            axis=0
+        )
 
         index_df_colnames = [
             "{} [N={:,}]".format(colname, index_df_n_nan_values[colname])
@@ -337,65 +370,76 @@ class main:
 
         return signif_df
 
+    # new version
     def plot_heatmap(
-        self, df, annot_df, xlabel="", ylabel="", appendix="", vmin=-1, vmax=1
+        self,
+        df,
+        annot_df,
+        xlabel="Vochteloo et al. PICs",
+        ylabel="Newly Generated PICs",
+        appendix="",
+        vmin=-1,
+        vmax=1,
     ):
+        # Define color palette
         cmap = sns.diverging_palette(246, 24, as_cmap=True)
 
-        fig, axes = plt.subplots(
-            nrows=2,
-            ncols=2,
-            figsize=(1 * df.shape[1] + 10, 1 * df.shape[0] + 10),
-            gridspec_kw={"width_ratios": [0.2, 0.8], "height_ratios": [0.8, 0.2]},
+        # Set figure size dynamically based on df dimensions
+        fig, ax = plt.subplots(
+            figsize=(1 * df.shape[1] + 8, 1 * df.shape[0] + 8)
         )
-        sns.set(color_codes=True)
 
+        # Remove NaNs from annotation dataframe
         annot_df.fillna("", inplace=True)
 
-        row_index = 0
-        col_index = 0
-        for _ in range(4):
-            ax = axes[row_index, col_index]
-            if row_index == 0 and col_index == 1:
-                sns.heatmap(
-                    df,
-                    cmap=cmap,
-                    vmin=vmin,
-                    vmax=vmax,
-                    center=0,
-                    square=True,
-                    annot=annot_df,
-                    fmt="",
-                    cbar=False,
-                    annot_kws={"size": 14, "color": "#000000"},
-                    ax=ax,
-                )
+        # Create heatmap
+        sns.heatmap(
+            df,
+            cmap=cmap,
+            vmin=vmin,
+            vmax=vmax,
+            center=0,
+            square=True,
+            annot=annot_df,
+            fmt="",
+            cbar=True,
+            annot_kws={
+                "size": 25,
+                "color": "#000000",
+            },  # Larger annotation text
+            ax=ax,
+            linewidths=0.5,  # Subtle grid lines
+            linecolor="black",
+        )
 
-                plt.setp(
-                    ax.set_yticklabels(
-                        ax.get_ymajorticklabels(), fontsize=20, rotation=0
-                    )
-                )
-                plt.setp(
-                    ax.set_xticklabels(
-                        ax.get_xmajorticklabels(), fontsize=20, rotation=90
-                    )
-                )
+        # Remove extra text from tick labels
+        clean_labels = lambda labels: [
+            label.get_text().split(" [")[0] for label in labels
+        ]
 
-                ax.set_xlabel(xlabel, fontsize=14)
-                ax.xaxis.set_label_position("top")
+        ax.set_xticklabels(
+            clean_labels(ax.get_xticklabels()),
+            fontsize=25,
+            rotation=45,
+            ha="right",
+        )
+        ax.set_yticklabels(
+            clean_labels(ax.get_yticklabels()), fontsize=25, rotation=0
+        )
 
-                ax.set_ylabel(ylabel, fontsize=14)
-                ax.yaxis.set_label_position("right")
-            else:
-                ax.set_axis_off()
+        # Set axis labels
+        ax.set_xlabel(xlabel, fontsize=20, labelpad=15)
+        ax.set_ylabel(ylabel, fontsize=20, labelpad=15)
 
-            col_index += 1
-            if col_index > 1:
-                col_index = 0
-                row_index += 1
+        # Improve colorbar styling
+        cbar = ax.collections[0].colorbar
+        cbar.ax.tick_params(labelsize=25)  # Adjust colorbar tick labels
+        cbar.set_label("Correlation", fontsize=25, labelpad=15)
 
+        # Tight layout for better spacing
         plt.tight_layout()
+
+        # Save figure in multiple formats
         for extension in self.extensions:
             fig.savefig(
                 os.path.join(
@@ -403,9 +447,85 @@ class main:
                     "{}_corr_heatmap_{}_{}.{}".format(
                         self.out_filename, self.method, appendix, extension
                     ),
-                )
+                ),
+                dpi=300,  # High resolution for publication-quality output
+                bbox_inches="tight",
             )
         plt.close()
+
+    # old version
+    # def plot_heatmap(
+    #     self, df, annot_df, xlabel="", ylabel="", appendix="", vmin=-1, vmax=1
+    # ):
+    #     cmap = sns.diverging_palette(246, 24, as_cmap=True)
+    #
+    #     fig, axes = plt.subplots(
+    #         nrows=2,
+    #         ncols=2,
+    #         figsize=(1 * df.shape[1] + 10, 1 * df.shape[0] + 10),
+    #         gridspec_kw={
+    #             "width_ratios": [0.2, 0.8],
+    #             "height_ratios": [0.8, 0.2],
+    #         },
+    #     )
+    #     sns.set(color_codes=True)
+    #
+    #     annot_df.fillna("", inplace=True)
+    #
+    #     row_index = 0
+    #     col_index = 0
+    #     for _ in range(4):
+    #         ax = axes[row_index, col_index]
+    #         if row_index == 0 and col_index == 1:
+    #             sns.heatmap(
+    #                 df,
+    #                 cmap=cmap,
+    #                 vmin=vmin,
+    #                 vmax=vmax,
+    #                 center=0,
+    #                 square=True,
+    #                 annot=annot_df,
+    #                 fmt="",
+    #                 cbar=False,
+    #                 annot_kws={"size": 14, "color": "#000000"},
+    #                 ax=ax,
+    #             )
+    #
+    #             plt.setp(
+    #                 ax.set_yticklabels(
+    #                     ax.get_ymajorticklabels(), fontsize=20, rotation=0
+    #                 )
+    #             )
+    #             plt.setp(
+    #                 ax.set_xticklabels(
+    #                     ax.get_xmajorticklabels(), fontsize=20, rotation=90
+    #                 )
+    #             )
+    #
+    #             ax.set_xlabel(xlabel, fontsize=14)
+    #             ax.xaxis.set_label_position("top")
+    #
+    #             ax.set_ylabel(ylabel, fontsize=14)
+    #             ax.yaxis.set_label_position("right")
+    #         else:
+    #             ax.set_axis_off()
+    #
+    #         col_index += 1
+    #         if col_index > 1:
+    #             col_index = 0
+    #             row_index += 1
+    #
+    #     plt.tight_layout()
+    #     for extension in self.extensions:
+    #         fig.savefig(
+    #             os.path.join(
+    #                 self.outdir,
+    #                 "{}_corr_heatmap_{}_{}.{}".format(
+    #                     self.out_filename, self.method, appendix, extension
+    #                 ),
+    #             )
+    #         )
+    #     plt.close()
 
     def print_arguments(self):
         print("Arguments:")
